@@ -1,4 +1,7 @@
 package com.Emergency_Response_Management.Repository;
 
-public interface DispatcherRepository {
+import com.Emergency_Response_Management.Model.Dispatcher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DispatcherRepository extends JpaRepository<Dispatcher, Integer> {
 }
