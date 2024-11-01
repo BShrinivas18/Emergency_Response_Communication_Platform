@@ -1,5 +1,7 @@
 package com.Emergency_Response_Management.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,13 +17,14 @@ import java.util.List;
 @Table(name = "dispatchers")
 public class Dispatcher {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer dispatcherId;
 
     private String name;
     private String contactInfo;
     private String assignedRegion;
 
-    @OneToMany(mappedBy = "managedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "managedBy")
+    @JsonIgnore // prevent serialisation loop
     private List<Incident> managedIncidents = new ArrayList<>();
 }

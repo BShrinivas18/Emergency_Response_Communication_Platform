@@ -1,5 +1,8 @@
 package com.Emergency_Response_Management.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,15 +18,17 @@ import java.util.List;
 @Table(name = "victims")
 public class Victim {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer victimId;
     private String name;
     private String contactInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Change to ManyToOne to represent relation
-    @JoinColumn(name = "location_id", nullable = true) // Ensure the column name matches your DB
+    @ManyToOne // Change to ManyToOne to represent relation
+    @JoinColumn(name = "location_id")// Ensure the column name matches your DB
+    @JsonIgnoreProperties({"victims", "responders"})
     private Location location;
 
-    @OneToMany(mappedBy = "victim", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Incident> incidents = new ArrayList<>();
+    @OneToMany(mappedBy = "victim")
+    @JsonIgnore
+     private List<Incident> incidents = new ArrayList<>();
 }

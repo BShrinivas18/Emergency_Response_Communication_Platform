@@ -16,17 +16,17 @@ import java.util.List;
 @Table(name = "locations")
 public class Location {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer locationId;
     private Float latitude;
     private Float longitude;
     private String address;
 
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "location")
     @JsonIgnore // Helps prevent circular reference during serialization
     private List<Responder> responders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "location")
     @JsonIgnore
     private List<Victim> victims = new ArrayList<>(); // Added for Victim reference
 }

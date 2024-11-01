@@ -16,26 +16,38 @@ public class VictimController {
     private VictimService victimService;
 
     @PostMapping
-    public Victim createVictim(@RequestBody Victim victim) {
-        return victimService.createVictim(victim);
+    public ResponseEntity<Victim> createVictim(@RequestBody Victim victim) {
+        return ResponseEntity.ok(victimService.createVictim(victim));
     }
 
     @GetMapping
-    public List<Victim> getAllVictims() {
-        return victimService.getAllVictims();
+    public ResponseEntity<List<Victim>> getAllVictims() {
+        return ResponseEntity.ok(victimService.getAllVictims());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Victim> getVictimById(@PathVariable Integer id) {
-        return victimService.getVictimById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(victimService.getVictimById(id));
     }
 
-    @PutMapping("/{id}")
-    public Victim updateVictim(@PathVariable Integer id, @RequestBody Victim updatedVictim) {
-        return victimService.updateVictim(id, updatedVictim);
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<List<Victim>> getVictimsByLocation(@PathVariable Integer locationId) {
+        return ResponseEntity.ok(victimService.getVictimsByLocation(locationId));
     }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<Victim>> getVictimsByName(@PathVariable String name) {
+        return ResponseEntity.ok(victimService.getVictimsByName(name));
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Victim> updateVictim(
+            @PathVariable Integer id,
+            @RequestBody Victim victim) {
+        return ResponseEntity.ok(victimService.updateVictim(id, victim));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVictim(@PathVariable Integer id) {
