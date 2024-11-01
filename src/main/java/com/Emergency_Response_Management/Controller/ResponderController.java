@@ -32,9 +32,34 @@ public class ResponderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Responder>> getRespondersByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(responderService.getRespondersByStatus(status));
+    }
+
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<Responder>> getRespondersByRole(@PathVariable String role) {
+        return ResponseEntity.ok(responderService.getRespondersByRole(role));
+    }
+
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<List<Responder>> getRespondersByLocation(@PathVariable Integer locationId) {
+        return ResponseEntity.ok(responderService.getRespondersByLocation(locationId));
+    }
+
+
     @PutMapping("/{id}")
-    public Responder updateResponder(@PathVariable Integer id, @RequestBody Responder updatedResponder) {
-        return responderService.updateResponder(id, updatedResponder);
+    public ResponseEntity<Responder> updateResponder(
+            @PathVariable Integer id,
+            @RequestBody Responder responder) {
+        return ResponseEntity.ok(responderService.updateResponder(id, responder));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Responder> updateStatus(
+            @PathVariable Integer id,
+            @RequestParam String status) {
+        return ResponseEntity.ok(responderService.updateStatus(id, status));
     }
 
     @DeleteMapping("/{id}")

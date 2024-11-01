@@ -20,9 +20,9 @@ public class Log {
     private LocalDateTime timestamp;
     private Integer updatedBy;
 
-//    @ManyToOne
-//    @JoinColumn(name = "incident_id", nullable =true)
-//    private Incident incident;
+    @ManyToOne
+    @JoinColumn(name = "incident_id", nullable =true)
+    private Incident incident;
 
 
 }

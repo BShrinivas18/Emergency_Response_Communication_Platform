@@ -22,11 +22,11 @@ public class Location {
     private Float longitude;
     private String address;
 
-//    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnore // Helps prevent circular reference during serialization
-//    private List<Responder> responders = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnore
-//    private List<Victim> victims = new ArrayList<>(); // Added for Victim reference
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Helps prevent circular reference during serialization
+    private List<Responder> responders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Victim> victims = new ArrayList<>(); // Added for Victim reference
 }

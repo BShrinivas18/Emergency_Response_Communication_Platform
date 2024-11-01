@@ -21,10 +21,10 @@ public class Responder {
     private String status;
     private String role;
     private LocalDateTime lastUpdate;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "location_id", nullable = true)
-//    private Location location;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id", nullable = true)
+    private Location location;
 
     // Other fields, getters, setters, and constructors
 }

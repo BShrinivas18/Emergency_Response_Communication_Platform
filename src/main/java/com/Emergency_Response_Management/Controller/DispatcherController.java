@@ -32,6 +32,11 @@ public class DispatcherController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/region/{region}")
+    public ResponseEntity<List<Dispatcher>> getDispatchersByRegion(@PathVariable String region) {
+        return ResponseEntity.ok(dispatcherService.getDispatchersByRegion(region));
+    }
+
     @PutMapping("/{id}")
     public Dispatcher updateDispatcher(@PathVariable Integer id, @RequestBody Dispatcher updatedDispatcher) {
         return dispatcherService.updateDispatcher(id, updatedDispatcher);

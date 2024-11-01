@@ -32,9 +32,31 @@ public class IncidentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Incident>> getIncidentsByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(incidentService.getIncidentsByStatus(status));
+    }
+
+    @PutMapping("/{id}/assign/{responderId}")
+    public ResponseEntity<Incident> assignResponder(
+            @PathVariable Integer id,
+            @PathVariable Integer responderId) {
+        return ResponseEntity.ok(incidentService.assignResponder(id, responderId));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Incident> updateStatus(
+            @PathVariable Integer id,
+            @RequestParam String status) {
+        return ResponseEntity.ok(incidentService.updateStatus(id, status));
+    }
+
+
     @PutMapping("/{id}")
-    public Incident updateIncident(@PathVariable Integer id, @RequestBody Incident updatedIncident) {
-        return incidentService.updateIncident(id, updatedIncident);
+    public ResponseEntity<Incident> updateIncident(
+            @PathVariable Integer id,
+            @RequestBody Incident incident) {
+        return ResponseEntity.ok(incidentService.updateIncident(id, incident));
     }
 
     @DeleteMapping("/{id}")

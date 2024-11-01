@@ -1,5 +1,6 @@
 package com.Emergency_Response_Management.Service;
 
+import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Dispatcher;
 import com.Emergency_Response_Management.Repository.DispatcherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,16 @@ public class DispatcherService {
         return dispatcherRepository.findById(id);
     }
 
-    public Dispatcher updateDispatcher(Integer id, Dispatcher updatedDispatcher) {
-        updatedDispatcher.setDispatcherId(id);
-        return dispatcherRepository.save(updatedDispatcher);
+    public Dispatcher updateDispatcher(Integer id, Dispatcher dispatcher) {
+        Dispatcher existingDispatcher = getDispatcherById(id).orElseThrow(()->new GeneralException("Dispatcher Not Found"));
+        existingDispatcher.setName(dispatcher.getName());
+        existingDispatcher.setContactInfo(dispatcher.getContactInfo());
+        existingDispatcher.setAssignedRegion(dispatcher.getAssignedRegion());
+        return dispatcherRepository.save(existingDispatcher);
+    }
+
+    public List<Dispatcher> getDispatchersByRegion(String region) {
+        return dispatcherRepository.findByAssignedRegion(region);
     }
 
     public void deleteDispatcher(Integer id) {

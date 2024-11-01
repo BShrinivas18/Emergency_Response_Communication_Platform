@@ -1,4 +1,5 @@
 package com.Emergency_Response_Management.Service;
+import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Admin;
 import com.Emergency_Response_Management.Repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,12 @@ public class AdminService {
         return adminRepository.findById(id);
     }
 
-    public Admin updateAdmin(Integer id, Admin updatedAdmin) {
-        updatedAdmin.setAdminId(id);
-        return adminRepository.save(updatedAdmin);
+    public Admin updateAdmin(Integer id, Admin admin) {
+        Admin existingAdmin = getAdminById(id).orElseThrow(() -> new GeneralException("Admin Not Found"));
+        existingAdmin.setName(admin.getName());
+        existingAdmin.setContactInfo(admin.getContactInfo());
+        existingAdmin.setRole(admin.getRole());
+        return adminRepository.save(existingAdmin);
     }
 
     public void deleteAdmin(Integer id) {

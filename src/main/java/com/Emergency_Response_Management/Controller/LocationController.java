@@ -32,9 +32,24 @@ public class LocationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Location>> findByCoordinates(
+            @RequestParam Float latitude,
+            @RequestParam Float longitude) {
+        return ResponseEntity.ok(locationService.findByCoordinates(latitude, longitude));
+    }
+
+    @GetMapping("/address/{address}")
+    public ResponseEntity<List<Location>> findByAddress(@PathVariable String address) {
+        return ResponseEntity.ok(locationService.findByAddress(address));
+    }
+
+
     @PutMapping("/{id}")
-    public Location updateLocation(@PathVariable Integer id, @RequestBody Location updatedLocation) {
-        return locationService.updateLocation(id, updatedLocation);
+    public ResponseEntity<Location> updateLocation(
+            @PathVariable Integer id,
+            @RequestBody Location location) {
+        return ResponseEntity.ok(locationService.updateLocation(id, location));
     }
 
     @DeleteMapping("/{id}")

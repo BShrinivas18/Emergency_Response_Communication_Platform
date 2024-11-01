@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,18 +25,18 @@ public class Incident {
     private String status;
 
 
-//    @ManyToOne
-//    @JoinColumn(name = "victim_id", nullable = true)
-//    private Victim victim;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "responder_id", nullable = true)
-//    private Responder assignedResponder;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "dispatcher_id", nullable = true)
-//    private Dispatcher managedBy;
-//
-//    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Log> logs = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "victim_id", nullable = true)
+    private Victim victim;
+
+    @ManyToOne
+    @JoinColumn(name = "responder_id", nullable = true)
+    private Responder assignedResponder;
+
+    @ManyToOne
+    @JoinColumn(name = "dispatcher_id", nullable = true)
+    private Dispatcher managedBy;
+
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Log> logs = new ArrayList<>();
 }

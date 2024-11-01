@@ -22,6 +22,6 @@ public class Dispatcher {
     private String contactInfo;
     private String assignedRegion;
 
-//    @OneToMany(mappedBy = "managedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Incident> managedIncidents = new ArrayList<>();
+    @OneToMany(mappedBy = "managedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Incident> managedIncidents = new ArrayList<>();
 }

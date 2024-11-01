@@ -20,10 +20,10 @@ public class Victim {
     private String name;
     private String contactInfo;
 
-//    @ManyToOne(fetch = FetchType.LAZY) // Change to ManyToOne to represent relation
-//    @JoinColumn(name = "location_id", nullable = true) // Ensure the column name matches your DB
-//    private Location location;
-//
-//    @OneToMany(mappedBy = "victim", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Incident> incidents = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY) // Change to ManyToOne to represent relation
+    @JoinColumn(name = "location_id", nullable = true) // Ensure the column name matches your DB
+    private Location location;
+
+    @OneToMany(mappedBy = "victim", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Incident> incidents = new ArrayList<>();
 }
