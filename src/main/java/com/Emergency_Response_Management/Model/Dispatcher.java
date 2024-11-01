@@ -14,14 +14,14 @@ import java.util.List;
 @Entity
 @Table(name = "dispatchers")
 public class Dispatcher {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer dispatcherId;
+
     private String name;
     private String contactInfo;
     private String assignedRegion;
-//    @OneToMany(mappedBy = "managedBy")
-//    private List<Incident> managedIncidents = new ArrayList<>();
 
+//    @OneToMany(mappedBy = "managedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Incident> managedIncidents = new ArrayList<>();
 }

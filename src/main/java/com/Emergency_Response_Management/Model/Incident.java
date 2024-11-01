@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "incidents")
 public class Incident {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer incidentId;
     private String location;
     private String severity;
@@ -23,15 +22,19 @@ public class Incident {
     private LocalDateTime timestamp;
     private String status;
 
+
 //    @ManyToOne
-//    @JoinColumn(name = "victim_id")
+//    @JoinColumn(name = "victim_id", nullable = true)
 //    private Victim victim;
+//
 //    @ManyToOne
-//    @JoinColumn(name = "responder_id")
+//    @JoinColumn(name = "responder_id", nullable = true)
 //    private Responder assignedResponder;
+//
 //    @ManyToOne
-//    @JoinColumn(name = "dispatcher_id")
+//    @JoinColumn(name = "dispatcher_id", nullable = true)
 //    private Dispatcher managedBy;
-//    @OneToMany(mappedBy = "incident")
+//
+//    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Log> logs = new ArrayList<>();
 }

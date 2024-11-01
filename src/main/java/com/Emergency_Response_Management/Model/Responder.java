@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,17 +14,17 @@ import java.util.List;
 @Table(name = "responders")
 public class Responder {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer responderId;
     private String name;
     private String currentLocation;
     private String status;
     private String role;
     private LocalDateTime lastUpdate;
-//    @OneToMany(mappedBy = "assignedResponder")
-//    private List<Incident> assignedIncidents = new ArrayList<>();
-//    @ManyToOne
-//    @JoinColumn(name = "location_id")
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "location_id", nullable = true)
 //    private Location location;
 
+    // Other fields, getters, setters, and constructors
 }
