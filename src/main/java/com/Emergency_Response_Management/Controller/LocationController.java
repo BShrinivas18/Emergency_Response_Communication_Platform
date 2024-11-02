@@ -1,5 +1,7 @@
 package com.Emergency_Response_Management.Controller;
 
+import com.Emergency_Response_Management.DTO.LocationDTO;
+import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,39 +18,39 @@ public class LocationController {
     private LocationService locationService;
 
     @PostMapping
-    public Location createLocation(@RequestBody Location location) {
+    public LocationDTO createLocation(@RequestBody LocationDTO location) {
         return locationService.createLocation(location);
     }
 
     @GetMapping
-    public List<Location> getAllLocations() {
+    public List<LocationDTO> getAllLocations() {
         return locationService.getAllLocations();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Location> getLocationById(@PathVariable Integer id) {
+    public ResponseEntity<LocationDTO> getLocationById(@PathVariable Integer id) {
         return locationService.getLocationById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Location>> findByCoordinates(
+    public ResponseEntity<List<LocationDTO>> findByCoordinates(
             @RequestParam Float latitude,
             @RequestParam Float longitude) {
         return ResponseEntity.ok(locationService.findByCoordinates(latitude, longitude));
     }
 
     @GetMapping("/address/{address}")
-    public ResponseEntity<List<Location>> findByAddress(@PathVariable String address) {
+    public ResponseEntity<List<LocationDTO>> findByAddress(@PathVariable String address) {
         return ResponseEntity.ok(locationService.findByAddress(address));
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Location> updateLocation(
+    public ResponseEntity<LocationDTO> updateLocation(
             @PathVariable Integer id,
-            @RequestBody Location location) {
+            @RequestBody LocationDTO location) {
         return ResponseEntity.ok(locationService.updateLocation(id, location));
     }
 

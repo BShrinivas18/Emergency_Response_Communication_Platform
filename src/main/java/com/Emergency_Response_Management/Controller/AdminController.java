@@ -1,8 +1,11 @@
 package com.Emergency_Response_Management.Controller;
 
+import com.Emergency_Response_Management.DTO.AdminDTO;
+import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Admin;
 import com.Emergency_Response_Management.Service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,24 +19,26 @@ public class AdminController {
     private AdminService adminService;
 
     @PostMapping
-    public Admin createAdmin(@RequestBody Admin admin) {
+    public AdminDTO createAdmin(@RequestBody AdminDTO admin) {
         return adminService.createAdmin(admin);
     }
 
     @GetMapping
-    public List<Admin> getAllAdmins() {
+    public List<AdminDTO> getAllAdmins() {
         return adminService.getAllAdmins();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Admin> getAdminById(@PathVariable Integer id) {
-        return adminService.getAdminById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @ResponseStatus
+    public AdminDTO getAdminById(@PathVariable Integer id) {
+        if(adminService.getAdminById(id)!=null)
+        return adminService.getAdminById(id);
+        else
+            throw new GeneralException("Admin Not Found");
     }
 
     @PutMapping("/{id}")
-    public Admin updateAdmin(@PathVariable Integer id, @RequestBody Admin updatedAdmin) {
+    public AdminDTO updateAdmin(@PathVariable Integer id, @RequestBody AdminDTO updatedAdmin) {
         return adminService.updateAdmin(id, updatedAdmin);
     }
 

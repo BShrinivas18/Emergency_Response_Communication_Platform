@@ -1,6 +1,6 @@
 package com.Emergency_Response_Management.Controller;
 
-import com.Emergency_Response_Management.Model.Victim;
+import com.Emergency_Response_Management.DTO.VictimDTO;
 import com.Emergency_Response_Management.Service.VictimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,35 +16,35 @@ public class VictimController {
     private VictimService victimService;
 
     @PostMapping
-    public ResponseEntity<Victim> createVictim(@RequestBody Victim victim) {
+    public ResponseEntity<VictimDTO> createVictim(@RequestBody VictimDTO victim) {
         return ResponseEntity.ok(victimService.createVictim(victim));
     }
 
     @GetMapping
-    public ResponseEntity<List<Victim>> getAllVictims() {
+    public ResponseEntity<List<VictimDTO>> getAllVictims() {
         return ResponseEntity.ok(victimService.getAllVictims());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Victim> getVictimById(@PathVariable Integer id) {
+    public ResponseEntity<VictimDTO> getVictimById(@PathVariable Integer id) {
         return ResponseEntity.ok(victimService.getVictimById(id));
     }
 
     @GetMapping("/location/{locationId}")
-    public ResponseEntity<List<Victim>> getVictimsByLocation(@PathVariable Integer locationId) {
+    public ResponseEntity<List<VictimDTO>> getVictimsByLocation(@PathVariable Integer locationId) {
         return ResponseEntity.ok(victimService.getVictimsByLocation(locationId));
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<Victim>> getVictimsByName(@PathVariable String name) {
+    public ResponseEntity<List<VictimDTO>> getVictimsByName(@PathVariable String name) {
         return ResponseEntity.ok(victimService.getVictimsByName(name));
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Victim> updateVictim(
+    public ResponseEntity<VictimDTO> updateVictim(
             @PathVariable Integer id,
-            @RequestBody Victim victim) {
+            @RequestBody VictimDTO victim) {
         return ResponseEntity.ok(victimService.updateVictim(id, victim));
     }
 

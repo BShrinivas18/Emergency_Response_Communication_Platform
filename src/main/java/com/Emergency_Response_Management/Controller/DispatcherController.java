@@ -1,5 +1,6 @@
 package com.Emergency_Response_Management.Controller;
 
+import com.Emergency_Response_Management.DTO.DispatcherDTO;
 import com.Emergency_Response_Management.Model.Dispatcher;
 import com.Emergency_Response_Management.Service.DispatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +17,18 @@ public class DispatcherController {
     private DispatcherService dispatcherService;
 
     @PostMapping
-    public Dispatcher createDispatcher(@RequestBody Dispatcher dispatcher) {
+    public DispatcherDTO createDispatcher(@RequestBody DispatcherDTO dispatcher) {
         return dispatcherService.createDispatcher(dispatcher);
     }
 
     @GetMapping
-    public List<Dispatcher> getAllDispatchers() {
+    public List<DispatcherDTO> getAllDispatchers() {
         return dispatcherService.getAllDispatchers();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dispatcher> getDispatcherById(@PathVariable Integer id) {
-        return dispatcherService.getDispatcherById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public DispatcherDTO getDispatcherById(@PathVariable Integer id) {
+        return dispatcherService.getDispatcherById(id);
     }
 
     @GetMapping("/region/{region}")
@@ -38,7 +37,7 @@ public class DispatcherController {
     }
 
     @PutMapping("/{id}")
-    public Dispatcher updateDispatcher(@PathVariable Integer id, @RequestBody Dispatcher updatedDispatcher) {
+    public DispatcherDTO updateDispatcher(@PathVariable Integer id, @RequestBody DispatcherDTO updatedDispatcher) {
         return dispatcherService.updateDispatcher(id, updatedDispatcher);
     }
 

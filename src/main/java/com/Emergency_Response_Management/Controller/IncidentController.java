@@ -1,5 +1,6 @@
 package com.Emergency_Response_Management.Controller;
 
+import com.Emergency_Response_Management.DTO.IncidentDTO;
 import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Service.IncidentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,36 +17,36 @@ public class IncidentController {
     private IncidentService incidentService;
 
     @PostMapping
-    public Incident createIncident(@RequestBody Incident incident) {
+    public IncidentDTO createIncident(@RequestBody IncidentDTO incident) {
         return incidentService.createIncident(incident);
     }
 
     @GetMapping
-    public List<Incident> getAllIncidents() {
+    public List<IncidentDTO> getAllIncidents() {
         return incidentService.getAllIncidents();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Incident> getIncidentById(@PathVariable Integer id) {
+    public ResponseEntity<IncidentDTO> getIncidentById(@PathVariable Integer id) {
         return incidentService.getIncidentById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<Incident>> getIncidentsByStatus(@PathVariable String status) {
+    public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@PathVariable String status) {
         return ResponseEntity.ok(incidentService.getIncidentsByStatus(status));
     }
 
     @PutMapping("/{id}/assign/{responderId}")
-    public ResponseEntity<Incident> assignResponder(
+    public ResponseEntity<IncidentDTO> assignResponder(
             @PathVariable Integer id,
             @PathVariable Integer responderId) {
         return ResponseEntity.ok(incidentService.assignResponder(id, responderId));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Incident> updateStatus(
+    public ResponseEntity<IncidentDTO> updateStatus(
             @PathVariable Integer id,
             @RequestParam String status) {
         return ResponseEntity.ok(incidentService.updateStatus(id, status));
@@ -53,9 +54,9 @@ public class IncidentController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Incident> updateIncident(
+    public ResponseEntity<IncidentDTO> updateIncident(
             @PathVariable Integer id,
-            @RequestBody Incident incident) {
+            @RequestBody IncidentDTO incident) {
         return ResponseEntity.ok(incidentService.updateIncident(id, incident));
     }
 
