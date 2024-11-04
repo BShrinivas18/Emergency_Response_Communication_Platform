@@ -3,11 +3,11 @@ package com.Emergency_Response_Management.Service;
 import com.Emergency_Response_Management.DTO.IncidentDTO;
 import com.Emergency_Response_Management.DTO.ResponderDTO;
 import com.Emergency_Response_Management.Exception.GeneralException;
-import com.Emergency_Response_Management.Model.Incident;
-import com.Emergency_Response_Management.Model.Log;
-import com.Emergency_Response_Management.Model.Responder;
+import com.Emergency_Response_Management.Model.*;
+import com.Emergency_Response_Management.Repository.DispatcherRepository;
 import com.Emergency_Response_Management.Repository.IncidentRepository;
 import com.Emergency_Response_Management.Repository.ResponderRepository;
+import com.Emergency_Response_Management.Repository.VictimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,12 @@ public class IncidentService {
 
     @Autowired
     private ResponderRepository responderRepository;
+
+    @Autowired
+    private VictimRepository victimRepository;
+
+    @Autowired
+    private DispatcherRepository dispatcherRepository;
 
     public IncidentDTO createIncident(IncidentDTO incidentDTO) {
         Incident incident = convertToEntity(incidentDTO);
@@ -115,6 +121,17 @@ public class IncidentService {
             Responder responder = responderRepository.findById(dto.getResponderId())
                     .orElseThrow(() -> new RuntimeException("Responder not found"));
             incident.setAssignedResponder(responder);
+        }
+        if (dto.getVictimId()!=null){
+            Victim victim = victimRepository.findById(dto.getVictimId())
+                    .orElseThrow(()-> new GeneralException("Victim not found"));
+           incident.setVictim(victim);
+        }
+
+        if(dto.getDispatcherId()!= null){
+            Dispatcher dispatcher = dispatcherRepository.findById(dto.getDispatcherId())
+                    .orElseThrow(() -> new GeneralException("Dispatcher not found"));
+            incident.setManagedBy(dispatcher);
         }
         // Map other fields if necessary, like victim, dispatcher, and logs.
         return incident;
