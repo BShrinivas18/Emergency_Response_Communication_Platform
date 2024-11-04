@@ -137,15 +137,4 @@ public class IncidentService {
         return incident;
     }
 
-    private ResponderDTO convertToResponderDTO(Responder responder) {
-        ResponderDTO responderDTO = new ResponderDTO();
-        responderDTO.setResponderId(responder.getResponderId());
-        responderDTO.setName(responder.getName());
-        responderDTO.setCurrentLocation(responder.getCurrentLocation());
-        responderDTO.setStatus(responder.getStatus());
-        responderDTO.setRole(responder.getRole());
-        responderDTO.setLastUpdate(responder.getLastUpdate());
-        // Set other fields as needed
-        return responderDTO;
-    }
 }
