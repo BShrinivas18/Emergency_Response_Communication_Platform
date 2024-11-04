@@ -16,5 +16,5 @@ public class ResponderDTO {
     private ResponderType type;
     private LocalDateTime lastUpdate;
     private Integer locationId;
-    private List<Integer> incidentIds;
+//    private List<Integer> incidentIds;  // can be fetched when required separately
 }

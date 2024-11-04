@@ -37,7 +37,7 @@ public class VictimService {
             dto.setLocationId(victim.getLocation().getLocationId());
         }
 
-        dto.setIncidentIds(victim.getIncidents().stream().map(Incident::getIncidentId).toList());
+//        dto.setIncidentIds(victim.getIncidents().stream().map(Incident::getIncidentId).toList());
         return dto;
     }
 
@@ -53,8 +53,8 @@ public class VictimService {
             victim.setLocation(location);
         }
 
-        List<Incident> incidents = incidentRepository.findAllById(dto.getIncidentIds());
-        victim.setIncidents(incidents);
+//        List<Incident> incidents = incidentRepository.findAllById(dto.getIncidentIds());
+//        victim.setIncidents(incidents);
         return victim;
     }
 
@@ -105,10 +105,10 @@ public class VictimService {
         );
 
 
-        if (victim.getIncidentIds() != null) {
-            List<Incident> incidents = incidentRepository.findAllById(victim.getIncidentIds());
-            existingVictim.setIncidents(incidents);
-        }
+//        if (victim.getIncidentIds() != null) {
+//            List<Incident> incidents = incidentRepository.findAllById(victim.getIncidentIds());
+//            existingVictim.setIncidents(incidents);
+//        }
         return convertToDTO(victimRepository.save(existingVictim));
     }
 

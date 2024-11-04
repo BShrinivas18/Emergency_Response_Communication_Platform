@@ -4,7 +4,6 @@ import com.Emergency_Response_Management.DTO.ResponderDTO;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Exception.GeneralException;
-import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Model.Responder;
 import com.Emergency_Response_Management.Repository.LocationRepository;
@@ -111,9 +110,9 @@ public class ResponderService {
         }
 
         // Assuming there's a method to retrieve incident IDs for a responder
-        dto.setIncidentIds(responder.getIncidents().stream()
-                .map(Incident::getIncidentId)
-                .collect(Collectors.toList()));
+//        dto.setIncidentIds(responder.getIncidents().stream()
+//                .map(Incident::getIncidentId)
+//                .collect(Collectors.toList()));
 
         return dto;
     }

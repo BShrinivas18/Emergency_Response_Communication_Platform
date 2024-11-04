@@ -61,9 +61,9 @@ public class DispatcherService {
         dto.setName(dispatcher.getName());
         dto.setContactInfo(dispatcher.getContactInfo());
         dto.setAssignedRegion(dispatcher.getAssignedRegion());
-        dto.setManagedIncidentIds(dispatcher.getManagedIncidents().stream()
-                .map(Incident::getIncidentId)
-                .collect(Collectors.toList()));
+//        dto.setManagedIncidentIds(dispatcher.getManagedIncidents().stream()
+//                .map(Incident::getIncidentId)
+//                .collect(Collectors.toList()));
         return dto;
     }
 

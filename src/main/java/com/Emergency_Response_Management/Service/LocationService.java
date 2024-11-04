@@ -68,8 +68,8 @@ public class LocationService {
         dto.setLatitude(location.getLatitude());
         dto.setLongitude(location.getLongitude());
         dto.setAddress(location.getAddress());
-        dto.setResponderIds(location.getResponders().stream().map(Responder::getResponderId).toList());
-        dto.setVictimIds(location.getVictims().stream().map(Victim::getVictimId).toList());
+//        dto.setResponderIds(location.getResponders().stream().map(Responder::getResponderId).toList());
+//        dto.setVictimIds(location.getVictims().stream().map(Victim::getVictimId).toList());
         return dto;
     }
 

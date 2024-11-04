@@ -10,5 +10,5 @@ public class DispatcherDTO {
     private String name;
     private String contactInfo;
     private String assignedRegion;
-    private List<Integer> managedIncidentIds;
+//    private List<Integer> managedIncidentIds; // removed as it's not always needed in responses
 }

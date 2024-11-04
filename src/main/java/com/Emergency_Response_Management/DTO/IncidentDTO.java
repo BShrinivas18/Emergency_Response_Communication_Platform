@@ -19,5 +19,5 @@ public class IncidentDTO {
     private Integer victimId;
     private Integer responderId;
     private Integer dispatcherId;
-    private List<Integer> logIds;
+//    private List<Integer> logIds; // removed because it can be fetched separately when needed
 }

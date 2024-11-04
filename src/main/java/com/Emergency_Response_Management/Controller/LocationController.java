@@ -5,6 +5,7 @@ import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +19,13 @@ public class LocationController {
     private LocationService locationService;
 
     @PostMapping
-    public LocationDTO createLocation(@RequestBody LocationDTO location) {
-        return locationService.createLocation(location);
+    public ResponseEntity<LocationDTO> createLocation(@RequestBody LocationDTO location) {
+        return new ResponseEntity<>(locationService.createLocation(location), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<LocationDTO> getAllLocations() {
-        return locationService.getAllLocations();
+    public ResponseEntity<List<LocationDTO>> getAllLocations() {
+        return new ResponseEntity<>(locationService.getAllLocations(),HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

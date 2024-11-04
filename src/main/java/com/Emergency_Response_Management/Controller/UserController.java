@@ -5,6 +5,7 @@ import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.User;
 import com.Emergency_Response_Management.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,27 +19,27 @@ public class UserController {
     private UserService UserService;
 
     @PostMapping
-    public UserDTO createUser(@RequestBody UserDTO User) {
-        return UserService.createUser(User);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO User) {
+        return new ResponseEntity<>(UserService.createUser(User), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return UserService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return new ResponseEntity<>(UserService.getAllUsers(),HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus
-    public UserDTO getUserById(@PathVariable Integer id) {
-        if(UserService.getUserById(id)!=null)
-        return UserService.getUserById(id);
-        else
-            throw new GeneralException("User Not Found");
+//    @ResponseStatus
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
+//        if(UserService.getUserById(id)!=null)
+        return new ResponseEntity<>(UserService.getUserById(id),HttpStatus.FOUND);
+//        else
+//            throw new GeneralException("User Not Found");
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable Integer id, @RequestBody UserDTO updatedUser) {
-        return UserService.updateUser(id, updatedUser);
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO updatedUser) {
+        return new ResponseEntity<>(UserService.updateUser(id, updatedUser),HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")

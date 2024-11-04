@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.IncidentDTO;
+import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Service.IncidentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class IncidentController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<IncidentDTO> updateStatus(
             @PathVariable Integer id,
-            @RequestParam ResponseStatus status) {
+           @RequestBody IncidentStatus status) {
         return ResponseEntity.ok(incidentService.updateStatus(id, status));
     }
 

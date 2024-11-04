@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.ResponderDTO;
+import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Service.ResponderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,8 @@ public class ResponderController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@PathVariable ResponseStatus status) {
-        return ResponseEntity.ok(responderService.getRespondersByStatus());
+    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@PathVariable ResponderStatus status) {
+        return ResponseEntity.ok(responderService.getRespondersByStatus(status));
     }
 
     @GetMapping("/role/{role}")
@@ -59,8 +60,8 @@ public class ResponderController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<ResponderDTO> updateStatus(
             @PathVariable Integer id,
-            @PathVariable ResponseStatus status) {
-        return ResponseEntity.ok(responderService.updateStatus(id, String.valueOf(status)));
+            @RequestBody ResponderStatus status) {
+        return ResponseEntity.ok(responderService.updateStatus(id, status));
     }
 
     @DeleteMapping("/{id}")

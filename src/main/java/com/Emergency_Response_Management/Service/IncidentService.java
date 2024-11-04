@@ -104,9 +104,9 @@ public class IncidentService {
         dto.setVictimId(incident.getVictim() != null ? incident.getVictim().getVictimId() : null);
         dto.setResponderId(incident.getAssignedResponder() != null ? incident.getAssignedResponder().getResponderId() : null);
         dto.setDispatcherId(incident.getManagedBy() != null ? incident.getManagedBy().getDispatcherId() : null);
-        dto.setLogIds(incident.getLogs().stream()
-                .map(Log::getLogId)
-                .collect(Collectors.toList()));
+//        dto.setLogIds(incident.getLogs().stream()
+//                .map(Log::getLogId)
+//                .collect(Collectors.toList()));
         return dto;
     }
 

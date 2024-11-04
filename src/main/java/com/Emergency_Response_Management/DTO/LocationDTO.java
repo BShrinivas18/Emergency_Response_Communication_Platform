@@ -10,6 +10,6 @@ public class LocationDTO {
     private Float latitude;
     private Float longitude;
     private String address;
-    private List<Integer> responderIds;
-    private List<Integer> victimIds;
+//    private List<Integer> responderIds; //they can fetched when required
+//    private List<Integer> victimIds;  //they can fetched when required
 }
