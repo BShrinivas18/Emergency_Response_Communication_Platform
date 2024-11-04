@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name = "responders")
 public class Responder {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer responderId;
     private String name;
     private String currentLocation;
@@ -32,7 +32,7 @@ public class Responder {
     @JsonIgnoreProperties({"responders","victims"})
     private Location location;
 
-    @OneToMany(mappedBy = "assignedResponder")
+    @OneToMany(mappedBy = "assignedResponder")//One Responder handles many Incidents
     @JsonIgnore
     private List<Incident> incidents = new ArrayList<>();
     // Other fields, getters, setters, and constructors

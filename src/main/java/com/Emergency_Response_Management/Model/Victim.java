@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "victims")
 public class Victim {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer victimId;
     private String name;
     private String contactInfo;
@@ -28,7 +28,7 @@ public class Victim {
     @JsonIgnoreProperties({"victims", "responders"})
     private Location location;
 
-    @OneToMany(mappedBy = "victim")
+    @OneToMany(mappedBy = "victim")//One Victim can be involved in many Incidents
     @JsonIgnore
      private List<Incident> incidents = new ArrayList<>();
 }

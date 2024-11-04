@@ -20,7 +20,7 @@ import java.util.List;
 @Table(name = "incidents")
 public class Incident {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer incidentId;
     private String location;
     private String severity;
@@ -44,7 +44,7 @@ public class Incident {
     @JsonIgnoreProperties("managedIncidents")
     private Dispatcher managedBy;
 
-    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)//One Incident has many Logs
     @JsonIgnoreProperties({"incidents"})
     private List<Log> logs = new ArrayList<>();
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LogService {
@@ -28,7 +29,7 @@ public class LogService {
         dto.setStatusUpdate(log.getStatusUpdate());
         dto.setTimestamp(log.getTimestamp());
         dto.setUpdatedBy(log.getUpdatedBy());
-        dto.setIncidentId(log.getIncident().getIncidentId()); // Assuming you have a relation set up
+        dto.setIncidentId(log.getIncident().getIncidentId());
         return dto;
     }
 
@@ -38,49 +39,58 @@ public class LogService {
         log.setStatusUpdate(dto.getStatusUpdate());
         log.setTimestamp(dto.getTimestamp());
         log.setUpdatedBy(dto.getUpdatedBy());
+        log.setIncident(incidentRepository.findById(dto.getIncidentId())
+                .orElseThrow(() -> new RuntimeException("Incident not found")));
         return log;
     }
 
-    public LogDTO createLog(LogDTO log, Integer incidentId) {
-        Log log1 = convertToEntity(log);
+    public LogDTO createLog(LogDTO logDTO, Integer incidentId) {
+        Log log = convertToEntity(logDTO);
         Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(()-> new GeneralException("Log not found"));
-        log1.setIncident(incident);
-        Log saveLog = logRepository.save(log1);
-        return convertToDTO(saveLog);
-
+                .orElseThrow(() -> new RuntimeException("Incident not found"));
+        log.setIncident(incident);
+        return convertToDTO(logRepository.save(log));
     }
+
     public List<LogDTO> getAllLogs() {
-
-        return logRepository.findAll().stream().map(this::convertToDTO).toList();
-
+        return logRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public Optional<LogDTO> getLogById(Integer id) {
-        return logRepository.findById(id) // Find the log by ID
-                .map(this::convertToDTO); // Convert to DTO if found
+        return logRepository.findById(id)
+                .map(this::convertToDTO);
     }
 
     public List<LogDTO> getLogsByIncident(Integer incidentId) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new RuntimeException("Incident not found"));
-        return logRepository.findByIncident(incident).stream().map(this::convertToDTO).toList();
+        return logRepository.findByIncident(incident).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public List<LogDTO> getLogsByTimeRange(LocalDateTime start, LocalDateTime end) {
-        return logRepository.findByTimestampBetween(start, end).stream().map(this::convertToDTO).toList();
+        return logRepository.findByTimestampBetween(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public List<LogDTO> getLogsByUser(Integer userId) {
-        return logRepository.findByUpdatedBy(userId).stream().map(this::convertToDTO).toList();
+        return logRepository.findByUpdatedBy(userId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public LogDTO updateLog(Integer id, LogDTO log) {
-        Log existingLog = logRepository.findById(id).orElseThrow(()-> new GeneralException("log not found"));
-        existingLog.setStatusUpdate(log.getStatusUpdate());
-        existingLog.setUpdatedBy(log.getUpdatedBy());
+    public LogDTO updateLog(Integer id, LogDTO logDTO) {
+        Log existingLog = logRepository.findById(id)
+                .orElseThrow(() -> new GeneralException("Log not found"));
+        existingLog.setStatusUpdate(logDTO.getStatusUpdate());
+        existingLog.setUpdatedBy(logDTO.getUpdatedBy());
         return convertToDTO(logRepository.save(existingLog));
     }
+
     public void deleteLog(Integer id) {
         logRepository.deleteById(id);
     }

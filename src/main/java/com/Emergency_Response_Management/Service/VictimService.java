@@ -32,7 +32,11 @@ public class VictimService {
         dto.setVictimId(victim.getVictimId());
         dto.setName(victim.getName());
         dto.setContactInfo(victim.getContactInfo());
-        dto.setLocationId(victim.getLocation().getLocationId());
+
+        if (victim.getLocation() != null) {
+            dto.setLocationId(victim.getLocation().getLocationId());
+        }
+
         dto.setIncidentIds(victim.getIncidents().stream().map(Incident::getIncidentId).toList());
         return dto;
     }
@@ -42,14 +46,30 @@ public class VictimService {
         victim.setVictimId(dto.getVictimId());
         victim.setName(dto.getName());
         victim.setContactInfo(dto.getContactInfo());
-        List<Incident> incident = incidentRepository.findAll().stream().toList();
-        victim.setIncidents(incident);
+
+        if (dto.getLocationId() != null) {
+            Location location = locationRepository.findById(dto.getLocationId())
+                    .orElseThrow(() -> new RuntimeException("Location not found"));
+            victim.setLocation(location);
+        }
+
+        List<Incident> incidents = incidentRepository.findAllById(dto.getIncidentIds());
+        victim.setIncidents(incidents);
         return victim;
     }
 
-    public VictimDTO createVictim(VictimDTO victim) {
-            Victim victim1 = convertToEntity(victim);
-        return convertToDTO(victimRepository.save(victim1));
+    public VictimDTO createVictim(VictimDTO victimDTO) {
+        Victim victim = convertToEntity(victimDTO);
+
+        // Fetch location based on locationId in VictimDTO
+        if (victimDTO.getLocationId() != null) {
+            Location location = locationRepository.findById(victimDTO.getLocationId())
+                    .orElseThrow(() -> new RuntimeException("Location not found"));
+            victim.setLocation(location);
+        }
+
+        Victim savedVictim = victimRepository.save(victim);
+        return convertToDTO(savedVictim);
     }
 
     public List<VictimDTO> getAllVictims() {

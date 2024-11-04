@@ -17,14 +17,14 @@ import java.util.List;
 @Table(name = "dispatchers")
 public class Dispatcher {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer dispatcherId;
 
     private String name;
     private String contactInfo;
     private String assignedRegion;
 
-    @OneToMany(mappedBy = "managedBy")
+    @OneToMany(mappedBy = "managedBy")//One Dispatcher manages many Incidents
     @JsonIgnore // prevent serialisation loop
     private List<Incident> managedIncidents = new ArrayList<>();
 }

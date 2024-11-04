@@ -1,7 +1,6 @@
 package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.LogDTO;
-import com.Emergency_Response_Management.Model.Log;
 import com.Emergency_Response_Management.Service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,9 +19,9 @@ public class LogController {
 
     @PostMapping("/incident/{incidentId}")
     public ResponseEntity<LogDTO> createLog(
-            @RequestBody LogDTO log,
+            @RequestBody LogDTO logDTO,
             @PathVariable Integer incidentId) {
-        return ResponseEntity.ok(logService.createLog(log, incidentId));
+        return ResponseEntity.ok(logService.createLog(logDTO, incidentId));
     }
 
     @GetMapping
@@ -49,7 +48,6 @@ public class LogController {
         return ResponseEntity.ok(logService.getLogsByTimeRange(start, end));
     }
 
-
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<LogDTO>> getLogsByUser(@PathVariable Integer userId) {
         return ResponseEntity.ok(logService.getLogsByUser(userId));
@@ -58,8 +56,8 @@ public class LogController {
     @PutMapping("/{id}")
     public ResponseEntity<LogDTO> updateLog(
             @PathVariable Integer id,
-            @RequestBody LogDTO log) {
-        return ResponseEntity.ok(logService.updateLog(id, log));
+            @RequestBody LogDTO logDTO) {
+        return ResponseEntity.ok(logService.updateLog(id, logDTO));
     }
 
     @DeleteMapping("/{id}")
