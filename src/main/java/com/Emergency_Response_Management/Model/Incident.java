@@ -1,5 +1,8 @@
 package com.Emergency_Response_Management.Model;
 
+import com.Emergency_Response_Management.Enums.IncidentSeverity;
+import com.Emergency_Response_Management.Enums.IncidentStatus;
+import com.Emergency_Response_Management.Enums.IncidentType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,10 +26,10 @@ public class Incident {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer incidentId;
     private String location;
-    private String severity;
-    private String type;
+    private IncidentSeverity severity;
+    private IncidentType type;
     private LocalDateTime timestamp;
-    private String status;
+    private IncidentStatus status;
 
 
     @ManyToOne

@@ -1,7 +1,7 @@
 package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.ResponderDTO;
-import com.Emergency_Response_Management.Model.Responder;
+import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Service.ResponderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +34,13 @@ public class ResponderController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@PathVariable String status) {
-        return ResponseEntity.ok(responderService.getRespondersByStatus(status));
+    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@PathVariable ResponseStatus status) {
+        return ResponseEntity.ok(responderService.getRespondersByStatus());
     }
 
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByRole(@PathVariable String role) {
-        return ResponseEntity.ok(responderService.getRespondersByRole(role));
+    public ResponseEntity<List<ResponderDTO>> getRespondersByRole(@PathVariable ResponderType type) {
+        return ResponseEntity.ok(responderService.getRespondersByType(type));
     }
 
     @GetMapping("/location/{locationId}")
@@ -59,8 +59,8 @@ public class ResponderController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<ResponderDTO> updateStatus(
             @PathVariable Integer id,
-            @RequestParam String status) {
-        return ResponseEntity.ok(responderService.updateStatus(id, status));
+            @PathVariable ResponseStatus status) {
+        return ResponseEntity.ok(responderService.updateStatus(id, String.valueOf(status)));
     }
 
     @DeleteMapping("/{id}")

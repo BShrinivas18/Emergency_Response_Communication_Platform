@@ -1,5 +1,8 @@
 package com.Emergency_Response_Management.DTO;
 
+import com.Emergency_Response_Management.Enums.IncidentSeverity;
+import com.Emergency_Response_Management.Enums.IncidentStatus;
+import com.Emergency_Response_Management.Enums.IncidentType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,10 +12,10 @@ import java.util.List;
 public class IncidentDTO {
     private Integer incidentId;
     private String location;
-    private String severity;
-    private String type;
+    private IncidentSeverity severity;
+    private IncidentType type;
     private LocalDateTime timestamp;
-    private String status;
+    private IncidentStatus status;
     private Integer victimId;
     private Integer responderId;
     private Integer dispatcherId;

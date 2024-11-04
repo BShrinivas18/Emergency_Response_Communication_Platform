@@ -1,8 +1,10 @@
 package com.Emergency_Response_Management.Service;
 
-import com.Emergency_Response_Management.DTO.LocationDTO;
 import com.Emergency_Response_Management.DTO.ResponderDTO;
+import com.Emergency_Response_Management.Enums.ResponderStatus;
+import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Exception.GeneralException;
+import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Model.Responder;
 import com.Emergency_Response_Management.Repository.LocationRepository;
@@ -40,16 +42,13 @@ public class ResponderService {
         return responderRepository.findById(id).map(this::convertToDTO);
     }
 
-    public List<ResponderDTO> getRespondersByStatus(String status) {
+    public List<ResponderDTO> getRespondersByStatus(ResponderStatus status) {
         return responderRepository.findByStatus(status).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
-
-
-    public List<ResponderDTO> getRespondersByRole(String role) {
-        return responderRepository.findByRole(role).stream()
+    public List<ResponderDTO> getRespondersByType(ResponderType type) {
+        return responderRepository.findByType(type).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -69,7 +68,7 @@ public class ResponderService {
         existingResponder.setName(responderDTO.getName());
         existingResponder.setCurrentLocation(responderDTO.getCurrentLocation());
         existingResponder.setStatus(responderDTO.getStatus());
-        existingResponder.setRole(responderDTO.getRole());
+        existingResponder.setType(responderDTO.getType());
         existingResponder.setLastUpdate(LocalDateTime.now());
 
         if (responderDTO.getLocationId() != null) {
@@ -82,7 +81,7 @@ public class ResponderService {
         return convertToDTO(updatedResponder);
     }
 
-    public ResponderDTO updateStatus(Integer id, String status) {
+    public ResponderDTO updateStatus(Integer id, ResponderStatus status) {
         Responder responder = responderRepository.findById(id)
                 .orElseThrow(() -> new GeneralException("Responder Not Found"));
 
@@ -104,7 +103,7 @@ public class ResponderService {
         dto.setName(responder.getName());
         dto.setCurrentLocation(responder.getCurrentLocation());
         dto.setStatus(responder.getStatus());
-        dto.setRole(responder.getRole());
+        dto.setType(responder.getType());
         dto.setLastUpdate(responder.getLastUpdate());
 
         if (responder.getLocation() != null) {
@@ -113,7 +112,7 @@ public class ResponderService {
 
         // Assuming there's a method to retrieve incident IDs for a responder
         dto.setIncidentIds(responder.getIncidents().stream()
-                .map(incident -> incident.getIncidentId())
+                .map(Incident::getIncidentId)
                 .collect(Collectors.toList()));
 
         return dto;
@@ -125,7 +124,7 @@ public class ResponderService {
         responder.setName(dto.getName());
         responder.setCurrentLocation(dto.getCurrentLocation());
         responder.setStatus(dto.getStatus());
-        responder.setRole(dto.getRole());
+        responder.setType(dto.getType());
         responder.setLastUpdate(dto.getLastUpdate());
 
         if (dto.getLocationId() != null) {
@@ -140,33 +139,33 @@ public class ResponderService {
         return responder;
     }
 
-    private LocationDTO convertLocationToDTO(Location location) {
-        LocationDTO locationDTO = new LocationDTO();
-        locationDTO.setLocationId(location.getLocationId());
-        locationDTO.setLatitude(location.getLatitude());
-        locationDTO.setLongitude(location.getLongitude());
-        locationDTO.setAddress(location.getAddress());
-
-        locationDTO.setResponderIds(location.getResponders().stream()
-                .map(Responder::getResponderId)
-                .collect(Collectors.toList()));
-
-        locationDTO.setVictimIds(location.getVictims().stream()
-                .map(victim -> victim.getVictimId())
-                .collect(Collectors.toList()));
-
-        return locationDTO;
-    }
-
-    private Location convertLocationToEntity(LocationDTO locationDTO) {
-        Location location = new Location();
-        location.setLocationId(locationDTO.getLocationId());
-        location.setLatitude(locationDTO.getLatitude());
-        location.setLongitude(locationDTO.getLongitude());
-        location.setAddress(locationDTO.getAddress());
-
-        // Set responders and victims if required based on ID lists in locationDTO
-
-        return location;
-    }
+//    private LocationDTO convertLocationToDTO(Location location) {
+//        LocationDTO locationDTO = new LocationDTO();
+//        locationDTO.setLocationId(location.getLocationId());
+//        locationDTO.setLatitude(location.getLatitude());
+//        locationDTO.setLongitude(location.getLongitude());
+//        locationDTO.setAddress(location.getAddress());
+//
+//        locationDTO.setResponderIds(location.getResponders().stream()
+//                .map(Responder::getResponderId)
+//                .collect(Collectors.toList()));
+//
+//        locationDTO.setVictimIds(location.getVictims().stream()
+//                .map(Victim::getVictimId)
+//                .collect(Collectors.toList()));
+//
+//        return locationDTO;
+//    }
+//
+//    private Location convertLocationToEntity(LocationDTO locationDTO) {
+//        Location location = new Location();
+//        location.setLocationId(locationDTO.getLocationId());
+//        location.setLatitude(locationDTO.getLatitude());
+//        location.setLongitude(locationDTO.getLongitude());
+//        location.setAddress(locationDTO.getAddress());
+//
+//        // Set responders and victims if required based on ID lists in locationDTO
+//
+//        return location;
+//    }
 }

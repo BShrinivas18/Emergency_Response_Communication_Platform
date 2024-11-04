@@ -34,7 +34,7 @@ public class IncidentController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@PathVariable String status) {
+    public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@PathVariable ResponseStatus status) {
         return ResponseEntity.ok(incidentService.getIncidentsByStatus(status));
     }
 
@@ -48,7 +48,7 @@ public class IncidentController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<IncidentDTO> updateStatus(
             @PathVariable Integer id,
-            @RequestParam String status) {
+            @RequestParam ResponseStatus status) {
         return ResponseEntity.ok(incidentService.updateStatus(id, status));
     }
 

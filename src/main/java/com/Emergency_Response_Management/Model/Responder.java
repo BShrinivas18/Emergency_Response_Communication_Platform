@@ -1,5 +1,7 @@
 package com.Emergency_Response_Management.Model;
 
+import com.Emergency_Response_Management.Enums.ResponderStatus;
+import com.Emergency_Response_Management.Enums.ResponderType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -23,8 +25,8 @@ public class Responder {
     private Integer responderId;
     private String name;
     private String currentLocation;
-    private String status;
-    private String role;
+    private ResponderStatus status;
+    private ResponderType type;
     private LocalDateTime lastUpdate;
 
     @ManyToOne

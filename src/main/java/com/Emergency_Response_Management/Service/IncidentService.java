@@ -1,7 +1,7 @@
 package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.IncidentDTO;
-import com.Emergency_Response_Management.DTO.ResponderDTO;
+import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.*;
 import com.Emergency_Response_Management.Repository.DispatcherRepository;
@@ -10,6 +10,7 @@ import com.Emergency_Response_Management.Repository.ResponderRepository;
 import com.Emergency_Response_Management.Repository.VictimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class IncidentService {
 
 
 
-    public List<IncidentDTO> getIncidentsByStatus(String status) {
+    public List<IncidentDTO> getIncidentsByStatus(ResponseStatus status) {
         return incidentRepository.findByStatus(status).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -64,7 +65,7 @@ public class IncidentService {
         return convertToDTO(updatedIncident);
     }
 
-    public IncidentDTO updateStatus(Integer id, String status) {
+    public IncidentDTO updateStatus(Integer id, IncidentStatus status) {
         Incident incident = getIncidentByIdEntity(id);
         incident.setStatus(status);
         Incident updatedIncident = incidentRepository.save(incident);
