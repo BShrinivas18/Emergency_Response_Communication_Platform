@@ -5,5 +5,5 @@ public enum ResponderType {
     FIREFIGHTER,
     POLICE_OFFICER,
     HAZMAT_SPECIALIST,
-    RESCUE_SPECIALIST
+    RESCUE_TEAM
 }

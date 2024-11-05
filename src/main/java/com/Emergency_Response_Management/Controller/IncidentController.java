@@ -18,8 +18,8 @@ public class IncidentController {
     private IncidentService incidentService;
 
     @PostMapping
-    public IncidentDTO createIncident(@RequestBody IncidentDTO incident) {
-        return incidentService.createIncident(incident);
+    public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incident) {
+        return ResponseEntity.ok(incidentService.reportIncident(incident));
     }
 
     @GetMapping
@@ -39,26 +39,37 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncidentsByStatus(status));
     }
 
-    @PutMapping("/{id}/assign/{responderId}")
-    public ResponseEntity<IncidentDTO> assignResponder(
-            @PathVariable Integer id,
-            @PathVariable Integer responderId) {
-        return ResponseEntity.ok(incidentService.assignResponder(id, responderId));
-    }
+//    @PutMapping("/{id}/assign/{responderId}")
+//    public ResponseEntity<IncidentDTO> assignResponder(
+//            @PathVariable Integer id,
+//            @PathVariable Integer responderId) {
+//        return ResponseEntity.ok(incidentService.assigResponder(id, responderId));
+//    }
 
-    @PatchMapping("/{id}/status")
+//    @PatchMapping("/{id}/status")
+//    public ResponseEntity<IncidentDTO> updateStatus(
+//            @PathVariable Integer id,
+//           @RequestBody IncidentStatus status) {
+//        return ResponseEntity.ok(incidentService.updateStatus(id, status));
+//    }
+
+
+//    @PutMapping("/{id}")
+//    public ResponseEntity<IncidentDTO> updateIncident(
+//            @PathVariable Integer id,
+//            @RequestBody IncidentDTO incident) {
+//        return ResponseEntity.ok(incidentService.updateIncident(id, incident));
+//    }
+
+
+    @PutMapping("/{incidentId}/status")
     public ResponseEntity<IncidentDTO> updateStatus(
-            @PathVariable Integer id,
-           @RequestBody IncidentStatus status) {
-        return ResponseEntity.ok(incidentService.updateStatus(id, status));
-    }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<IncidentDTO> updateIncident(
-            @PathVariable Integer id,
-            @RequestBody IncidentDTO incident) {
-        return ResponseEntity.ok(incidentService.updateIncident(id, incident));
+            @PathVariable Integer incidentId,
+            @RequestParam IncidentStatus status,
+            @RequestParam String statusDetails,
+            @RequestParam Integer updatedBy) {
+        return ResponseEntity.ok(incidentService.updateIncidentStatus(
+                incidentId, status, statusDetails, updatedBy));
     }
 
     @DeleteMapping("/{id}")

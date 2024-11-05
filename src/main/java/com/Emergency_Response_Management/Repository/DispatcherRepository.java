@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface DispatcherRepository extends JpaRepository<Dispatcher, Integer> {
-    List<Dispatcher> findByAssignedRegion(String region);
+//    List<Dispatcher> findByAssignedRegion(String region);
 }
 

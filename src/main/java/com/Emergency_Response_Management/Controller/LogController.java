@@ -17,12 +17,12 @@ public class LogController {
     @Autowired
     private LogService logService;
 
-    @PostMapping("/incident/{incidentId}")
-    public ResponseEntity<LogDTO> createLog(
-            @RequestBody LogDTO logDTO,
-            @PathVariable Integer incidentId) {
-        return ResponseEntity.ok(logService.createLog(logDTO, incidentId));
-    }
+//    @PostMapping("/incident/{incidentId}")
+//    public ResponseEntity<LogDTO> createLog(
+//            @RequestBody LogDTO logDTO,
+//            @PathVariable Integer incidentId) {
+//        return ResponseEntity.ok(logService.createLog(logDTO, incidentId));
+//    }
 
     @GetMapping
     public List<LogDTO> getAllLogs() {

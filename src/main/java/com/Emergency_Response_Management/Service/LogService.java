@@ -44,12 +44,13 @@ public class LogService {
         return log;
     }
 
-    public LogDTO createLog(LogDTO logDTO, Integer incidentId) {
-        Log log = convertToEntity(logDTO);
-        Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
+    void createLog(Incident incident, String statusUpdate, Integer updatedBy) {
+        Log log = new Log();
         log.setIncident(incident);
-        return convertToDTO(logRepository.save(log));
+        log.setStatusUpdate(statusUpdate);
+        log.setTimestamp(LocalDateTime.now());
+        log.setUpdatedBy(updatedBy);
+        logRepository.save(log);
     }
 
     public List<LogDTO> getAllLogs() {

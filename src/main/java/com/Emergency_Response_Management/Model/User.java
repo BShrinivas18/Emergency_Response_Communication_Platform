@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Model;
 
 import com.Emergency_Response_Management.Enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,5 @@ public class User {
     private Integer userId;
     private String name;
     private String contactInfo;
-
     private UserRole role;
 }

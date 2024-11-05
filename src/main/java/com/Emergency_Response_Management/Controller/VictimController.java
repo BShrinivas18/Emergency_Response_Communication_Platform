@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.VictimDTO;
+import com.Emergency_Response_Management.Model.Victim;
 import com.Emergency_Response_Management.Service.VictimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class VictimController {
     private VictimService victimService;
 
     @PostMapping
-    public ResponseEntity<VictimDTO> createVictim(@RequestBody VictimDTO victim) {
+    public ResponseEntity<VictimDTO> createVictim(@RequestBody Victim victim) {
         return ResponseEntity.ok(victimService.createVictim(victim));
     }
 

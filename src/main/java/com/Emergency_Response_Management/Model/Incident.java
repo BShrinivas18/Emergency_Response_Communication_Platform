@@ -3,10 +3,7 @@ package com.Emergency_Response_Management.Model;
 import com.Emergency_Response_Management.Enums.IncidentSeverity;
 import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Enums.IncidentType;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,7 +22,11 @@ public class Incident {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer incidentId;
-    private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    @JsonIgnoreProperties({"victims", "responders"})
+    private Location location;
     private IncidentSeverity severity;
     private IncidentType type;
     private LocalDateTime timestamp;

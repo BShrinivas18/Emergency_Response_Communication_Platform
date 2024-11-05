@@ -131,40 +131,6 @@ public class ResponderService {
                     .orElseThrow(() -> new GeneralException("Location Not Found"));
             responder.setLocation(location);
         }
-
-        // Assuming there's a method to link incidents to a responder
-        // Populate incidents if required, based on incident IDs in the DTO.
-
         return responder;
     }
-
-//    private LocationDTO convertLocationToDTO(Location location) {
-//        LocationDTO locationDTO = new LocationDTO();
-//        locationDTO.setLocationId(location.getLocationId());
-//        locationDTO.setLatitude(location.getLatitude());
-//        locationDTO.setLongitude(location.getLongitude());
-//        locationDTO.setAddress(location.getAddress());
-//
-//        locationDTO.setResponderIds(location.getResponders().stream()
-//                .map(Responder::getResponderId)
-//                .collect(Collectors.toList()));
-//
-//        locationDTO.setVictimIds(location.getVictims().stream()
-//                .map(Victim::getVictimId)
-//                .collect(Collectors.toList()));
-//
-//        return locationDTO;
-//    }
-//
-//    private Location convertLocationToEntity(LocationDTO locationDTO) {
-//        Location location = new Location();
-//        location.setLocationId(locationDTO.getLocationId());
-//        location.setLatitude(locationDTO.getLatitude());
-//        location.setLongitude(locationDTO.getLongitude());
-//        location.setAddress(locationDTO.getAddress());
-//
-//        // Set responders and victims if required based on ID lists in locationDTO
-//
-//        return location;
-//    }
 }

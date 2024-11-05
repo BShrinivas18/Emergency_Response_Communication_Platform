@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,10 @@ public class Location {
     private Float latitude;
     private Float longitude;
     private String address;
+
+    @OneToMany(mappedBy = "location")
+    @JsonIgnore
+    private List<Incident> incidentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "location")//One Location can have many Responders
     @JsonIgnore // Helps prevent circular reference during serialization

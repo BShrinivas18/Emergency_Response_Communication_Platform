@@ -22,7 +22,7 @@ public class Dispatcher {
 
     private String name;
     private String contactInfo;
-    private String assignedRegion;
+//    private String assignedRegion;
 
     @OneToMany(mappedBy = "managedBy")//One Dispatcher manages many Incidents
     @JsonIgnore // prevent serialisation loop

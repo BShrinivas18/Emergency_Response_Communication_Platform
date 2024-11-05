@@ -1,9 +1,7 @@
 package com.Emergency_Response_Management.Service;
 
-import com.Emergency_Response_Management.DTO.LogDTO;
 import com.Emergency_Response_Management.DTO.VictimDTO;
 import com.Emergency_Response_Management.Exception.GeneralException;
-import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Model.Victim;
 import com.Emergency_Response_Management.Repository.IncidentRepository;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VictimService {
@@ -41,29 +38,28 @@ public class VictimService {
         return dto;
     }
 
-    private Victim convertToEntity(VictimDTO dto) {
-        Victim victim = new Victim();
-        victim.setVictimId(dto.getVictimId());
-        victim.setName(dto.getName());
-        victim.setContactInfo(dto.getContactInfo());
+//    private Victim convertToEntity(VictimDTO dto) {
+//        Victim victim = new Victim();
+//        victim.setVictimId(dto.getVictimId());
+//        victim.setName(dto.getName());
+//        victim.setContactInfo(dto.getContactInfo());
+//
+//        if (dto.getLocationId() != null) {
+//            Location location = locationRepository.findById(dto.getLocationId())
+//                    .orElseThrow(() -> new RuntimeException("Location not found"));
+//            victim.setLocation(location);
+//        }
+//
+////        List<Incident> incidents = incidentRepository.findAllById(dto.getIncidentIds());
+////        victim.setIncidents(incidents);
+//        return victim;
+//    }
 
-        if (dto.getLocationId() != null) {
-            Location location = locationRepository.findById(dto.getLocationId())
-                    .orElseThrow(() -> new RuntimeException("Location not found"));
-            victim.setLocation(location);
-        }
-
-//        List<Incident> incidents = incidentRepository.findAllById(dto.getIncidentIds());
-//        victim.setIncidents(incidents);
-        return victim;
-    }
-
-    public VictimDTO createVictim(VictimDTO victimDTO) {
-        Victim victim = convertToEntity(victimDTO);
+    public VictimDTO createVictim(Victim victim) {
 
         // Fetch location based on locationId in VictimDTO
-        if (victimDTO.getLocationId() != null) {
-            Location location = locationRepository.findById(victimDTO.getLocationId())
+        if (victim.getLocation() != null) {
+            Location location = locationRepository.findById(victim.getLocation().getLocationId())
                     .orElseThrow(() -> new RuntimeException("Location not found"));
             victim.setLocation(location);
         }

@@ -2,6 +2,7 @@ package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.DispatcherDTO;
 import com.Emergency_Response_Management.Model.Dispatcher;
+import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Service.DispatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,10 +33,16 @@ public class DispatcherController {
         return new ResponseEntity<>(dispatcherService.getDispatcherById(id),HttpStatus.FOUND);
     }
 
-    @GetMapping("/region/{region}")
-    public ResponseEntity<List<Dispatcher>> getDispatchersByRegion(@PathVariable String region) {
-        return ResponseEntity.ok(dispatcherService.getDispatchersByRegion(region));
+    @PutMapping("/{id}/assign/{responderId}")
+    public ResponseEntity<Void> assignResponder(
+            @RequestBody Incident incident) {
+        dispatcherService.assignAppropriateResponder(incident);
+        return ResponseEntity.ok().build();
     }
+//    @GetMapping("/region/{region}")
+//    public ResponseEntity<List<Dispatcher>> getDispatchersByRegion(@PathVariable String region) {
+//        return ResponseEntity.ok(dispatcherService.getDispatchersByRegion(region));
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<DispatcherDTO> updateDispatcher(@PathVariable Integer id, @RequestBody DispatcherDTO updatedDispatcher) {
