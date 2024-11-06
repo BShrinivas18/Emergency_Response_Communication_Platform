@@ -23,7 +23,7 @@ public class Victim {
     private String name;
     private String contactInfo;
 
-    @ManyToOne // Change to ManyToOne to represent relation
+    @ManyToOne
     @JoinColumn(name = "location_id")// Ensure the column name matches your DB
     @JsonIgnoreProperties({"victims", "responders"})
     private Location location;

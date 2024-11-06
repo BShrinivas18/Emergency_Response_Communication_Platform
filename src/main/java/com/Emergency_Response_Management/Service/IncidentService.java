@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.IncidentDTO;
+import com.Emergency_Response_Management.DTO.VictimDTO;
 import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Enums.IncidentType;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
@@ -24,8 +25,6 @@ public class IncidentService {
     @Autowired
     private IncidentRepository incidentRepository;
 
-    @Autowired
-    private VictimService victimService;
 
     @Autowired
     private ResponderRepository responderRepository;
@@ -34,11 +33,7 @@ public class IncidentService {
     private VictimRepository victimRepository;
 
     @Autowired
-    private DispatcherRepository dispatcherRepository;
-
-    @Autowired
-    private DispatcherService dispatcherService;
-
+    private ResponderService responderService;
 
     @Autowired
     private LogService logService;
@@ -47,27 +42,33 @@ public class IncidentService {
     private LocationRepository locationRepository;
 
     public IncidentDTO reportIncident(IncidentDTO dto) {
+
         // Create a new victim regardless of whether victimId is provided
-        Location victimLocation = locationRepository.findById(dto.getLocationId())
+        // Step 1: Validate and get victim's location
+        if (dto.getVictimLocationId() == null) {
+            throw new IllegalArgumentException("Victim location is required");
+        }
+        Location victimLocation = locationRepository.findById(dto.getVictimLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Victim location not found"));
 
         Victim victim = new Victim();
-        victimService.createVictim(victim);
-        // Save the newly created victim
+        victim.setName(dto.getVictimName());
+        victim.setContactInfo(dto.getVictimContact());
+        victim.setLocation(victimLocation);
         victim = victimRepository.save(victim);
 
-        // Determine incident location
+
         Location incidentLocation;
-        if (dto.getLocationId() != null) {
-            // If the user provides a locationId, use that as the incident location
-            incidentLocation = locationRepository.findById(dto.getLocationId())
+        if (dto.getIncidentLocationId() != null) {
+            // If incident location is provided, use that
+            incidentLocation = locationRepository.findById(dto.getIncidentLocationId())
                     .orElseThrow(() -> new ResourceNotFoundException("Incident location not found"));
         } else {
-            // If the user does not provide a locationId, use the victim's location
-            incidentLocation = victim.getLocation();
+            // If no incident location provided, use victim's location
+            incidentLocation = victimLocation;
         }
 
-        // Create the incident
+        // Step 4: Create and save the incident
         Incident incident = new Incident();
         incident.setType(dto.getType());
         incident.setSeverity(dto.getSeverity());
@@ -76,39 +77,43 @@ public class IncidentService {
         incident.setVictim(victim);
         incident.setLocation(incidentLocation);
 
-        // Save the incident
         incident = incidentRepository.save(incident);
 
-        // Create initial log for the incident
-        logService.createLog(incident, "Emergency incident reported by " + victim.getName() +
-                " at location: " + incidentLocation.getAddress(), victim.getVictimId());
+        // Step 5: Create log entry
+        String locationInfo = incidentLocation.equals(victimLocation)
+                ? "at victim's location: " + victimLocation.getAddress()
+                : "at location: " + incidentLocation.getAddress() + " (victim located at: " + victimLocation.getAddress() + ")";
 
-        assignAvailableDispatcher(incident);
+        logService.createLog(incident,
+                "Emergency incident reported by " + victim.getName() + " " + locationInfo,
+                victim.getVictimId());
 
+//        assignAvailableDispatcher(incident);
+        responderService.assignAppropriateResponder(incident);
         // Return the incident DTO
         return convertToDTO(incident);
     }
 
 
     // Automatically assign an available dispatcher
-    private void assignAvailableDispatcher(Incident incident) {
-        // For simplicity, getting the first available dispatcher
-        // In a real system, we might want to implement more sophisticated load balancing
-        List<Dispatcher> dispatchers = dispatcherRepository.findAll();
-        if (!dispatchers.isEmpty()) {
-            Dispatcher dispatcher = dispatchers.getFirst();
-            incident.setManagedBy(dispatcher);
-            incident.setStatus(IncidentStatus.NEW);
-            incidentRepository.save(incident);
-
-           logService.createLog(incident, "Dispatcher automatically assigned to incident", dispatcher.getDispatcherId());
-
-            // Automatically try to assign appropriate responder
-            dispatcherService.assignAppropriateResponder(incident);
-        } else {
-            logService.createLog(incident, "WARNING: No dispatchers available", null);
-        }
-    }
+//    private void assignAvailableDispatcher(Incident incident) {
+//        // For simplicity, getting the first available dispatcher
+//        // In a real system, we might want to implement more sophisticated load balancing
+//        List<Dispatcher> dispatchers = dispatcherRepository.findAll();
+//        if (!dispatchers.isEmpty()) {
+//            Dispatcher dispatcher = dispatchers.getFirst();
+//            incident.setManagedBy(dispatcher);
+//            incident.setStatus(IncidentStatus.NEW);
+//            incidentRepository.save(incident);
+//
+//           logService.createLog(incident, "Dispatcher automatically assigned to incident", dispatcher.getDispatcherId());
+//
+//            // Automatically try to assign appropriate responder
+//
+//        } else {
+//            logService.createLog(incident, "WARNING: No dispatchers available", null);
+//        }
+//    }
 
 
 
@@ -129,16 +134,6 @@ public class IncidentService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
-//    public IncidentDTO assignResponder(Integer incidentId, Integer responderId) {
-//        Incident incident = getIncidentByIdEntity(incidentId);
-//        Responder responder = responderRepository.findById(responderId)
-//                .orElseThrow(() -> new RuntimeException("Responder not found"));
-//
-//        incident.setAssignedResponder(responder);
-//        Incident updatedIncident = incidentRepository.save(incident);
-//        return convertToDTO(updatedIncident);
-//    }
 
     // Update incident status during response
     public IncidentDTO updateIncidentStatus(Integer incidentId, IncidentStatus status, String statusDetails, Integer updatedBy) {
@@ -173,50 +168,60 @@ public class IncidentService {
     private IncidentDTO convertToDTO(Incident incident) {
         IncidentDTO dto = new IncidentDTO();
         dto.setIncidentId(incident.getIncidentId());
-        dto.setLocationId(incident.getLocation()!=null ? incident.getLocation().getLocationId():null);
         dto.setSeverity(incident.getSeverity());
         dto.setType(incident.getType());
         dto.setTimestamp(incident.getTimestamp());
-        dto.setStatus(incident.getStatus());
-        dto.setVictimId(incident.getVictim() != null ? incident.getVictim().getVictimId() : null);
-        dto.setResponderId(incident.getAssignedResponder() != null ? incident.getAssignedResponder().getResponderId() : null);
-        dto.setDispatcherId(incident.getManagedBy() != null ? incident.getManagedBy().getDispatcherId() : null);
-//        dto.setLogIds(incident.getLogs().stream()
-//                .map(Log::getLogId)
-//                .collect(Collectors.toList()));
+        dto.setStatus(incident.getStatus());// Set incident location
+        if (incident.getLocation() != null) {
+            dto.setIncidentLocationId(incident.getLocation().getLocationId());
+        }
+
+        if(incident.getAssignedResponder()!=null){
+            dto.setResponderId(incident.getAssignedResponder().getResponderId());
+        }
+
+        // Set victim information
+        if (incident.getVictim() != null) {
+            dto.setVictimId(incident.getVictim().getVictimId());
+            dto.setVictimName(incident.getVictim().getName());
+            dto.setVictimContact(incident.getVictim().getContactInfo());
+            if (incident.getVictim().getLocation() != null) {
+                dto.setVictimLocationId(incident.getVictim().getLocation().getLocationId());
+            }
+        }
         return dto;
     }
 
-    private Incident convertToEntity(IncidentDTO dto) {
-        Incident incident = new Incident();
-        incident.setIncidentId(dto.getIncidentId());
-        if(dto.getLocationId()!=null){
-            Location location = locationRepository.findById(dto.getLocationId())
-                    .orElseThrow(()->new ResourceNotFoundException("Location not found"));
-            incident.setLocation(location);
-        }
-        incident.setSeverity(dto.getSeverity());
-        incident.setType(dto.getType());
-        incident.setTimestamp(dto.getTimestamp());
-        incident.setStatus(dto.getStatus());
-        if (dto.getResponderId() != null) {
-            Responder responder = responderRepository.findById(dto.getResponderId())
-                    .orElseThrow(() -> new RuntimeException("Responder not found"));
-            incident.setAssignedResponder(responder);
-        }
-        if (dto.getVictimId()!=null){
-            Victim victim = victimRepository.findById(dto.getVictimId())
-                    .orElseThrow(()-> new GeneralException("Victim not found"));
-           incident.setVictim(victim);
-        }
-
-        if(dto.getDispatcherId()!= null){
-            Dispatcher dispatcher = dispatcherRepository.findById(dto.getDispatcherId())
-                    .orElseThrow(() -> new GeneralException("Dispatcher not found"));
-            incident.setManagedBy(dispatcher);
-        }
-        // Map other fields if necessary, like victim, dispatcher, and logs.
-        return incident;
-    }
+//    private Incident convertToEntity(IncidentDTO dto) {
+//        Incident incident = new Incident();
+//        incident.setIncidentId(dto.getIncidentId());
+//        if(dto.getLocationId()!=null){
+//            Location location = locationRepository.findById(dto.getLocationId())
+//                    .orElseThrow(()->new ResourceNotFoundException("Location not found"));
+//            incident.setLocation(location);
+//        }
+//        incident.setSeverity(dto.getSeverity());
+//        incident.setType(dto.getType());
+//        incident.setTimestamp(dto.getTimestamp());
+//        incident.setStatus(dto.getStatus());
+//        if (dto.getResponderId() != null) {
+//            Responder responder = responderRepository.findById(dto.getResponderId())
+//                    .orElseThrow(() -> new RuntimeException("Responder not found"));
+//            incident.setAssignedResponder(responder);
+//        }
+//        if (dto.getVictimId()!=null){
+//            Victim victim = victimRepository.findById(dto.getVictimId())
+//                    .orElseThrow(()-> new GeneralException("Victim not found"));
+//           incident.setVictim(victim);
+//        }
+//
+//        if(dto.getDispatcherId()!= null){
+//            Dispatcher dispatcher = dispatcherRepository.findById(dto.getDispatcherId())
+//                    .orElseThrow(() -> new GeneralException("Dispatcher not found"));
+//            incident.setManagedBy(dispatcher);
+//        }
+//        // Map other fields if necessary, like victim, dispatcher, and logs.
+//        return incident;
+//    }
 
 }

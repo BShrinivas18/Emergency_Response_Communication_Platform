@@ -1,11 +1,15 @@
 package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.ResponderDTO;
+import com.Emergency_Response_Management.Enums.IncidentStatus;
+import com.Emergency_Response_Management.Enums.IncidentType;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Exception.GeneralException;
+import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Model.Responder;
+import com.Emergency_Response_Management.Repository.IncidentRepository;
 import com.Emergency_Response_Management.Repository.LocationRepository;
 import com.Emergency_Response_Management.Repository.ResponderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,12 @@ public class ResponderService {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private IncidentRepository incidentRepository;
+
+    @Autowired
+    private LogService logService;
 
     public ResponderDTO createResponder(ResponderDTO responderDTO) {
         Responder responder = convertToEntity(responderDTO);
@@ -133,4 +143,70 @@ public class ResponderService {
         }
         return responder;
     }
+
+    // Automatically assign appropriate responder based on incident type (needs to be done for availability too)
+    public void assignAppropriateResponder(Incident incident) {
+        ResponderType requiredResponderType = getRequiredResponderType(incident.getType());
+
+        // Find available responders of the required type
+        List<Responder> availableResponders = responderRepository.findByStatusAndType(
+                ResponderStatus.AVAILABLE,
+                requiredResponderType
+        );
+
+        if (!availableResponders.isEmpty()) {
+            // For now, simply get the first available responder
+            // In a real system, we might want to consider location, workload, etc.
+
+            Responder responder = availableResponders.stream().filter(i->(i.getStatus().toString()).equals("AVAILABLE")).findFirst().orElse(null);
+            if(responder==null){
+                responder = responderRepository.findByStatusAndType(ResponderStatus.AVAILABLE,ResponderType.POLICE_OFFICER).getFirst();
+//                responder = responderService.findByStatusAndType(ResponderStatus.AVAILABLE,ResponderType.POLICE_OFFICER).getFirst();
+            }
+            // Assign responder
+
+            incident.setAssignedResponder(responder);
+//            incident.setStatus(IncidentStatus.IN_PROGRESS);
+
+            // Update responder status
+            responder.setStatus(ResponderStatus.ASSIGNED);
+            responderRepository.save(responder);
+
+            // Save incident
+            incidentRepository.save(incident);
+
+            logService.createLog(incident, "Responder automatically assigned: " + responder.getName(),responder.getResponderId()
+            );
+
+            // Notify responder
+//            notificationService.notifyResponder(responder, incident);
+        } else {
+            logService.createLog(incident, "WARNING: No available responders of type " + requiredResponderType,null);
+        }
+    }
+
+    // Helper method to determine required responder type based on incident type
+    private ResponderType getRequiredResponderType(IncidentType incidentType) {
+
+        return switch (incidentType) {
+            case MEDICAL_EMERGENCY -> ResponderType.PARAMEDIC;
+            case FIRE -> ResponderType.FIREFIGHTER;
+            case NATURAL_DISASTER -> ResponderType.RESCUE_TEAM;
+            case HAZMAT -> ResponderType.HAZMAT_SPECIALIST;
+            default -> ResponderType.POLICE_OFFICER;
+        };
+
+//        return switch (incidentType) {
+//            case "MEDICAL_EMERGENCY", "TRAFFIC_ACCIDENT" -> ResponderType.PARAMEDIC;
+//            case "FIRE" -> ResponderType.FIREFIGHTER;
+//            case "NATURAL_DISASTER" -> ResponderType.RESCUE_TEAM;
+//            case "HAZMAT" -> ResponderType.HAZMAT_SPECIALIST;
+//            default -> ResponderType.POLICE_OFFICER;
+//        };
+
+
+    }
+//    public List<Responder> findByStatusAndType(ResponderStatus status, ResponderType type){
+//        return responderRepository.findAll().stream().filter(i-> (i.getStatus().equals(status) && i.getType().equals(type))).toList();
+//    }
 }

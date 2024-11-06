@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Data
 public class IncidentDTO {
     private Integer incidentId;
-    private Integer locationId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private IncidentSeverity severity;
@@ -26,13 +25,17 @@ public class IncidentDTO {
 
     private LocalDateTime timestamp;
 
-    // Location handling
-    private boolean useVictimLocation = false;
+    // Incident location
+    private Integer incidentLocationId;
 
+    // Victim information
     private Integer victimId;
+    private String victimName;
+    private String victimContact;
+    private Integer victimLocationId;
 
     private Integer responderId;
 
-    private Integer dispatcherId;
+//    private Integer dispatcherId;
 //    private List<Integer> logIds; // removed because it can be fetched separately when needed
 }

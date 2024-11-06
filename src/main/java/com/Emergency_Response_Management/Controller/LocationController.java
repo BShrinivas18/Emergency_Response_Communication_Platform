@@ -1,7 +1,6 @@
 package com.Emergency_Response_Management.Controller;
 
 import com.Emergency_Response_Management.DTO.LocationDTO;
-import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,8 @@ public class LocationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LocationDTO> getLocationById(@PathVariable Integer id) {
-        return locationService.getLocationById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(locationService.getLocationById(id));
+
     }
 
     @GetMapping("/search")

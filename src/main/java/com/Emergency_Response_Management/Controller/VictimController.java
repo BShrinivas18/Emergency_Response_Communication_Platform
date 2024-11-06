@@ -17,7 +17,7 @@ public class VictimController {
     private VictimService victimService;
 
     @PostMapping
-    public ResponseEntity<VictimDTO> createVictim(@RequestBody Victim victim) {
+    public ResponseEntity<VictimDTO> createVictim(@RequestBody VictimDTO victim) {
         return ResponseEntity.ok(victimService.createVictim(victim));
     }
 

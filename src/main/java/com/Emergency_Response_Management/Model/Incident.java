@@ -27,7 +27,9 @@ public class Incident {
     @JoinColumn(name = "location_id")
     @JsonIgnoreProperties({"victims", "responders"})
     private Location location;
+    @Enumerated(value = EnumType.STRING)
     private IncidentSeverity severity;
+    @Enumerated(value = EnumType.STRING)
     private IncidentType type;
     private LocalDateTime timestamp;
     private IncidentStatus status;
@@ -43,10 +45,10 @@ public class Incident {
     @JsonIgnoreProperties("incidents") // breaks the circular reference
     private Responder assignedResponder;
 
-    @ManyToOne
-    @JoinColumn(name = "dispatcher_id", nullable = true)
-    @JsonIgnoreProperties("managedIncidents")
-    private Dispatcher managedBy;
+//    @ManyToOne
+//    @JoinColumn(name = "dispatcher_id", nullable = true)
+//    @JsonIgnoreProperties("managedIncidents")
+//    private Dispatcher managedBy;
 
     @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)//One Incident has many Logs
     @JsonIgnoreProperties({"incidents"})

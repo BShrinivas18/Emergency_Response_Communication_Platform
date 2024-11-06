@@ -3,14 +3,11 @@ package com.Emergency_Response_Management.Service;
 import com.Emergency_Response_Management.DTO.LocationDTO;
 import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Model.Location;
-import com.Emergency_Response_Management.Model.Responder;
-import com.Emergency_Response_Management.Model.Victim;
 import com.Emergency_Response_Management.Repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,9 +28,9 @@ public class LocationService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<LocationDTO> getLocationById(Integer id) {
-        return locationRepository.findById(id)
-                .map(this::convertToDTO);
+    public LocationDTO getLocationById(Integer id) {
+        return convertToDTO(locationRepository.findById(id)
+                .orElseThrow(()-> new GeneralException("Location not found with id " + id)));
     }
 
     public List<LocationDTO> findByCoordinates(Float latitude, Float longitude) {
