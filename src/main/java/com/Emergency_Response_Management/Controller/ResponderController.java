@@ -35,12 +35,12 @@ public class ResponderController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@PathVariable ResponderStatus status) {
+    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@RequestBody ResponderStatus status) {
         return ResponseEntity.ok(responderService.getRespondersByStatus(status));
     }
 
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByRole(@PathVariable ResponderType type) {
+    public ResponseEntity<List<ResponderDTO>> getRespondersByRole(@RequestBody ResponderType type) {
         return ResponseEntity.ok(responderService.getRespondersByType(type));
     }
 
@@ -48,7 +48,6 @@ public class ResponderController {
     public ResponseEntity<List<ResponderDTO>> getRespondersByLocation(@PathVariable Integer locationId) {
         return ResponseEntity.ok(responderService.getRespondersByLocation(locationId));
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponderDTO> updateResponder(
@@ -69,4 +68,13 @@ public class ResponderController {
         responderService.deleteResponder(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/requestAdditionalResponder/{id}/{type}")
+    public ResponseEntity<Void> requestResponder(
+            @PathVariable Integer id ,
+            @PathVariable ResponderType type){
+        responderService.requestAdditionalResponders(id, type);
+        return ResponseEntity.ok().build();
+    }
+
 }

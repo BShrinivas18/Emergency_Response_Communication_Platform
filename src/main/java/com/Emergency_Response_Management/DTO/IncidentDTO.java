@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Data
@@ -34,7 +36,8 @@ public class IncidentDTO {
     private String victimContact;
     private Integer victimLocationId;
 
-    private Integer responderId;
+    // List of responder IDs assigned to this incident
+    private List<Integer> responderIds;
 
 //    private Integer dispatcherId;
 //    private List<Integer> logIds; // removed because it can be fetched separately when needed

@@ -14,7 +14,7 @@ import java.util.List;
 public interface IncidentRepository extends JpaRepository<Incident, Integer> {
     List<Incident> findByStatus(ResponseStatus status);
     List<Incident> findByVictim(Victim victim);
-    List<Incident> findByAssignedResponder(Responder responder);
+//    List<Incident> findByAssignedResponders(Responder responder);
 //    List<Incident> findByManagedBy(Dispatcher dispatcher);
 }
 

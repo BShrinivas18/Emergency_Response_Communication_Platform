@@ -9,6 +9,6 @@ public class LogDTO {
     private Integer logId;
     private String statusUpdate;
     private LocalDateTime timestamp;
-    private Integer updatedBy;
+    //private Integer updatedBy;
     private Integer incidentId;
 }

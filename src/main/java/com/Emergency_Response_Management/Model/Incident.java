@@ -40,10 +40,14 @@ public class Incident {
     @JsonIgnoreProperties({"incidents"}) // breaks the circular reference
     private Victim victim;
 
-    @ManyToOne
-    @JoinColumn(name = "responder_id", nullable = true)
-    @JsonIgnoreProperties("incidents") // breaks the circular reference
-    private Responder assignedResponder;
+//    @ManyToOne
+//    @JoinColumn(name = "responder_id", nullable = true)
+//    @JsonIgnoreProperties("incidents") // breaks the circular reference
+//    private Responder assignedResponder;
+
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("incident")
+    private List<Responder> assignedResponders = new ArrayList<>();
 
 //    @ManyToOne
 //    @JoinColumn(name = "dispatcher_id", nullable = true)

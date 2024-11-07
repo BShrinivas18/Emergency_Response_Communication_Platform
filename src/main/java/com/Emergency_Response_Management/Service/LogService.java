@@ -28,7 +28,7 @@ public class LogService {
         dto.setLogId(log.getLogId());
         dto.setStatusUpdate(log.getStatusUpdate());
         dto.setTimestamp(log.getTimestamp());
-        dto.setUpdatedBy(log.getUpdatedBy());
+        //dto.setUpdatedBy(log.getUpdatedBy());
         dto.setIncidentId(log.getIncident().getIncidentId());
         return dto;
     }
@@ -38,7 +38,7 @@ public class LogService {
         log.setLogId(dto.getLogId());
         log.setStatusUpdate(dto.getStatusUpdate());
         log.setTimestamp(dto.getTimestamp());
-        log.setUpdatedBy(dto.getUpdatedBy());
+        //log.setUpdatedBy(dto.getUpdatedBy());
         log.setIncident(incidentRepository.findById(dto.getIncidentId())
                 .orElseThrow(() -> new RuntimeException("Incident not found")));
         return log;
@@ -49,7 +49,7 @@ public class LogService {
         log.setIncident(incident);
         log.setStatusUpdate(statusUpdate);
         log.setTimestamp(LocalDateTime.now());
-        log.setUpdatedBy(updatedBy);
+        //log.setUpdatedBy(updatedBy);
         logRepository.save(log);
     }
 
@@ -88,7 +88,7 @@ public class LogService {
         Log existingLog = logRepository.findById(id)
                 .orElseThrow(() -> new GeneralException("Log not found"));
         existingLog.setStatusUpdate(logDTO.getStatusUpdate());
-        existingLog.setUpdatedBy(logDTO.getUpdatedBy());
+        //existingLog.setUpdatedBy(logDTO.getUpdatedBy());
         return convertToDTO(logRepository.save(existingLog));
     }
 

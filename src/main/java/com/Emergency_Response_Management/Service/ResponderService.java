@@ -1,11 +1,11 @@
 package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.ResponderDTO;
-import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Enums.IncidentType;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Exception.GeneralException;
+import com.Emergency_Response_Management.Exception.ResourceNotFoundException;
 import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Model.Location;
 import com.Emergency_Response_Management.Model.Responder;
@@ -118,6 +118,7 @@ public class ResponderService {
         if (responder.getLocation() != null) {
             dto.setLocationId(responder.getLocation().getLocationId());
         }
+        dto.setIncidentId(dto.getIncidentId());
 
         // Assuming there's a method to retrieve incident IDs for a responder
 //        dto.setIncidentIds(responder.getIncidents().stream()
@@ -147,7 +148,7 @@ public class ResponderService {
     // Automatically assign appropriate responder based on incident type (needs to be done for availability too)
     public void assignAppropriateResponder(Incident incident) {
         ResponderType requiredResponderType = getRequiredResponderType(incident.getType());
-
+        //String address = incident.getLocation().getAddress();
         // Find available responders of the required type
         List<Responder> availableResponders = responderRepository.findByStatusAndType(
                 ResponderStatus.AVAILABLE,
@@ -155,32 +156,39 @@ public class ResponderService {
         );
 
         if (!availableResponders.isEmpty()) {
-            // For now, simply get the first available responder
-            // In a real system, we might want to consider location, workload, etc.
 
-            Responder responder = availableResponders.stream().filter(i->(i.getStatus().toString()).equals("AVAILABLE")).findFirst().orElse(null);
-            if(responder==null){
-                responder = responderRepository.findByStatusAndType(ResponderStatus.AVAILABLE,ResponderType.POLICE_OFFICER).getFirst();
-//                responder = responderService.findByStatusAndType(ResponderStatus.AVAILABLE,ResponderType.POLICE_OFFICER).getFirst();
-            }
-            // Assign responder
-
-            incident.setAssignedResponder(responder);
-//            incident.setStatus(IncidentStatus.IN_PROGRESS);
-
-            // Update responder status
+//            availableResponders.stream()
+//                    .filter(i -> i.getStatus() == ResponderStatus.AVAILABLE)
+//                    .forEach(responder -> {
+//                        // Assign responder to the incident
+//                        incident.getAssignedResponders().add(responder);
+//
+//                        // Update responder's status to ASSIGNED
+//                        responder.setStatus(ResponderStatus.ASSIGNED);
+//                        responderRepository.save(responder);
+//
+//                        logService.createLog(incident, "Responder automatically assigned: " + responder.getName(), responder.getResponderId());
+//                    });
+           Responder responder = availableResponders.stream().findFirst().orElseThrow(()-> new ResourceNotFoundException("No responder found"));
+            incident.getAssignedResponders().add(responder);
+//
+            // Update responder's status to ASSIGNED
             responder.setStatus(ResponderStatus.ASSIGNED);
+
             responderRepository.save(responder);
 
-            // Save incident
+
+            logService.createLog(incident, "Responder automatically assigned: " + responder.getName(), responder.getResponderId());
+
+
+            // Save the updated incident
             incidentRepository.save(incident);
+            responder.setIncident(incident);
+            responderRepository.save(responder);
 
-            logService.createLog(incident, "Responder automatically assigned: " + responder.getName(),responder.getResponderId()
-            );
 
-            // Notify responder
-//            notificationService.notifyResponder(responder, incident);
-        } else {
+        }
+        else {
             logService.createLog(incident, "WARNING: No available responders of type " + requiredResponderType,null);
         }
     }
@@ -206,6 +214,33 @@ public class ResponderService {
 
 
     }
+
+    public void requestAdditionalResponders(Integer incidentId, ResponderType requiredResponderType) {
+        // Create a notification or trigger mechanism to request additional responders
+        // For now, we log the request.
+        Incident incident = incidentRepository.findById(incidentId).orElseThrow(()-> new ResourceNotFoundException("Incident not found"));
+        logService.createLog(incident, "Requesting additional responders of type " + requiredResponderType, null);
+
+        // Logic to handle additional responder requests:
+        // This could involve notifying nearby responders, dispatching requests to agencies, etc.
+
+        // Example: requesting more responders from a different type (e.g., paramedics in case of medical emergency)
+        List<Responder> additionalResponders = responderRepository.findByStatusAndType(ResponderStatus.AVAILABLE, requiredResponderType);
+        if (!additionalResponders.isEmpty()) {
+            additionalResponders.forEach(responder -> {
+                incident.getAssignedResponders().add(responder);
+                responder.setStatus(ResponderStatus.ASSIGNED);
+                responder.setIncident(incident);
+                responderRepository.save(responder);
+            });
+            incidentRepository.save(incident);
+            logService.createLog(incident, "Additional responders assigned to the incident", null);
+        } else {
+            // If no responders are found, log or notify that more responders are required
+            logService.createLog(incident, "No additional responders available for type " + requiredResponderType, null);
+        }
+    }
+
 //    public List<Responder> findByStatusAndType(ResponderStatus status, ResponderType type){
 //        return responderRepository.findAll().stream().filter(i-> (i.getStatus().equals(status) && i.getType().equals(type))).toList();
 //    }

@@ -13,5 +13,6 @@ public interface LogRepository extends JpaRepository<Log, Integer> {
     List<Log> findByIncident(Incident incident);
     List<Log> findByTimestampBetween(LocalDateTime start, LocalDateTime end);
     List<Log> findByUpdatedBy(Integer userId);
+    //List<Log> findByIncidentId(int incidentid);
 }
 

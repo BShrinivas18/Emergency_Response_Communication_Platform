@@ -19,12 +19,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.BooleanUtils.forEach;
+
 @Service
 public class IncidentService {
 
     @Autowired
     private IncidentRepository incidentRepository;
-
 
     @Autowired
     private ResponderRepository responderRepository;
@@ -115,8 +116,6 @@ public class IncidentService {
 //        }
 //    }
 
-
-
     public List<IncidentDTO> getAllIncidents() {
         return incidentRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -146,9 +145,16 @@ public class IncidentService {
         logService.createLog(incident, "Status updated to " + status + ": " + statusDetails, updatedBy);
 
         if (status == IncidentStatus.RESOLVED) {
-            Responder responder = incident.getAssignedResponder();
-            responder.setStatus(ResponderStatus.AVAILABLE);
-            responderRepository.save(responder);
+            incident.getAssignedResponders()
+                    .forEach(i -> {
+                        i.setStatus(ResponderStatus.AVAILABLE);
+                       responderRepository.save(i);
+                   }
+           );
+
+
+//            responder.setStatus(ResponderStatus.AVAILABLE);
+
 //            notificationService.notifyVictim(incident.getVictim(), "Your incident has been resolved");
         }
 
@@ -176,10 +182,14 @@ public class IncidentService {
             dto.setIncidentLocationId(incident.getLocation().getLocationId());
         }
 
-        if(incident.getAssignedResponder()!=null){
-            dto.setResponderId(incident.getAssignedResponder().getResponderId());
+        if (incident.getAssignedResponders() != null && !incident.getAssignedResponders().isEmpty()) {
+            dto.setResponderIds(incident.getAssignedResponders().stream()
+                    .map(Responder::getResponderId)
+                    .toList());
+            System.out.println("Assigned Responder IDs: " + dto.getResponderIds());
+        } else {
+            System.out.println("No assigned responders found.");
         }
-
         // Set victim information
         if (incident.getVictim() != null) {
             dto.setVictimId(incident.getVictim().getVictimId());
@@ -192,36 +202,6 @@ public class IncidentService {
         return dto;
     }
 
-//    private Incident convertToEntity(IncidentDTO dto) {
-//        Incident incident = new Incident();
-//        incident.setIncidentId(dto.getIncidentId());
-//        if(dto.getLocationId()!=null){
-//            Location location = locationRepository.findById(dto.getLocationId())
-//                    .orElseThrow(()->new ResourceNotFoundException("Location not found"));
-//            incident.setLocation(location);
-//        }
-//        incident.setSeverity(dto.getSeverity());
-//        incident.setType(dto.getType());
-//        incident.setTimestamp(dto.getTimestamp());
-//        incident.setStatus(dto.getStatus());
-//        if (dto.getResponderId() != null) {
-//            Responder responder = responderRepository.findById(dto.getResponderId())
-//                    .orElseThrow(() -> new RuntimeException("Responder not found"));
-//            incident.setAssignedResponder(responder);
-//        }
-//        if (dto.getVictimId()!=null){
-//            Victim victim = victimRepository.findById(dto.getVictimId())
-//                    .orElseThrow(()-> new GeneralException("Victim not found"));
-//           incident.setVictim(victim);
-//        }
-//
-//        if(dto.getDispatcherId()!= null){
-//            Dispatcher dispatcher = dispatcherRepository.findById(dto.getDispatcherId())
-//                    .orElseThrow(() -> new GeneralException("Dispatcher not found"));
-//            incident.setManagedBy(dispatcher);
-//        }
-//        // Map other fields if necessary, like victim, dispatcher, and logs.
-//        return incident;
-//    }
+
 
 }

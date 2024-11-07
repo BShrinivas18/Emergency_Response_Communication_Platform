@@ -37,8 +37,13 @@ public class Responder {
     @JsonIgnoreProperties({"responders","victims"})
     private Location location;
 
-    @OneToMany(mappedBy = "assignedResponder")//One Responder handles many Incidents
-    @JsonIgnore
-    private List<Incident> incidents = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "incident_id")
+    @JsonIgnoreProperties("assignedResponders")
+    private Incident incident;
+
+//    @OneToMany(mappedBy = "assignedResponder")//One Responder handles many Incidents
+//    @JsonIgnore
+//    private List<Incident> incidents = new ArrayList<>();
     // Other fields, getters, setters, and constructors
 }
