@@ -2,11 +2,11 @@ package com.Emergency_Response_Management.DTO;
 
 import com.Emergency_Response_Management.Enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+
 import lombok.Data;
 
 @Data
+
 public class UserDTO {
     private Integer userId;
     private String name;

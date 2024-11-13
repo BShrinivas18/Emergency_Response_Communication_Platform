@@ -3,14 +3,15 @@ package com.Emergency_Response_Management.DTO;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Enums.ResponderType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-//import jakarta.persistence.EnumType;
-//import jakarta.persistence.Enumerated;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 //import java.util.List;
 
 @Data
+
 public class ResponderDTO {
     private Integer responderId;
     private String name;
@@ -22,6 +23,7 @@ public class ResponderDTO {
     private LocalDateTime lastUpdate;
     private Integer locationId;
 
+//    @JsonIgnore
     private Integer incidentId;
 //    private List<Integer> incidentIds;  // can be fetched when required separately
 }

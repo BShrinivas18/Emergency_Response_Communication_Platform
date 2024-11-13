@@ -16,10 +16,10 @@ public class VictimController {
     @Autowired
     private VictimService victimService;
 
-    @PostMapping
-    public ResponseEntity<VictimDTO> createVictim(@RequestBody VictimDTO victim) {
-        return ResponseEntity.ok(victimService.createVictim(victim));
-    }
+//    @PostMapping
+//    public ResponseEntity<VictimDTO> createVictim(@RequestBody VictimDTO victim) {
+//        return ResponseEntity.ok(victimService.createVictim(victim));
+//    }
 
     @GetMapping
     public ResponseEntity<List<VictimDTO>> getAllVictims() {

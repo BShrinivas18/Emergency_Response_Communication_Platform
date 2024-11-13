@@ -1,6 +1,6 @@
 package com.Emergency_Response_Management.Model;
 
-import com.Emergency_Response_Management.Enums.IncidentSeverity;
+//import com.Emergency_Response_Management.Enums.IncidentSeverity;
 import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Enums.IncidentType;
 import com.fasterxml.jackson.annotation.*;
@@ -27,8 +27,8 @@ public class Incident {
     @JoinColumn(name = "location_id")
     @JsonIgnoreProperties({"victims", "responders"})
     private Location location;
-    @Enumerated(value = EnumType.STRING)
-    private IncidentSeverity severity;
+//    @Enumerated(value = EnumType.STRING)
+//    private IncidentSeverity severity;
     @Enumerated(value = EnumType.STRING)
     private IncidentType type;
     private LocalDateTime timestamp;

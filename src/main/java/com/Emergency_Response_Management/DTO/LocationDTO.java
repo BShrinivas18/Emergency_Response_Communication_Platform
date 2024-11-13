@@ -1,10 +1,12 @@
 package com.Emergency_Response_Management.DTO;
 
+import jakarta.persistence.Entity;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+
 public class LocationDTO {
     private Integer locationId;
     private Float latitude;

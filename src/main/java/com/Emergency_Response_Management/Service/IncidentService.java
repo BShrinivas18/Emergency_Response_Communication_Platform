@@ -1,11 +1,8 @@
 package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.IncidentDTO;
-import com.Emergency_Response_Management.DTO.VictimDTO;
 import com.Emergency_Response_Management.Enums.IncidentStatus;
-import com.Emergency_Response_Management.Enums.IncidentType;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
-import com.Emergency_Response_Management.Enums.ResponderType;
 import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Exception.ResourceNotFoundException;
 import com.Emergency_Response_Management.Model.*;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,7 +70,7 @@ public class IncidentService {
         // Step 4: Create and save the incident
         Incident incident = new Incident();
         incident.setType(dto.getType());
-        incident.setSeverity(dto.getSeverity());
+//        incident.setSeverity(dto.getSeverity());
         incident.setTimestamp(LocalDateTime.now());
         incident.setStatus(IncidentStatus.NEW);
         incident.setVictim(victim);
@@ -89,32 +87,11 @@ public class IncidentService {
                 "Emergency incident reported by " + victim.getName() + " " + locationInfo,
                 victim.getVictimId());
 
-//        assignAvailableDispatcher(incident);
         responderService.assignAppropriateResponder(incident);
         // Return the incident DTO
         return convertToDTO(incident);
     }
 
-
-    // Automatically assign an available dispatcher
-//    private void assignAvailableDispatcher(Incident incident) {
-//        // For simplicity, getting the first available dispatcher
-//        // In a real system, we might want to implement more sophisticated load balancing
-//        List<Dispatcher> dispatchers = dispatcherRepository.findAll();
-//        if (!dispatchers.isEmpty()) {
-//            Dispatcher dispatcher = dispatchers.getFirst();
-//            incident.setManagedBy(dispatcher);
-//            incident.setStatus(IncidentStatus.NEW);
-//            incidentRepository.save(incident);
-//
-//           logService.createLog(incident, "Dispatcher automatically assigned to incident", dispatcher.getDispatcherId());
-//
-//            // Automatically try to assign appropriate responder
-//
-//        } else {
-//            logService.createLog(incident, "WARNING: No dispatchers available", null);
-//        }
-//    }
 
     public List<IncidentDTO> getAllIncidents() {
         return incidentRepository.findAll().stream()
@@ -174,22 +151,25 @@ public class IncidentService {
     private IncidentDTO convertToDTO(Incident incident) {
         IncidentDTO dto = new IncidentDTO();
         dto.setIncidentId(incident.getIncidentId());
-        dto.setSeverity(incident.getSeverity());
+//        dto.setSeverity(incident.getSeverity());
         dto.setType(incident.getType());
         dto.setTimestamp(incident.getTimestamp());
-        dto.setStatus(incident.getStatus());// Set incident location
+        dto.setStatus(incident.getStatus());
+
+        // Set incident location
         if (incident.getLocation() != null) {
             dto.setIncidentLocationId(incident.getLocation().getLocationId());
         }
 
-        if (incident.getAssignedResponders() != null && !incident.getAssignedResponders().isEmpty()) {
-            dto.setResponderIds(incident.getAssignedResponders().stream()
+        if (incident.getAssignedResponders() != null) {
+            List<Integer> responderIds = incident.getAssignedResponders().stream()
                     .map(Responder::getResponderId)
-                    .toList());
-            System.out.println("Assigned Responder IDs: " + dto.getResponderIds());
+                    .collect(Collectors.toList());
+            dto.setResponderIds(responderIds);
         } else {
-            System.out.println("No assigned responders found.");
+            dto.setResponderIds(new ArrayList<>());
         }
+
         // Set victim information
         if (incident.getVictim() != null) {
             dto.setVictimId(incident.getVictim().getVictimId());

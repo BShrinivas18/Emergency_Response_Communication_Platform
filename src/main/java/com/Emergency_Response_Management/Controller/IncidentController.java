@@ -53,7 +53,6 @@ public class IncidentController {
 //        return ResponseEntity.ok(incidentService.updateStatus(id, status));
 //    }
 
-
 //    @PutMapping("/{id}")
 //    public ResponseEntity<IncidentDTO> updateIncident(
 //            @PathVariable Integer id,
