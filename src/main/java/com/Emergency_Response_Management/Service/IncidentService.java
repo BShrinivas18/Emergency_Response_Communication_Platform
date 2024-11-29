@@ -2,6 +2,7 @@ package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.IncidentDTO;
 import com.Emergency_Response_Management.Enums.IncidentStatus;
+import com.Emergency_Response_Management.Enums.IncidentType;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Exception.GeneralException;
 import com.Emergency_Response_Management.Exception.ResourceNotFoundException;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.BooleanUtils.forEach;
 
 @Service
 public class IncidentService {
@@ -40,57 +40,138 @@ public class IncidentService {
     @Autowired
     private LocationRepository locationRepository;
 
-    public IncidentDTO reportIncident(IncidentDTO dto) {
-
-        // Create a new victim regardless of whether victimId is provided
-        // Step 1: Validate and get victim's location
-        if (dto.getVictimLocationId() == null) {
-            throw new IllegalArgumentException("Victim location is required");
-        }
-        Location victimLocation = locationRepository.findById(dto.getVictimLocationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Victim location not found"));
-
-        Victim victim = new Victim();
-        victim.setName(dto.getVictimName());
-        victim.setContactInfo(dto.getVictimContact());
-        victim.setLocation(victimLocation);
-        victim = victimRepository.save(victim);
+//    @Autowired
+//    private GeocodingService geocodingService; // This service is responsible for retrieving the address from coordinates
 
 
-        Location incidentLocation;
-        if (dto.getIncidentLocationId() != null) {
-            // If incident location is provided, use that
-            incidentLocation = locationRepository.findById(dto.getIncidentLocationId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Incident location not found"));
-        } else {
-            // If no incident location provided, use victim's location
-            incidentLocation = victimLocation;
+    public IncidentDTO reportIncident(IncidentDTO dto, Double latitude, Double longitude, boolean isSOS) {
+        // Handle location
+        Location incidentLocation = determineLocation(dto, latitude, longitude);
+
+        // Create incident
+        Incident incident = createIncident(dto, incidentLocation, isSOS);
+
+        // Handle victim information if available (not for SOS)
+        if (!isSOS && dto != null) {
+            handleVictimInformation(incident, dto);
         }
 
-        // Step 4: Create and save the incident
-        Incident incident = new Incident();
-        incident.setType(dto.getType());
-//        incident.setSeverity(dto.getSeverity());
-        incident.setTimestamp(LocalDateTime.now());
-        incident.setStatus(IncidentStatus.NEW);
-        incident.setVictim(victim);
-        incident.setLocation(incidentLocation);
-
+        // Save incident
         incident = incidentRepository.save(incident);
 
-        // Step 5: Create log entry
-        String locationInfo = incidentLocation.equals(victimLocation)
-                ? "at victim's location: " + victimLocation.getAddress()
-                : "at location: " + incidentLocation.getAddress() + " (victim located at: " + victimLocation.getAddress() + ")";
-
-        logService.createLog(incident,
-                "Emergency incident reported by " + victim.getName() + " " + locationInfo,
-                victim.getVictimId());
+        // Log the incident
+        logIncident(incident);
 
         responderService.assignAppropriateResponder(incident);
-        // Return the incident DTO
+
         return convertToDTO(incident);
     }
+
+    private Incident createIncident(IncidentDTO dto, Location location, boolean isSOS) {
+        Incident incident = new Incident();
+        incident.setType(isSOS ? IncidentType.SOS_REQUEST: dto.getType());
+//        System.out.println("incident-type: "+incident.getType());
+        incident.setTimestamp(LocalDateTime.now());
+        incident.setStatus(IncidentStatus.NEW);
+        incident.setLocation(location);
+        return incident;
+    }
+
+    private void handleVictimInformation(Incident incident, IncidentDTO dto) {
+        if (dto.getVictimName() != null) {
+            Victim victim = new Victim();
+            victim.setName(dto.getVictimName());
+            victim.setContactInfo(dto.getVictimContact());
+            victim.setLocation(incident.getLocation());
+            victim = victimRepository.save(victim);
+            incident.setVictim(victim);
+        }
+    }
+
+    private void logIncident(Incident incident) {
+        String locationInfo = String.format("at location: %s (Lat: %f, Long: %f)",
+                incident.getLocation().getAddress(),
+                incident.getLocation().getLatitude(),
+                incident.getLocation().getLongitude());
+
+        logService.createLog(incident,
+                "Incident reported " + locationInfo,
+                incident.getVictim() != null ? incident.getVictim().getVictimId() : null);
+    }
+
+    private Location determineLocation(IncidentDTO dto, Double latitude, Double longitude) {
+        if (latitude != null && longitude != null) {
+            return locationRepository.findByLatitudeAndLongitude(latitude, longitude)
+                    .orElseGet(() -> {
+                        Location newLocation = new Location();
+                        newLocation.setLatitude(latitude);
+                        newLocation.setLongitude(longitude);
+//                        String address = geocodingService.getAddressFromCoordinates(latitude, longitude);
+
+//                        System.out.println("address: "+address);
+                        newLocation.setAddress(null);
+                        return locationRepository.save(newLocation);
+                    });
+        } else {
+            return locationRepository.findById(dto.getVictimLocationId())
+                    .orElseThrow(() -> new RuntimeException("Location not found"));
+        }
+    }
+
+
+
+
+//    public IncidentDTO reportIncident(IncidentDTO dto) {
+//
+//        // Create a new victim regardless of whether victimId is provided
+//        // Step 1: Validate and get victim's location
+//        if (dto.getVictimLocationId() == null) {
+//            throw new IllegalArgumentException("Victim location is required");
+//        }
+//        Location victimLocation = locationRepository.findById(dto.getVictimLocationId())
+//                .orElseThrow(() -> new ResourceNotFoundException("Victim location not found"));
+//
+//        Victim victim = new Victim();
+//        victim.setName(dto.getVictimName());
+//        victim.setContactInfo(dto.getVictimContact());
+//        victim.setLocation(victimLocation);
+//        victim = victimRepository.save(victim);
+//
+//
+//        Location incidentLocation;
+//        if (dto.getIncidentLocationId() != null) {
+//            // If incident location is provided, use that
+//            incidentLocation = locationRepository.findById(dto.getIncidentLocationId())
+//                    .orElseThrow(() -> new ResourceNotFoundException("Incident location not found"));
+//        } else {
+//            // If no incident location provided, use victim's location
+//            incidentLocation = victimLocation;
+//        }
+//
+//        // Step 4: Create and save the incident
+//        Incident incident = new Incident();
+//        incident.setType(dto.getType());
+////        incident.setSeverity(dto.getSeverity());
+//        incident.setTimestamp(LocalDateTime.now());
+//        incident.setStatus(IncidentStatus.NEW);
+//        incident.setVictim(victim);
+//        incident.setLocation(incidentLocation);
+//
+//        incident = incidentRepository.save(incident);
+//
+//        // Step 5: Create log entry
+//        String locationInfo = incidentLocation.equals(victimLocation)
+//                ? "at victim's location: " + victimLocation.getAddress()
+//                : "at location: " + incidentLocation.getAddress() + " (victim located at: " + victimLocation.getAddress() + ")";
+//
+//        logService.createLog(incident,
+//                "Emergency incident reported by " + victim.getName() + " " + locationInfo,
+//                victim.getVictimId());
+//
+//        responderService.assignAppropriateResponder(incident);
+//        // Return the incident DTO
+//        return convertToDTO(incident);
+//    }
 
 
     public List<IncidentDTO> getAllIncidents() {
@@ -112,31 +193,28 @@ public class IncidentService {
     }
 
     // Update incident status during response
-    public IncidentDTO updateIncidentStatus(Integer incidentId, IncidentStatus status, String statusDetails, Integer updatedBy) {
-        Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Incident not found"));
-
-        incident.setStatus(status);
-        incident = incidentRepository.save(incident);
-
-        logService.createLog(incident, "Status updated to " + status + ": " + statusDetails, updatedBy);
-
-        if (status == IncidentStatus.RESOLVED) {
-            incident.getAssignedResponders()
-                    .forEach(i -> {
-                        i.setStatus(ResponderStatus.AVAILABLE);
-                       responderRepository.save(i);
-                   }
-           );
-
-
-//            responder.setStatus(ResponderStatus.AVAILABLE);
-
-//            notificationService.notifyVictim(incident.getVictim(), "Your incident has been resolved");
-        }
-
-        return convertToDTO(incident);
-    }
+//    public void updateIncidentStatus(Integer incidentId, ResponderStatus status) {
+//        Incident incident = incidentRepository.findById(incidentId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Incident not found"));
+//        switch (status){
+//            case ON_ROUTE ,ON_SCENE-> incident.setStatus(IncidentStatus.IN_PROGRESS);
+//            default -> incident.setStatus(IncidentStatus.RESOLVED);
+//        }
+////        incident.setStatus(status);
+//        incident = incidentRepository.save(incident);
+//
+//        logService.createLog(incident, "Status updated to " + status + ": ", null);
+//
+//        if (incident.getStatus() == IncidentStatus.RESOLVED) {
+//            incident.getAssignedResponders()
+//                    .forEach(i -> {
+//                        i.setStatus(ResponderStatus.AVAILABLE);
+//                       responderRepository.save(i);
+//                   }
+//           );
+//  }
+//        convertToDTO(incident);
+//    }
 
     public void deleteIncident(Integer id) {
         incidentRepository.deleteById(id);

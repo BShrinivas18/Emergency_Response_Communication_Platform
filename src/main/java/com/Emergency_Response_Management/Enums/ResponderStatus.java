@@ -6,5 +6,5 @@ public enum ResponderStatus {
     ON_ROUTE,
     ON_SCENE,
     OFF_DUTY,
-    ON_BREAK
+    NOT_AVAILABLE
 }

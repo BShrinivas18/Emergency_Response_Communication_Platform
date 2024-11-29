@@ -1,6 +1,7 @@
 package com.Emergency_Response_Management.Service;
 
 import com.Emergency_Response_Management.DTO.ResponderDTO;
+import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Enums.IncidentType;
 import com.Emergency_Response_Management.Enums.ResponderStatus;
 import com.Emergency_Response_Management.Enums.ResponderType;
@@ -48,6 +49,7 @@ public class ResponderService {
     }
 
     public Optional<ResponderDTO> getResponderById(Integer id) {
+        System.out.println("incident id: "+responderRepository.findById(id).get().getIncident().getIncidentId());
         return responderRepository.findById(id).map(this::convertToDTO);
     }
 
@@ -95,6 +97,33 @@ public class ResponderService {
                 .orElseThrow(() -> new GeneralException("Responder Not Found"));
 
         responder.setStatus(status);
+        if(status == ResponderStatus.NOT_AVAILABLE){
+            responder.setLastUpdate(LocalDateTime.now());
+            responderRepository.save(responder);
+            return convertToDTO(responder);
+        }
+        responder.getIncident().setStatus(
+                switch (status){
+                    case ON_ROUTE ,ON_SCENE->IncidentStatus.IN_PROGRESS;
+                    case OFF_DUTY -> IncidentStatus.RESOLVED;
+                    default -> IncidentStatus.NEW;
+                }
+
+        );
+
+        incidentRepository.save(responder.getIncident());
+
+        logService.createLog(responder.getIncident(), "Status updated to " + status + ": ", null);
+
+        if (responder.getIncident().getStatus() == IncidentStatus.RESOLVED) {
+            responder.getIncident().getAssignedResponders()
+                    .forEach(i -> {
+                                i.setStatus(ResponderStatus.AVAILABLE);
+                                responderRepository.save(i);
+                            }
+                    );
+        }
+//        incidentService.updateIncidentStatus(responder.getIncident().getIncidentId(), responder.getStatus());
         responder.setLastUpdate(LocalDateTime.now());
 
         Responder updatedResponder = responderRepository.save(responder);
@@ -118,8 +147,9 @@ public class ResponderService {
         if (responder.getLocation() != null) {
             dto.setLocationId(responder.getLocation().getLocationId());
         }
-        dto.setIncidentId(dto.getIncidentId());
-
+        if(responder.getIncident()!=null) {
+            dto.setIncidentId(responder.getIncident().getIncidentId());
+        }
         // Assuming there's a method to retrieve incident IDs for a responder
 //        dto.setIncidentIds(responder.getIncidents().stream()
 //                .map(Incident::getIncidentId)
@@ -147,9 +177,12 @@ public class ResponderService {
 
     // Automatically assign appropriate responder based on incident type (needs to be done for availability too)
     public void assignAppropriateResponder(Incident incident) {
+
         ResponderType requiredResponderType = getRequiredResponderType(incident.getType());
+        System.out.println("requiredResponderType returned: "+ requiredResponderType);
         //String address = incident.getLocation().getAddress();
         // Find available responders of the required type
+//        System.out.println("requiredResponderType returned: "+requiredResponderType);
         List<Responder> availableResponders = responderRepository.findByStatusAndType(
                 ResponderStatus.AVAILABLE,
                 requiredResponderType
@@ -157,35 +190,20 @@ public class ResponderService {
 
         if (!availableResponders.isEmpty()) {
 
-//            availableResponders.stream()
-//                    .filter(i -> i.getStatus() == ResponderStatus.AVAILABLE)
-//                    .forEach(responder -> {
-//                        // Assign responder to the incident
-//                        incident.getAssignedResponders().add(responder);
-//
-//                        // Update responder's status to ASSIGNED
-//                        responder.setStatus(ResponderStatus.ASSIGNED);
-//                        responderRepository.save(responder);
-//
-//                        logService.createLog(incident, "Responder automatically assigned: " + responder.getName(), responder.getResponderId());
-//                    });
            Responder responder = availableResponders.stream().findFirst().orElseThrow(()-> new ResourceNotFoundException("No responder found"));
             incident.getAssignedResponders().add(responder);
 //
             // Update responder's status to ASSIGNED
             responder.setStatus(ResponderStatus.ASSIGNED);
 
-            responderRepository.save(responder);
-
-
             logService.createLog(incident, "Responder automatically assigned: " + responder.getName(), responder.getResponderId());
-
 
             // Save the updated incident
             incidentRepository.save(incident);
-            responder.setIncident(incident);
-            responderRepository.save(responder);
 
+            responder.setIncident(incident);
+            System.out.println(responder.getIncident().getIncidentId());
+            responderRepository.save(responder);
 
         }
         else {
@@ -195,9 +213,9 @@ public class ResponderService {
 
     // Helper method to determine required responder type based on incident type
     private ResponderType getRequiredResponderType(IncidentType incidentType) {
-
+//        System.out.println("incident-type passed to getRequiredResponderType: "+incidentType);
         return switch (incidentType) {
-            case MEDICAL_EMERGENCY -> ResponderType.PARAMEDIC;
+            case MEDICAL_EMERGENCY , TRAFFIC_ACCIDENT -> ResponderType.PARAMEDIC;
             case FIRE -> ResponderType.FIREFIGHTER;
             case NATURAL_DISASTER -> ResponderType.RESCUE_TEAM;
             case HAZMAT -> ResponderType.HAZMAT_SPECIALIST;

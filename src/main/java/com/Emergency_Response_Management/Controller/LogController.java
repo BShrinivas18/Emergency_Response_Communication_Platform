@@ -17,13 +17,6 @@ public class LogController {
     @Autowired
     private LogService logService;
 
-//    @PostMapping("/incident/{incidentId}")
-//    public ResponseEntity<LogDTO> createLog(
-//            @RequestBody LogDTO logDTO,
-//            @PathVariable Integer incidentId) {
-//        return ResponseEntity.ok(logService.createLog(logDTO, incidentId));
-//    }
-
     @GetMapping
     public List<LogDTO> getAllLogs() {
         return logService.getAllLogs();
@@ -48,10 +41,10 @@ public class LogController {
         return ResponseEntity.ok(logService.getLogsByTimeRange(start, end));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LogDTO>> getLogsByUser(@PathVariable Integer userId) {
-        return ResponseEntity.ok(logService.getLogsByUser(userId));
-    }
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<List<LogDTO>> getLogsByUser(@PathVariable Integer userId) {
+//        return ResponseEntity.ok(logService.getLogsByUser(userId));
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<LogDTO> updateLog(

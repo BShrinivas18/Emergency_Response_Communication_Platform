@@ -33,11 +33,11 @@ public class LocationService {
                 .orElseThrow(()-> new GeneralException("Location not found with id " + id)));
     }
 
-    public List<LocationDTO> findByCoordinates(Float latitude, Float longitude) {
-        return locationRepository.findByLatitudeAndLongitude(latitude, longitude).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
+//    public List<LocationDTO> findByCoordinates(Float latitude, Float longitude) {
+//        return locationRepository.findByLatitudeAndLongitude(latitude, longitude).stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
+//    }
 
     public List<LocationDTO> findByAddress(String address) {
         return locationRepository.findByAddress(address).stream()

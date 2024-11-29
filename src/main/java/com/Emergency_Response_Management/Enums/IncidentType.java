@@ -7,5 +7,6 @@ public enum IncidentType {
     NATURAL_DISASTER,
     TRAFFIC_ACCIDENT,
     HAZMAT,
+    SOS_REQUEST,
     OTHER
 }

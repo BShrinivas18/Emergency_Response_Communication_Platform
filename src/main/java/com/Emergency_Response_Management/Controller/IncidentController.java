@@ -5,9 +5,11 @@ import com.Emergency_Response_Management.Enums.IncidentStatus;
 import com.Emergency_Response_Management.Model.Incident;
 import com.Emergency_Response_Management.Service.IncidentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -17,9 +19,28 @@ public class IncidentController {
     @Autowired
     private IncidentService incidentService;
 
+//    @PostMapping
+//    public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incident) {
+//        return ResponseEntity.ok(incidentService.reportIncident(incident));
+//    }
+
     @PostMapping
-    public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incident) {
-        return ResponseEntity.ok(incidentService.reportIncident(incident));
+    public ResponseEntity<?> createIncident(
+            @RequestBody(required = false) IncidentDTO incident,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false, defaultValue = "false") boolean isSOS
+    ) {
+        try {
+            IncidentDTO response = incidentService.reportIncident(incident, latitude, longitude, isSOS);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
     }
 
     @GetMapping
@@ -35,41 +56,19 @@ public class IncidentController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@PathVariable ResponseStatus status) {
+    public ResponseEntity<List<IncidentDTO>> getIncidentsByStatus(@RequestParam ResponseStatus status) {
         return ResponseEntity.ok(incidentService.getIncidentsByStatus(status));
     }
 
-//    @PutMapping("/{id}/assign/{responderId}")
-//    public ResponseEntity<IncidentDTO> assignResponder(
-//            @PathVariable Integer id,
-//            @PathVariable Integer responderId) {
-//        return ResponseEntity.ok(incidentService.assigResponder(id, responderId));
-//    }
-
-//    @PatchMapping("/{id}/status")
+//    @PutMapping("/{incidentId}/status")
 //    public ResponseEntity<IncidentDTO> updateStatus(
-//            @PathVariable Integer id,
-//           @RequestBody IncidentStatus status) {
-//        return ResponseEntity.ok(incidentService.updateStatus(id, status));
+//            @PathVariable Integer incidentId,
+//            @RequestParam IncidentStatus status,
+//            @RequestParam String statusDetails,
+//            @RequestParam Integer updatedBy) {
+//        return ResponseEntity.ok(incidentService.updateIncidentStatus(
+//                incidentId, status));
 //    }
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<IncidentDTO> updateIncident(
-//            @PathVariable Integer id,
-//            @RequestBody IncidentDTO incident) {
-//        return ResponseEntity.ok(incidentService.updateIncident(id, incident));
-//    }
-
-
-    @PutMapping("/{incidentId}/status")
-    public ResponseEntity<IncidentDTO> updateStatus(
-            @PathVariable Integer incidentId,
-            @RequestParam IncidentStatus status,
-            @RequestParam String statusDetails,
-            @RequestParam Integer updatedBy) {
-        return ResponseEntity.ok(incidentService.updateIncidentStatus(
-                incidentId, status, statusDetails, updatedBy));
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIncident(@PathVariable Integer id) {

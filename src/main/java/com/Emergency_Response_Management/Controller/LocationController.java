@@ -33,12 +33,12 @@ public class LocationController {
 
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<LocationDTO>> findByCoordinates(
-            @RequestParam Float latitude,
-            @RequestParam Float longitude) {
-        return ResponseEntity.ok(locationService.findByCoordinates(latitude, longitude));
-    }
+//    @GetMapping("/search")
+//    public ResponseEntity<List<LocationDTO>> findByCoordinates(
+//            @RequestParam Float latitude,
+//            @RequestParam Float longitude) {
+//        return ResponseEntity.ok(locationService.findByCoordinates(latitude, longitude));
+//    }
 
     @GetMapping("/address/{address}")
     public ResponseEntity<List<LocationDTO>> findByAddress(@PathVariable String address) {

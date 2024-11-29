@@ -35,12 +35,12 @@ public class ResponderController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@RequestBody ResponderStatus status) {
+    public ResponseEntity<List<ResponderDTO>> getRespondersByStatus(@PathVariable ResponderStatus status) {
         return ResponseEntity.ok(responderService.getRespondersByStatus(status));
     }
 
-    @GetMapping("/role/{role}")
-    public ResponseEntity<List<ResponderDTO>> getRespondersByRole(@RequestBody ResponderType type) {
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<ResponderDTO>> getRespondersByType(@PathVariable ResponderType type) {
         return ResponseEntity.ok(responderService.getRespondersByType(type));
     }
 
@@ -55,13 +55,13 @@ public class ResponderController {
             @RequestBody ResponderDTO responder) {
         return ResponseEntity.ok(responderService.updateResponder(id, responder));
     }
-
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{id}/{status}")
     public ResponseEntity<ResponderDTO> updateStatus(
             @PathVariable Integer id,
-            @RequestBody ResponderStatus status) {
+            @PathVariable ResponderStatus status) {
         return ResponseEntity.ok(responderService.updateStatus(id, status));
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResponder(@PathVariable Integer id) {

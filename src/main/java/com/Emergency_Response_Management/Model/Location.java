@@ -2,10 +2,13 @@ package com.Emergency_Response_Management.Model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +22,14 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer locationId;
-    private Float latitude;
-    private Float longitude;
+
+    @Min(value = -90, message = "Latitude must be between -90 and 90")
+    @Max(value = 90, message = "Latitude must be between -90 and 90")
+    private Double latitude;
+
+    @Min(value = -180, message = "Longitude must be between -180 and 180")
+    @Max(value = 180, message = "Longitude must be between -180 and 180")
+    private Double longitude;
     private String address;
 
     @OneToMany(mappedBy = "location")
