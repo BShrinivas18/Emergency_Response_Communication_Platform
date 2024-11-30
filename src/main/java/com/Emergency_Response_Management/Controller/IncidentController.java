@@ -75,4 +75,11 @@ public class IncidentController {
         incidentService.deleteIncident(id);
         return ResponseEntity.noContent().build();
     }
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllIncidents() {
+        for (IncidentDTO incident : incidentService.getAllIncidents()) {
+            incidentService.deleteIncident(incident.getIncidentId());
+        }
+        return ResponseEntity.noContent().build();
+    }
 }

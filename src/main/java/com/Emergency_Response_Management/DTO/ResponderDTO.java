@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 public class ResponderDTO {
     private Integer responderId;
     private String name;
-    private String currentLocation;
+    private String StationAddress;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ResponderStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ResponderType type;
     private LocalDateTime lastUpdate;
-    private Integer locationId;
+    private Integer responderLocationId;
 
 //    @JsonIgnore
     private Integer incidentId;

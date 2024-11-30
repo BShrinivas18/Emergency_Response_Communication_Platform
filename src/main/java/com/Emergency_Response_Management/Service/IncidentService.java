@@ -40,8 +40,8 @@ public class IncidentService {
     @Autowired
     private LocationRepository locationRepository;
 
-//    @Autowired
-//    private GeocodingService geocodingService; // This service is responsible for retrieving the address from coordinates
+    @Autowired
+    private GeocodingService geocodingService; // This service is responsible for retrieving the address from coordinates
 
 
     public IncidentDTO reportIncident(IncidentDTO dto, Double latitude, Double longitude, boolean isSOS) {
@@ -106,10 +106,10 @@ public class IncidentService {
                         Location newLocation = new Location();
                         newLocation.setLatitude(latitude);
                         newLocation.setLongitude(longitude);
-//                        String address = geocodingService.getAddressFromCoordinates(latitude, longitude);
+                        String address = geocodingService.getAddressFromCoordinates(latitude, longitude);
 
 //                        System.out.println("address: "+address);
-                        newLocation.setAddress(null);
+                        newLocation.setAddress(address);
                         return locationRepository.save(newLocation);
                     });
         } else {
@@ -217,8 +217,21 @@ public class IncidentService {
 //    }
 
     public void deleteIncident(Integer id) {
+        Incident incident = incidentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Incident not found"));
+
+        // Disassociate responders before deleting the incident
+        for (Responder responder : incident.getAssignedResponders()) {
+            responder.setIncident(null);
+            responder.setStatus(ResponderStatus.AVAILABLE);
+            responder.setLastUpdate(LocalDateTime.now());
+            // Clear the reference to the incident
+        }
+
+        // Now you can delete the incident safely
         incidentRepository.deleteById(id);
     }
+
 
     // Helper method to retrieve Incident as an entity for internal use
     private Incident getIncidentByIdEntity(Integer id) {

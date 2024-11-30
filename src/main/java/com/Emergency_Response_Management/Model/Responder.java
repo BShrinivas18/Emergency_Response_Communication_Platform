@@ -25,17 +25,16 @@ public class Responder {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer responderId;
     private String name;
-    private String currentLocation;
-
+    private String StationAddress;
     private ResponderStatus status;
 
     private ResponderType type;
     private LocalDateTime lastUpdate;
 
     @ManyToOne
-    @JoinColumn(name = "location_id", nullable = true)
+    @JoinColumn(name = "responderLocation_id", nullable = true)
     @JsonIgnoreProperties({"responders","victims"})
-    private Location location;
+    private Location responderLocation;
 
     @ManyToOne
     @JoinColumn(name = "incident_id")

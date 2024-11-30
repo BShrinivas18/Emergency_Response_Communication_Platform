@@ -16,8 +16,13 @@ public class LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
+    @Autowired
+    private GeocodingService geocodingService;
+
     public LocationDTO createLocation(LocationDTO locationDTO) {
         Location location = convertToEntity(locationDTO);
+        location.setLatitude(geocodingService.getCoordinatesFromAddress(locationDTO.getAddress()).get("latitude"));
+        location.setLongitude(geocodingService.getCoordinatesFromAddress(locationDTO.getAddress()).get("longitude"));
         Location savedLocation = locationRepository.save(location);
         return convertToDTO(savedLocation);
     }

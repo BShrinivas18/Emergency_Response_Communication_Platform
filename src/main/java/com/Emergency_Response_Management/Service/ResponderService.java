@@ -36,7 +36,18 @@ public class ResponderService {
     @Autowired
     private LogService logService;
 
+    @Autowired
+    private GeocodingService geocodingService;
+
     public ResponderDTO createResponder(ResponderDTO responderDTO) {
+
+        Location location = new Location();
+                location.setLatitude(geocodingService.getCoordinatesFromAddress(responderDTO.getStationAddress()).get("latitude"));
+                location.setLongitude(geocodingService.getCoordinatesFromAddress(responderDTO.getStationAddress()).get("longitude"));
+                location.setAddress(responderDTO.getStationAddress());
+                locationRepository.save(location);
+        responderDTO.setResponderLocationId(location.getLocationId());
+
         Responder responder = convertToEntity(responderDTO);
         Responder savedResponder = responderRepository.save(responder);
         return convertToDTO(savedResponder);
@@ -67,7 +78,7 @@ public class ResponderService {
     public List<ResponderDTO> getRespondersByLocation(Integer locationId) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new RuntimeException("Location not found"));
-        return responderRepository.findByLocation(location).stream()
+        return responderRepository.findByResponderLocation(location).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -77,15 +88,15 @@ public class ResponderService {
                 .orElseThrow(() -> new GeneralException("Responder Not Found"));
 
         existingResponder.setName(responderDTO.getName());
-        existingResponder.setCurrentLocation(responderDTO.getCurrentLocation());
+        existingResponder.setStationAddress(responderDTO.getStationAddress());
         existingResponder.setStatus(responderDTO.getStatus());
         existingResponder.setType(responderDTO.getType());
         existingResponder.setLastUpdate(LocalDateTime.now());
 
-        if (responderDTO.getLocationId() != null) {
-            Location location = locationRepository.findById(responderDTO.getLocationId())
+        if (responderDTO.getResponderLocationId() != null) {
+            Location location = locationRepository.findById(responderDTO.getResponderLocationId())
                     .orElseThrow(() -> new GeneralException("Location Not Found"));
-            existingResponder.setLocation(location);
+            existingResponder.setResponderLocation(location);
         }
 
         Responder updatedResponder = responderRepository.save(existingResponder);
@@ -139,13 +150,13 @@ public class ResponderService {
         ResponderDTO dto = new ResponderDTO();
         dto.setResponderId(responder.getResponderId());
         dto.setName(responder.getName());
-        dto.setCurrentLocation(responder.getCurrentLocation());
+//        dto.setCurrentLocation(responder.getCurrentLocation());
         dto.setStatus(responder.getStatus());
         dto.setType(responder.getType());
         dto.setLastUpdate(responder.getLastUpdate());
 
-        if (responder.getLocation() != null) {
-            dto.setLocationId(responder.getLocation().getLocationId());
+        if (responder.getResponderLocation() != null) {
+            dto.setResponderLocationId(responder.getResponderLocation().getLocationId());
         }
         if(responder.getIncident()!=null) {
             dto.setIncidentId(responder.getIncident().getIncidentId());
@@ -162,15 +173,15 @@ public class ResponderService {
         Responder responder = new Responder();
         responder.setResponderId(dto.getResponderId());
         responder.setName(dto.getName());
-        responder.setCurrentLocation(dto.getCurrentLocation());
+//        responder.setCurrentLocation(dto.getCurrentLocation());
         responder.setStatus(dto.getStatus());
         responder.setType(dto.getType());
         responder.setLastUpdate(dto.getLastUpdate());
 
-        if (dto.getLocationId() != null) {
-            Location location = locationRepository.findById(dto.getLocationId())
+        if (dto.getResponderLocationId() != null) {
+            Location location = locationRepository.findById(dto.getResponderLocationId())
                     .orElseThrow(() -> new GeneralException("Location Not Found"));
-            responder.setLocation(location);
+            responder.setResponderLocation(location);
         }
         return responder;
     }

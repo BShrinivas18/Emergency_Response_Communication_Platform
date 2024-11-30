@@ -45,7 +45,7 @@ public class Incident {
 //    @JsonIgnoreProperties("incidents") // breaks the circular reference
 //    private Responder assignedResponder;
 
-    @OneToMany(mappedBy = "incident", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties("incident")
     private List<Responder> assignedResponders = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-//package com.Emergency_Response_Management.Service;
+package com.Emergency_Response_Management.Service;
 ////
 ////import com.fasterxml.jackson.databind.JsonNode;
 ////import com.fasterxml.jackson.databind.ObjectMapper;
@@ -155,3 +155,73 @@
 //    }
 //}
 //
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class GeocodingService {
+    private final String GOOGLE_API_KEY = "AIzaSyDx8zbodyeGZNaL6xPUDGpblI2IvFb2vgA";
+
+    public String getAddressFromCoordinates(Double latitude, Double longitude) {
+        String url = String.format(
+                "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&key=%s",
+                latitude, longitude, GOOGLE_API_KEY);
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            Map<String, Object> body = response.getBody();
+
+            if (body != null && "OK".equals(body.get("status"))) {
+                List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+                if (!results.isEmpty()) {
+                    return (String) results.get(0).get("formatted_address");
+                }
+            }
+            throw new RuntimeException("Failed to fetch address: " + body.get("status"));
+        } catch (Exception e) {
+            throw new RuntimeException("Error while fetching address from coordinates", e);
+        }
+    }
+
+    public Map<String, Double> getCoordinatesFromAddress(String address) {
+        String url = String.format(
+                "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s",
+                address.replace(" ", "+"), GOOGLE_API_KEY);
+
+        System.out.println("url: "+url);
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            System.out.println("inside try block");
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            System.out.println("response: "+response);
+            Map<String, Object> body = response.getBody();
+
+            System.out.println("body: "+body);
+            if (body != null && "OK".equals(body.get("status"))) {
+                List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+                if (!results.isEmpty()) {
+                    Map<String, Object> location = (Map<String, Object>)
+                            ((Map<String, Object>) results.get(0).get("geometry")).get("location");
+
+                    Double lat = (Double) location.get("lat");
+                    Double lng = (Double) location.get("lng");
+                    System.out.println("lat: "+lat);
+                    System.out.println("lng: "+lng);
+                    return Map.of("latitude", lat, "longitude", lng);
+                }
+            }
+            System.out.println("Exception being thrown");
+            throw new RuntimeException("Failed to fetch coordinates: " + body.get("status"));
+        } catch (Exception e) {
+            System.out.println("Exception being thrown as couldn't enter try block");
+            throw new RuntimeException("Error while fetching coordinates from address", e);
+        }
+    }
+}
+

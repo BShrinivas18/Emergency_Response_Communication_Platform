@@ -13,7 +13,7 @@ import java.util.List;
 public interface ResponderRepository extends JpaRepository<Responder, Integer> {
     List<Responder> findByStatus(ResponderStatus status);
     List<Responder> findByType(ResponderType type);
-    List<Responder> findByLocation(Location location);
+    List<Responder> findByResponderLocation(Location location);
     List<Responder> findByStatusAndType(ResponderStatus status, ResponderType type);
 }
 

@@ -39,6 +39,7 @@ public class IncidentDTO {
     private Integer victimLocationId;
 
     // List of responder IDs assigned to this incident
+
     private List<Integer> responderIds;
 
 //    private Integer dispatcherId;

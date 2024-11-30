@@ -36,7 +36,7 @@ public class Location {
     @JsonIgnore
     private List<Incident> incidentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "location")//One Location can have many Responders
+    @OneToMany(mappedBy = "responderLocation")//One Location can have many Responders
     @JsonIgnore // Helps prevent circular reference during serialization
     private List<Responder> responders = new ArrayList<>();
 

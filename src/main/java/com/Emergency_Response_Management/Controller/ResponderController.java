@@ -77,4 +77,12 @@ public class ResponderController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllResponders() {
+        for (ResponderDTO responder : responderService.getAllResponders()) {
+            responderService.deleteResponder(responder.getResponderId());
+        }
+        return ResponseEntity.noContent().build();
+    }
+
 }
