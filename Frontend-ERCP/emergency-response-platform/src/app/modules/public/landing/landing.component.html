@@ -1,0 +1,106 @@
+<div class="container-fluid p-0" style="height: 100vh;">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center p-3 bg-info text-white">
+        <div class="d-flex align-items-center">
+            <!-- <button mat-icon-button>
+                <mat-icon>menu</mat-icon>
+            </button> -->
+            <h2 class="ms-2">Emergency Response Platform</h2>
+        </div>
+        <div class="d-flex align-items-center">
+            <button mat-raised-button color="primary">
+                <mat-icon>account_circle</mat-icon> <!-- Login Icon -->
+                Login
+              </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="row" style="margin-right: 0;">
+
+        <div class="col-md-4 bg-light p-3 d-flex flex-column" style="height: 100vh;">
+            <h3>Emergency Guidelines</h3>
+            <div class="d-grid gap-2">
+                <!-- Emergency Type Toggle Buttons -->
+                <button mat-raised-button color="primary" (click)="selectEmergency('Fire')">Fire</button>
+                <button mat-raised-button color="primary" (click)="selectEmergency('Medical')">Medical</button>
+                <button mat-raised-button color="primary" (click)="selectEmergency('Accident')">Accident</button>
+                <button mat-raised-button color="primary" (click)="selectEmergency('Crime')">Crime</button>
+                <button mat-raised-button color="primary" (click)="selectEmergency('Natural Disaster')">Natural Disaster</button>
+            </div>
+
+            <div class="mt-4">
+                <h4>Guidelines</h4>
+                <!-- Display dynamic guidelines based on selected emergency type -->
+                <div *ngIf="selectedEmergency">
+                    <h5>{{ selectedEmergency }} Guidelines:</h5>
+                    <p>{{ guidelines[selectedEmergency] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section (Middle Part) -->
+        <div class="col-md-4 p-0" style="height: 100vh;">
+            <google-map 
+                height="100%" 
+                width="100%" 
+                [center]="mapCenter()" 
+                [zoom]="5">
+                @for (marker of mapMarkers(); track marker.position) {
+            <map-marker 
+              [position]="marker.position"
+              [title]="marker.title">
+            </map-marker>
+        }
+            </google-map>
+        </div>
+
+        <!-- Right Sidebar (Static content for later) -->
+        <div class="col-md-4 bg-light p-3 d-flex flex-column" style="height: 100vh;">
+            <h3>Emergency Actions</h3>
+            <div class="d-grid gap-2">
+                <button 
+                    mat-raised-button 
+                    color="primary" 
+                    (click)="openIncidentReportModal()">
+                    Report an Incident
+                </button>
+                <!-- <button 
+                    mat-raised-button 
+                    color="warn" 
+                    (click)="sendSOSAlert()">
+                    SOS Alert
+                </button> -->
+                <button 
+                    mat-raised-button 
+                    color="warn" >
+                    SOS Alert
+                    <mat-icon>warning</mat-icon>
+                    <!-- <mat-icon>warning</mat-icon> -->
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <h4>Current Weather Alerts</h4>
+                <div *ngFor="let alert of weatherAlerts()" class="alert alert-warning my-2">
+                    {{ alert.description }} - {{ alert.location }}
+                </div>
+            </div>
+        </div>
+        <!-- Floating SOS Button (Bottom Right) -->
+        
+        <button  mat-fab style="position: fixed; bottom: 30px; right: 30px; background-color: red;" (click)="sendSOSAlert()">
+            <mat-icon >warning</mat-icon>
+            
+        </button>
+    
+    </div>
+
+    <!-- Floating SOS Button (Left Side) -->
+    <!-- <div class="sos-float-btn">
+        <button mat-fab color="warn" (click)="sendSOSAlert()">
+            <mat-icon>warning</mat-icon>
+        </button>
+    </div> -->
+
+
