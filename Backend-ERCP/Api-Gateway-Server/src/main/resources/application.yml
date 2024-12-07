@@ -1,0 +1,50 @@
+spring:
+  cloud:
+    gateway:
+      mvc:
+        default-filters:
+          - ResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+        globalcors:
+          cors-configurations:
+            '[/**]':
+              allowed-origins: "*"
+              allowed-methods: "*"
+        #                allowed-headers: "*"
+        routes:
+          - id: INCIDENT_SERVICE
+            uri:
+              lb://incident-service
+            predicates:
+              - Path=/incidents/**
+
+          - id: LOCATION_SERVICE
+            uri:
+              lb://location-service
+            predicates:
+              - Path=/locations/**
+
+          - id: VICTIM_SERVICE
+            uri:
+              lb://victim-service
+            predicates:
+              - Path=/victims/**
+
+          - id: RESPONDER_SERVICE
+            uri:
+              lb://responder-service
+            predicates:
+              - Path=/responders/**
+
+          - id: LOG_SERVICE
+            uri:
+              lb://log-service
+            predicates:
+              - Path=/logs/**
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+  instance:
+    prefer-ip-address: true
