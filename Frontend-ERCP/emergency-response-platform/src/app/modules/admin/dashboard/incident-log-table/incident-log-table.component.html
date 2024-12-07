@@ -1,0 +1,65 @@
+<!-- <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of incidentLogs">
+        <td>{{ log.type }}</td>
+        <td>{{ log.location }}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <ng-container [ngSwitch]="log.status">
+              <i *ngSwitchCase="'Active'" class="h-4 w-4 text-red-500">⚠️</i>
+              <i *ngSwitchCase="'Resolved'" class="h-4 w-4 text-green-500">✔️</i>
+              <i *ngSwitchCase="'In Progress'" class="h-4 w-4 text-yellow-500">⏳</i>
+            </ng-container>
+            <span [ngClass]="{'badge-success': log.status === 'Resolved', 'badge-warning': log.status === 'In Progress', 'badge-danger': log.status === 'Active'}">
+              {{ log.status }}
+            </span>
+          </div>
+        </td>
+        <td>{{ log.timestamp }}</td>
+      </tr>
+    </tbody>
+  </table>
+   -->
+
+   <table class="table table-bordered table-hover table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of incidentLogs">
+        <td>{{ log.type }}</td>
+        <td>{{ log.location }}</td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <ng-container [ngSwitch]="log.status">
+              <i *ngSwitchCase="'Active'" class="h4 text-danger">⚠️</i>
+              <i *ngSwitchCase="'Resolved'" class="h4 text-success">✔️</i>
+              <i *ngSwitchCase="'In Progress'" class="h4 text-warning">⏳</i>
+            </ng-container>
+            <span [ngClass]="{
+                'badge bg-success': log.status === 'Resolved',
+                'badge bg-warning': log.status === 'In Progress',
+                'badge bg-danger': log.status === 'Active'
+              }">
+              {{ log.status }}
+            </span>
+          </div>
+        </td>
+        <td>{{ log.timestamp | date: 'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+  

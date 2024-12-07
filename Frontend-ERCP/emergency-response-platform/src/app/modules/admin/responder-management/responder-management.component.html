@@ -1,0 +1,41 @@
+<div class="container">
+    <h1 class="title">Responder Management</h1>
+    <div class="button-row">
+      <button mat-raised-button color="primary" (click)="isCreating = true">
+        <mat-icon>add</mat-icon> Create Responder
+      </button>
+    </div>
+  
+    <!-- Responder Type Cards -->
+    <app-responder-type-cards
+      *ngIf="!selectedResponderType"
+      (selectType)="onSelectResponderType($event)">
+    </app-responder-type-cards>
+  
+    <!-- Responder Table -->
+    <div *ngIf="selectedResponderType">
+      <button mat-button (click)="selectedResponderType = null">
+        <mat-icon>arrow_back</mat-icon> Back to Responder Types
+      </button>
+      <mat-card>
+        <app-responder-table
+          [responderType]="selectedResponderType"
+          (selectResponder)="onSelectResponder($event)">
+        </app-responder-table>
+      </mat-card>
+    </div>
+  
+    <!-- Responder Details Modal -->
+    <app-responder-details
+      *ngIf="selectedResponderId"
+      [responderId]="selectedResponderId"
+      (close)="closeDetails()">
+    </app-responder-details>
+  
+    <!-- Responder Form Modal -->
+    <app-responder-form
+      *ngIf="isCreating"
+      (close)="closeForm()">
+    </app-responder-form>
+  </div>
+  
