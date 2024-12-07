@@ -1,1 +1,18 @@
-<p>sos-alert-modal works!</p>
+<!-- <p>sos-alert-modal works!</p> -->
+
+<div class="sos-confirmation-dialog">
+    <h2 mat-dialog-title>SOS Alert Sent</h2>
+    <mat-dialog-content>
+      <div class="alert-details">
+        <mat-icon color="warn">warning</mat-icon>
+        <p>Your emergency alert has been sent successfully!</p>
+        <p>Location: {{ data.location }}</p>
+        <p>Help is on the way. Stay calm and safe.</p>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-raised-button color="primary" (click)="dialogRef.close()">
+        Close
+      </button>
+    </mat-dialog-actions>
+  </div>

@@ -1,0 +1,15 @@
+.sos-confirmation-dialog {
+    text-align: center;
+    padding: 20px;
+  }
+  .alert-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+  }

@@ -13,6 +13,8 @@ import { MatCardModule } from '@angular/material/card';
 import { IncidentType } from '../../../shared/models/incident.model';
 import { LocationService } from '../../../core/services/location.service';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationDriver } from '@angular/animations/browser';
 @Component({
   selector: 'app-incident-report-modal',
   standalone: true,
@@ -25,7 +27,7 @@ import { LocationService } from '../../../core/services/location.service';
     MatSelectModule,
     MatFormFieldModule,
     MatCardModule,
-    MatDialogModule
+    MatDialogModule,
   ], 
   templateUrl: './incident-modal.component.html',
   styleUrls: ['./incident-modal.component.css']
@@ -33,7 +35,7 @@ import { LocationService } from '../../../core/services/location.service';
 export class IncidentReportModalComponent implements OnInit {
   
   incidentForm! : FormGroup;
-  incidentTypes = ['Fire', 'Medical Emergency', 'Crime', 'Natural Disaster'];
+  incidentTypes:string[] = ['Fire', 'Medical Emergency', 'Crime', 'Natural Disaster','Accident'];
   userLocation: { lat: number; lng: number } | null = null;
 
   // submittedIncident :any = null;
@@ -44,7 +46,11 @@ export class IncidentReportModalComponent implements OnInit {
     private fb: FormBuilder,
     private locationService: LocationService,
     private dialogRef: MatDialogRef<IncidentReportModalComponent>
-  ) {}
+  ) {
+    this.incidentForm = this.fb.group({
+      incidentType: [''], // Default value
+    });
+  }
 
   ngOnInit() {
     this.initForm();
@@ -71,7 +77,7 @@ export class IncidentReportModalComponent implements OnInit {
       this.userLocation = { lat: location.latitude, lng: location.longitude };
       this.locationService
         .getAddressFromCoordinates(location.latitude, location.longitude)
-        .then((address) => {
+        .then((address:any) => {
           this.incidentForm.patchValue({
             victimAddress: address,
           });
@@ -83,7 +89,7 @@ export class IncidentReportModalComponent implements OnInit {
     if (this.userLocation) {
       this.locationService
         .getAddressFromCoordinates(this.userLocation.lat, this.userLocation.lng)
-        .then((address) => {
+        .then((address:any) => {
           this.incidentForm.patchValue({
             [field]: address,
           });
@@ -117,7 +123,7 @@ export class IncidentReportModalComponent implements OnInit {
       if (position) {
         const lat = position.lat();
         const lng = position.lng();
-        this.locationService.getAddressFromCoordinates(lat, lng).then((address) => {
+        this.locationService.getAddressFromCoordinates(lat, lng).then((address:any) => {
           this.incidentForm.patchValue({
             incidentLocation: address,
           });
