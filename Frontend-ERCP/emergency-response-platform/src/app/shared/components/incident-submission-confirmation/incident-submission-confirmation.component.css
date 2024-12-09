@@ -1,0 +1,77 @@
+/* Modal Header */
+.modal-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+  }
+  
+  /* Modal Title */
+  .modal-header .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    text-align: center;
+    margin: 0;
+  }
+  
+  /* Icon styles */
+  .modal-header i {
+    font-size: 1.25rem;
+  }
+  
+  /* Modal Body */
+  .modal-body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 1rem;
+  }
+  
+  .modal-body .text-gray-600 {
+    color: #6c757d;
+  }
+  
+  /* Data Section Highlighting */
+  .modal-body .font-semibold {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  /* Icon Size */
+  .modal-body i {
+    font-size: 1rem;
+  }
+  
+  /* Footer Button */
+  .modal-footer button {
+    background-color: #e53e3e; /* Red color for victim */
+    /* hover: background-color: #e23636; */
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: white;
+    border-radius: 8px;
+  }
+  
+  .modal-footer button:hover {
+    background-color: #c53030; /* Darker red for hover */
+  }
+  
+  /* Close button */
+  .btn-close {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+  .btn-close i {
+    font-size: 1.25rem;
+    color: #888;
+  }
+  
+  .btn-close:hover i {
+    color: #333;
+  }
+  

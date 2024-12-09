@@ -1,0 +1,105 @@
+.emergency-platform {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .emergency-header {
+    background-color: #1976d2;
+    color: white;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-section {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    width: 50px;
+    margin-right: 15px;
+  }
+  
+  .platform-title {
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .emergency-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    flex-grow: 1;
+  }
+  
+  .emergency-guidelines, 
+  .emergency-actions {
+    background-color: #f4f4f4;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .emergency-type-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .emergency-type-buttons button {
+    flex-grow: 1;
+  }
+  
+  .emergency-map {
+    height: 100%;
+  }
+  
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .weather-alerts .alerts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .alert-card {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .alert-icon {
+    margin-right: 15px;
+  }
+  
+  .alert-icon mat-icon.low-severity { color: green; }
+  .alert-icon mat-icon.medium-severity { color: orange; }
+  .alert-icon mat-icon.high-severity { color: red; }
+  
+  .floating-sos-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    transform: scale(1.2);
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }

@@ -1,17 +1,7 @@
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-
-// export class AuthService {
-//   constructor() { }
-// }
-
-
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../../enviornments/enviornment';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -20,10 +10,23 @@ interface LoginCredentials {
   password: string;
 }
 
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  userId: number;
+  role: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
   private apiUrl = 'http://localhost:8888/login'; // Adjust to your login endpoint
 
   constructor(private http: HttpClient) {}
@@ -53,5 +56,7 @@ export class AuthService {
     // Check if a valid JWT token exists
     const token = localStorage.getItem('jwtToken');
     return !!token; // You can add additional validation here to check if the token is expired
+
+  
   }
 }
