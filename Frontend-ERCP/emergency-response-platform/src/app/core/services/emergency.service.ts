@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Incident, IncidentStatus, IncidentType } from '../../shared/models/incident.model';
 
+
 @Injectable({
   providedIn: 'root'
 })
