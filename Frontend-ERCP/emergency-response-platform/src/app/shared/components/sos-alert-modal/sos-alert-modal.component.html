@@ -6,7 +6,8 @@
       <div class="alert-details">
         <mat-icon color="warn">warning</mat-icon>
         <p>Your emergency alert has been sent successfully!</p>
-        <p>Location: {{ data.location }}</p>
+        <p>Location: {{ data.incident.location.address }}</p>
+        <!-- <p>Location: {{ data.location }}</p> -->
         <p>Help is on the way. Stay calm and safe.</p>
       </div>
     </mat-dialog-content>

@@ -20,6 +20,8 @@ import { MatIconModule } from '@angular/material/icon';
 export class SOSAlertConfirmationComponent {
   constructor(
     public dialogRef: MatDialogRef<SOSAlertConfirmationComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { location: string }
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    console.log(data);
+     }
 }
