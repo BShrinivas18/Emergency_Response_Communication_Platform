@@ -1,0 +1,25 @@
+<mat-dialog-content>
+    <mat-card>
+      <mat-card-title>Responder Details</mat-card-title>
+      <mat-card-content>
+        <p><strong>Name:</strong> {{ responder.name }}</p>
+        <p><strong>Type:</strong> {{ responder.type }}</p>
+        <p><strong>Status:</strong> {{ responder.status }}</p>
+        <p><strong>Station Location:</strong> {{ responder.stationLocation }}</p>
+        <p><strong>Contact:</strong> {{ responder.contact }}</p>
+        <p><strong>Years of Experience:</strong> {{ responder.yearsOfExperience }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="isEditing = true">Edit</button>
+        <button mat-button (click)="closeDetails()">Close</button>
+      </mat-card-actions>
+    </mat-card>
+  
+    <app-responder-form
+      *ngIf="isEditing"
+      [responder]="responder"
+      (close)="isEditing = false"
+      (submit)="updateResponder($event)">
+    </app-responder-form>
+  </mat-dialog-content>
+  

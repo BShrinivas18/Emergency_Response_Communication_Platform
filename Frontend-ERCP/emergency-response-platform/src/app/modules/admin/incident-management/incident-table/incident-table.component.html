@@ -1,0 +1,25 @@
+<table mat-table [dataSource]="incidents" class="mat-elevation-z8">
+    <thead>
+      <tr>
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <th mat-header-cell *matHeaderCellDef>Location</th>
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr mat-row *matRowDef="let incident; columns: ['type', 'location', 'status', 'date', 'action']">
+        <td mat-cell>{{ incident.type }}</td>
+        <td mat-cell>{{ incident.location }}</td>
+        <td mat-cell>{{ incident.status }}</td>
+        <td mat-cell>{{ incident.date }}</td>
+        <td mat-cell>
+          <button mat-raised-button color="primary" (click)="onViewLogs(incident.id)">View Logs</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+
+   

@@ -1,1 +1,24 @@
-<p>incident-management works!</p>
+<div class="space-y-8">
+    <h1 class="text-3xl font-bold text-gray-800">Incident Management</h1>
+    <div class="card">
+      <div class="card-content p-6">
+        <mat-tab-group>
+          <mat-tab label="All Incidents">
+            <app-incident-table (selectIncident)="selectIncident($event)"></app-incident-table>
+          </mat-tab>
+          <mat-tab label="Active Incidents">
+            <app-incident-table [status]="'active'" (selectIncident)="selectIncident($event)"></app-incident-table>
+          </mat-tab>
+          <mat-tab label="Resolved Incidents">
+            <app-incident-table [status]="'resolved'" (selectIncident)="selectIncident($event)"></app-incident-table>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  
+    <app-incident-logs *ngIf="selectedIncident" 
+      [incidentId]="selectedIncident" 
+      (close)="closeLogs()">
+    </app-incident-logs>
+  </div>
+  

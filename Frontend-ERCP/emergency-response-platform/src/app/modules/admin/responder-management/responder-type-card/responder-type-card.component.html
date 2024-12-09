@@ -1,0 +1,9 @@
+<div class="card-container">
+    <mat-card *ngFor="let responder of responderTypes" class="type-card" (click)="selectResponderType(responder.type)">
+      <mat-card-header>
+        <mat-icon>{{ responder.icon }}</mat-icon>
+        <mat-card-title>{{ responder.label }}</mat-card-title>
+      </mat-card-header>
+    </mat-card>
+  </div>
+  
