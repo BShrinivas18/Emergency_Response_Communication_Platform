@@ -1,39 +1,4 @@
-<!-- <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Status</th>
-        <th>Location</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let responder of responders">
-        <td>{{ responder.name }}</td>
-        <td>
-          <div class="flex items-center gap-2">
-            <ng-container [ngSwitch]="responder.type">
-              <i *ngSwitchCase="'FIREFIGHTER'" class="h-4 w-4">🔥</i>
-              <i *ngSwitchCase="'PARAMEDIC'" class="h-4 w-4">🚑</i>
-              <i *ngSwitchCase="'POLICE_OFFICER'" class="h-4 w-4">👮</i>
-              <i *ngSwitchCase="'HAZMAT_SPECIALIST'" class="h-4 w-4">🛠️</i>
-              <i *ngSwitchCase="'RESCUE_TEAM'" class="h-4 w-4">🚒</i>
-            </ng-container>
-            {{ responder.type }}
-          </div>
-        </td>
-        <td>
-          <span [ngClass]="{'badge-success': responder.status === 'Available', 'badge-warning': responder.status !== 'Available'}">
-            {{ responder.status }}
-          </span>
-        </td>
-        <td>{{ responder.location }}</td>
-      </tr>
-    </tbody>
-  </table>
-   -->
-
-   <table class="table table-bordered table-hover table-striped">
+   <!-- <table class="table table-bordered table-hover table-striped">
     <thead class="thead-dark">
       <tr>
         <th>Name</th>
@@ -70,4 +35,83 @@
       </tr>
     </tbody>
   </table>
-  
+   -->
+
+
+
+   <!-- <table class="table table-bordered table-hover table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let responder of responders">
+        <td>{{ responder.name }}</td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <ng-container [ngSwitch]="responder.type">
+              <i *ngSwitchCase="'FIREFIGHTER'" class="h4">🔥</i>
+              <i *ngSwitchCase="'PARAMEDIC'" class="h4">🚑</i>
+              <i *ngSwitchCase="'POLICE_OFFICER'" class="h4">👮</i>
+              <i *ngSwitchCase="'HAZMAT_SPECIALIST'" class="h4">🛠️</i>
+              <i *ngSwitchCase="'RESCUE_TEAM'" class="h4">🚒</i>
+            </ng-container>
+            <span>{{ responder.type }}</span>
+          </div>
+        </td>
+        <td>
+          <span [ngClass]="{
+              'badge bg-success': responder.status === 'AVAILABLE',
+              'badge bg-warning': responder.status !== 'AVAILABLE',
+              'badge bg-danger': responder.status === 'UNAVAILABLE'
+            }">
+            {{ responder.status }}
+          </span>
+        </td>
+        <td>{{ responder.stationLocation }}</td>
+      </tr>
+    </tbody>
+  </table> -->
+
+
+  <table class="table table-bordered table-hover table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let responder of responders">
+        <td>{{ responder.name }}</td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <ng-container [ngSwitch]="responder.type">
+              <i *ngSwitchCase="'FIREFIGHTER'" class="h4">🔥</i>
+              <i *ngSwitchCase="'PARAMEDIC'" class="h4">🚑</i>
+              <i *ngSwitchCase="'POLICE_OFFICER'" class="h4">👮</i>
+              <i *ngSwitchCase="'HAZMAT_SPECIALIST'" class="h4">🛠️</i>
+              <i *ngSwitchCase="'RESCUE_TEAM'" class="h4">🚒</i>
+            </ng-container>
+            <span>{{ responder.type }}</span>
+          </div>
+        </td>
+        <td>
+          <span [ngClass]="{
+              'badge bg-success': responder.status === 'AVAILABLE',
+              'badge bg-warning': responder.status !== 'AVAILABLE',
+        
+            }">
+            {{ responder.status }}
+          </span>
+        </td>
+        <td>{{ responder.stationLocation }}</td>
+      </tr>
+    </tbody>
+  </table>

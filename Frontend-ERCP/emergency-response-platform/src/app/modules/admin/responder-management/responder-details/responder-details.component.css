@@ -1,0 +1,92 @@
+/* Styling the dialog content and details card */
+.details-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    overflow: hidden;
+  }
+  
+  .details-card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .details-card-content p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 12px;
+  }
+  
+  .details-card-content strong {
+    color: #1976d2; /* Blue color for strong labels */
+    font-weight: 600;
+  }
+  
+  /* Button Styling */
+  .close-button {
+    background-color: #f44336;
+    color: #fff;
+    border-radius: 30px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px; /* Add spacing from the content above */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for the button */
+  }
+  
+  .close-button:hover {
+    background-color: #d32f2f;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
+  }
+  
+  /* Add some styling to the form content */
+  app-responder-form {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  app-responder-form .mat-form-field {
+    margin-bottom: 15px;
+  }
+  
+  /* Styling for the dialog content */
+  mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20px; /* Extra padding at the bottom */
+  }
+  
+  /* For small screens */
+  @media (max-width: 768px) {
+    .details-card {
+      padding: 15px;
+      margin: 15px;
+    }
+  
+    .details-card-title {
+      font-size: 1.4rem;
+    }
+  
+    .details-card-content p {
+      font-size: 0.9rem;
+    }
+  
+    .close-button {
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      margin-top: 15px;
+    }
+  }
+  

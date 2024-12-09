@@ -1,0 +1,27 @@
+/* Sidebar link styles */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-link:hover {
+    background-color: #f0f4f8;
+    color: #0056b3;
+    border-radius: 5px;
+  }
+  
+  .sidebar-link i {
+    margin-right: 12px; /* Space between icon and text */
+  }
+  
+  /* Hover effect on sidebar link */
+  .sidebar-link:hover i {
+    color: #0056b3;
+  }
+  

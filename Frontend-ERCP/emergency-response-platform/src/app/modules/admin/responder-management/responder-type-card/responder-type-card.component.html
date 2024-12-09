@@ -1,9 +1,38 @@
-<div class="card-container">
-    <mat-card *ngFor="let responder of responderTypes" class="type-card" (click)="selectResponderType(responder.type)">
-      <mat-card-header>
-        <mat-icon>{{ responder.icon }}</mat-icon>
-        <mat-card-title>{{ responder.label }}</mat-card-title>
+<!-- <div class="container my-5">
+    <h1 class="text-center display-4 mb-4 text-primary">Responder Types</h1> -->
+  
+    <!-- Card Container for Responder Types -->
+    <!-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <mat-card 
+        *ngFor="let responder of responderTypes" 
+        class="type-card shadow-sm border-0" 
+        (click)="selectResponderType(responder.type)">
+        
+        <mat-card-header class="text-center d-flex flex-column align-items-center p-4">
+          <mat-icon class="mb-3" style="font-size: 3rem;">{{ responder.icon }}</mat-icon>
+          <mat-card-title class="h5">{{ responder.label }}</mat-card-title>
+        </mat-card-header> -->
+<!--         
+      </mat-card>
+    </div>
+  </div> -->
+
+  <!-- responder-type-card.component.html -->
+<div class="container my-5">
+  <h1 class="text-center display-4 mb-4 text-primary">Responder Types</h1>
+
+  <!-- Card Container for Responder Types -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <mat-card 
+      *ngFor="let responder of responderTypes" 
+      class="type-card shadow-sm border-0 cursor-pointer" 
+      (click)="selectResponderType(responder.type)">
+      
+      <mat-card-header class="text-center d-flex flex-column align-items-center p-4">
+        <mat-icon class="mb-3" style="font-size: 3rem;">{{ responder.icon }}</mat-icon>
+        <mat-card-title class="h5">{{ responder.label }}</mat-card-title>
       </mat-card-header>
     </mat-card>
   </div>
+</div>
   

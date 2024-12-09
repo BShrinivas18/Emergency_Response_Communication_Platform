@@ -1,48 +1,14 @@
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
-
-//   constructor() { }
-// }
-
-// import { Injectable } from '@angular/core';
-// import { Observable, of, throwError } from 'rxjs';
-// import { User, LoginCredentials } from '../../shared/models/user.model';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
-//   // Simulated login method
-//   login(credentials: LoginCredentials): Observable<User> {
-//     // In a real app, this would be an HTTP call to your backend
-//     if (credentials.username === 'admin' && credentials.password === 'emergency2024') {
-//       return of({
-//         id: '1',
-//         username: 'admin',
-//         email: 'admin@emergencyresponse.org',
-//         role: 'Administrator',
-//         department: 'Central Command'
-//       });
-//     }
-//     return throwError(() => new Error('Invalid credentials'));
-//   }
-
-//   // Simulated logout method
-//   logout(): void {
-//     // Implement logout logic
-//     console.log('User logged out');
-//   }
-// }
-
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../enviornments/enviornment';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
 
 export interface LoginRequest {
   username: string;
@@ -55,38 +21,42 @@ export interface LoginResponse {
   role: string;
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
-  private apiUrl = environment.apiUrl;
+
+  private apiUrl = 'http://localhost:8888/login'; // Adjust to your login endpoint
 
   constructor(private http: HttpClient) {}
 
-  login(loginRequest: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, loginRequest).pipe(
-      tap(response => {
-        // Store token, user ID, and role in session storage
-        sessionStorage.setItem('token', response.token);
-        sessionStorage.setItem('userId', response.userId.toString());
-        sessionStorage.setItem('userRole', response.role);
+  login(credentials: LoginCredentials): Observable<any> {
+    return this.http.post(this.apiUrl, credentials).pipe(
+      tap((response: any) => {
+        if (response.token) {
+          // Store the JWT token in localStorage
+          localStorage.setItem('jwtToken', response.token);
+        }
+      }),
+      catchError(error => {
+        // Handle the error gracefully
+        console.error('Login failed', error);
+        return throwError(error);
       })
     );
   }
 
-  logout(): void {
-    // Clear session storage on logout
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('userRole');
+  logout() {
+    // Remove the JWT token from local storage
+    localStorage.removeItem('jwtToken');
   }
 
   isLoggedIn(): boolean {
-    return !!sessionStorage.getItem('token');
-  }
+    // Check if a valid JWT token exists
+    const token = localStorage.getItem('jwtToken');
+    return !!token; // You can add additional validation here to check if the token is expired
 
-  getUserRole(): string | null {
-    return sessionStorage.getItem('userRole');
+  
   }
 }

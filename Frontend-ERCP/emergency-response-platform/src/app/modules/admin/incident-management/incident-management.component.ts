@@ -1,15 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-incident-management',
-//   imports: [],
-//   templateUrl: './incident-management.component.html',
-//   styleUrl: './incident-management.component.css'
-// })
-// export class IncidentManagementComponent {
-
-// }
-
 import { Component, NgModule } from '@angular/core';
 import { IncidentLogsComponent } from './incident-logs/incident-logs.component';
 import { IncidentTableComponent } from './incident-table/incident-table.component';

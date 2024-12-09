@@ -1,47 +1,107 @@
-// import { Component } from '@angular/core';
+// import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+// import { ResponderService } from '../../../../core/services/responder.service';
+// import { CommonModule } from '@angular/common';
+// import { MatTableModule } from '@angular/material/table';
+// import { MatIconModule } from '@angular/material/icon';
+// import { MatButtonModule } from '@angular/material/button';
+// import { MatCardModule } from '@angular/material/card';
+// import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+// import { ResponderDetailsComponent } from '../responder-details/responder-details.component';
+
 
 // @Component({
+//   standalone: true,
 //   selector: 'app-responder-table',
-//   imports: [],
+//   imports: [CommonModule,MatTableModule,MatIconModule,MatButtonModule,MatCardModule,MatDialogModule],
 //   templateUrl: './responder-table.component.html',
-//   styleUrl: './responder-table.component.css'
+//   styleUrls: ['./responder-table.component.css'],
 // })
-// export class ResponderTableComponent {
+// export class ResponderTableComponent implements OnInit {
+//   @Input() responderType!: string;
+//   @Output() selectResponder = new EventEmitter<number>();
 
+//   responders: any[] = [];
+//   displayedColumns: string[] = ['id', 'name', 'status', 'actions'];
+
+//   constructor(private responderService: ResponderService,
+//     private dialog:MatDialog
+//   ) {}
+
+//   ngOnInit() {
+//     // this.responders = this.responderService.getRespondersByType(this.responderType);
+//   }
+
+//   selectResponderById(id: number) {
+//     this.selectResponder.emit(id);
+//   }
+
+//   openResponderDetails(responderId: number) {
+//     // Open the ResponderDetailsComponent dialog and pass the responderId to it
+//     const dialogRef = this.dialog.open(ResponderDetailsComponent, {
+//       data: { responderId: responderId },  // Passing the responderId as data
+//     });
+
+//     dialogRef.afterClosed().subscribe(result => {
+//       console.log('The dialog was closed');
+//     });
+//   }
 // }
+
+
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { ResponderService } from '../../../../core/services/responder.service';
-import { MatCardModule } from '@angular/material/card';
+import { ResponderService, ResponderType, ResponderDTO } from '../../../../core/services/responder.service';
+import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ResponderDetailsComponent } from '../responder-details/responder-details.component';
 
 @Component({
-  standalone:true,
+  standalone: true,
   selector: 'app-responder-table',
-  imports:[MatCardModule,MatTableModule],
+  imports: [CommonModule, MatTableModule, MatIconModule, MatButtonModule, MatCardModule, MatDialogModule],
   templateUrl: './responder-table.component.html',
-  styleUrls: ['./responder-table.component.css']
+  styleUrls: ['./responder-table.component.css'],
 })
 export class ResponderTableComponent implements OnInit {
-  @Input() responderType!: string;
+  @Input() responderType!: ResponderType;
   @Output() selectResponder = new EventEmitter<number>();
 
-  responders: any[] = [];
+  responders: ResponderDTO[] = [];
   displayedColumns: string[] = ['id', 'name', 'status', 'actions'];
 
-  constructor(private responderService: ResponderService) {}
+  constructor(
+    private responderService: ResponderService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
-    this.getResponders();
+    this.fetchRespondersByType();
   }
 
-  getResponders() {
-    this.responderService.getRespondersByType(this.responderType).subscribe((data) => {
-      this.responders = data;
-    });
+  fetchRespondersByType() {
+    this.responderService.getRespondersByType(this.responderType)
+      .subscribe({
+        next: (responders) => {
+          this.responders = responders;
+        },
+        error: (error) => {
+          console.error('Error fetching responders', error);
+        }
+      });
   }
 
   selectResponderById(id: number) {
     this.selectResponder.emit(id);
+  }
+
+  openResponderDetails(responderId: number) {
+    const dialogRef = this.dialog.open(ResponderDetailsComponent, {
+      data: { responderId: responderId },
+      width: '500px'
+    });
   }
 }
 

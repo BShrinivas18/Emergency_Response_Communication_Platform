@@ -1,22 +1,3 @@
-// import { CommonModule } from '@angular/common';
-// import { Component } from '@angular/core';
-// import { MatIconModule } from '@angular/material/icon';
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import { ResponderTypeCardsComponent } from './responder-type-card/responder-type-card.component';
-// import { ResponderFormComponent } from './responder-form/responder-form.component';
-// import { ResponderDetailsComponent } from './responder-details/responder-details.component';
-
-
-// @Component({
-//   selector: 'app-responder-management',
-//   standalone :true,
-//   imports: [CommonModule,MatIconModule,ResponderTypeCardsComponent,ResponderFormComponent,ResponderDetailsComponent],
-//   templateUrl: './responder-management.component.html',
-//   styleUrl: './responder-management.component.css'
-// })
-// export class ResponderManagementComponent {
-
-// }
 import { Component } from '@angular/core';
 import { ResponderFormComponent } from './responder-form/responder-form.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,20 +6,37 @@ import { ResponderTableComponent } from './responder-table/responder-table.compo
 import { ResponderDetailsComponent } from './responder-details/responder-details.component';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ResponderType } from '../../../core/services/responder.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   standalone:true,
   selector: 'app-responder-management',
-  imports:[ResponderFormComponent,MatIconModule,ResponderTypeCardsComponent,ResponderTableComponent,ResponderDetailsComponent,MatCardModule,CommonModule],
+  imports:[
+    MatIconModule,
+    ResponderTypeCardsComponent,
+    ResponderTableComponent,
+    ResponderDetailsComponent,
+    MatCardModule,
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatDialogModule,
+    
+  ],
   templateUrl: './responder-management.component.html',
   styleUrls: ['./responder-management.component.css']
 })
 export class ResponderManagementComponent {
   selectedResponderId: number | null = null;
-  selectedResponderType: string | null = null;
+  selectedResponderType: ResponderType | null = null;
   isCreating: boolean = false;
 
-  onSelectResponderType(type: string) {
+  constructor(private dialog: MatDialog) {}
+
+  onSelectResponderType(type: ResponderType) {
     this.selectedResponderType = type;
   }
 
@@ -52,6 +50,20 @@ export class ResponderManagementComponent {
 
   closeForm() {
     this.isCreating = false;
+  }
+
+  openCreateResponderForm() {
+    const dialogRef = this.dialog.open(ResponderFormComponent, {
+      width: '500px', // Set the width of the dialog
+      height: 'auto', // Height can be adjusted automatically
+      panelClass: 'custom-dialog', // Optional: Custom CSS class for styling the dialog
+    });
+
+
+    dialogRef.afterClosed().subscribe(result => {
+      // Handle the form close event, if necessary
+      console.log('The dialog was closed');
+    });
   }
 }
 
