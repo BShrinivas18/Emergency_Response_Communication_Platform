@@ -24,8 +24,8 @@ export interface WeatherAlert {
   providedIn: 'root'
 })
 export class WeatherService {
-  private apiKey = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with actual API key
-  private baseUrl = 'https://api.openweathermap.org/data/2.5';
+  private apiKey = 'ea69bd232640b6859c7269d38c0d2308'; // Replace with actual API key
+  private baseUrl = 'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={apiKey}';
 
   constructor(private http: HttpClient) {}
 
@@ -39,4 +39,36 @@ export class WeatherService {
       }
     });
   }
+
+  // fetchWeatherAlerts() {
+  //   const mockAlerts: WeatherAlert[] = [
+  //     {
+  //       type: 'Flood Warning',
+  //       description: 'Heavy rainfall expected in your area.',
+  //       severity: 'high',
+  //       location: 'New York, USA',
+  //     },
+  //     {
+  //       type: 'Heat Advisory',
+  //       description: 'Extreme temperatures likely. Stay hydrated.',
+  //       severity: 'medium',
+  //       location: 'California, USA',
+  //     },
+  //   ];
+  
+  //   // Simulate API response using mock data
+  //   this.weatherAlertsSubject.next(mockAlerts);
+  
+  //   // Uncomment for actual API call
+  //   const { lat, lng } = this.mapCenter();
+  //   this.weatherService.getWeatherAlerts(lat, lng).subscribe({
+  //     next: (alerts) => {
+  //       this.weatherAlertsSubject.next(alerts);
+  //     },
+  //     error: (err) => {
+  //       console.error('Weather alerts fetch failed', err);
+  //     }
+  //   });
+  // }
+  
 }

@@ -1,4 +1,5 @@
 // environment.ts
 export const environment = {
-    googleMapsApiKey: ''
+    googleMapsApiKey: '',
+    apiUrl: 'http://localhost:3000/api'
   };

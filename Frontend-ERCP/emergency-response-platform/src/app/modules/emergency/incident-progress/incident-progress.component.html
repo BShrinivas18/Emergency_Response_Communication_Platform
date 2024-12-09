@@ -1,1 +1,161 @@
-<p>incident-progress works!</p>
+<!-- <div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+      <h2 class="card-title mb-0">Incident Progress</h2>
+    </div>
+    <div class="card-body">
+      <div class="progress-tracker">
+        <div 
+          *ngFor="let stage of stages; let i = index" 
+          class="d-flex align-items-center mb-3"
+        >
+    
+          <div class="stage-icon me-3">
+            <div 
+              class="rounded-circle d-flex align-items-center justify-content-center border" 
+              [ngClass]="{'bg-success text-white': isActive(stage), 'bg-light': !isActive(stage)}"
+              style="width: 40px; height: 40px;"
+            >
+              <i class="material-icons">{{ stage.icon }}</i>
+            </div>
+          </div>
+        
+          <div class="flex-grow-1">
+            <div class="stage-name fw-bold">{{ stage.name }}</div>
+            <div 
+              *ngIf="stage.completedAt" 
+              class="stage-time text-muted small"
+            >
+              Completed at: {{ stage.completedAt | date:'medium' }}
+            </div>
+          </div>
+          
+        
+          <div 
+            *ngIf="i < stages.length - 1" 
+            class="stage-line border-top flex-grow-1 mx-3" 
+            style="height: 1px;"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+
+
+
+
+
+
+
+
+
+
+  
+<!-- 
+  <div class="card shadow-sm mb-4">
+ 
+    <div class="card-header bg-info text-white">
+      <h2 class="card-title mb-0">Incident Progress</h2>
+    </div>
+  
+   
+    <div class="card-body">
+      <div class="progress-tracker position-relative">
+     
+        <div class="progress-line position-absolute w-100 top-50 start-0" style="height: 2px;"></div>
+  
+      
+        <div 
+          *ngFor="let stage of stages; let i = index" 
+          class="d-flex align-items-center"
+          [style.zIndex]="stages.length - i"
+        >
+        
+          <div class="stage-icon me-3 position-relative">
+            <div 
+              class="rounded-circle d-flex align-items-center justify-content-center border"
+              [ngClass]="{'bg-success text-white': isActive(stage), 'bg-light': !isActive(stage)}"
+              style="width: 40px; height: 40px;"
+            >
+              <i class="material-icons">{{ stage.icon }}</i>
+            </div>
+          </div>
+  
+         
+          <div class="flex-grow-1">
+            <div class="stage-name fw-bold">{{ stage.name }}</div>
+            <div 
+              *ngIf="stage.completedAt" 
+              class="stage-time text-muted small"
+            >
+              Completed at: {{ stage.completedAt | date:'medium' }}
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+  </div>
+   -->
+
+
+   <div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+      <h2 class="card-title mb-0">Incident Progress</h2>
+    </div>
+  
+    <div class="card-body d-flex">
+      <!-- Progress Tracker -->
+      <div class="progress-tracker flex-grow-1">
+        <div
+          *ngFor="let stage of stages; let i = index"
+          class="d-flex align-items-center mb-4 position-relative"
+        >
+          <!-- Stage Icon -->
+          <div class="stage-icon me-3">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center border"
+              [ngClass]="{'bg-success text-white': isActive(stage), 'bg-light': !isActive(stage)}"
+              style="width: 40px; height: 40px;"
+            >
+              <i class="material-icons">{{ stage.icon }}</i>
+            </div>
+          </div>
+  
+          <!-- Stage Content -->
+          <div class="flex-grow-1">
+            <div class="stage-name fw-bold">{{ stage.name }}</div>
+            <div *ngIf="stage.completedAt" class="stage-time text-muted small">
+              Completed at: {{ stage.completedAt | date: 'medium' }}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Right Vertical Progress Line -->
+      <div class="progress-indicator-container position-relative" style="width: 50px;">
+        <!-- Full Line -->
+        <div
+          class="full-line bg-light position-absolute start-50 translate-middle-x"
+          style="width: 2px; height: 100%;"
+        ></div>
+  
+        <!-- Completed Line -->
+        <div
+          class="completed-line bg-success position-absolute start-50 translate-middle-x"
+          [style.height]="getCompletedLineHeight()"
+          style="width: 2px;"
+        ></div>
+  
+        <!-- Marker -->
+        <div
+          class="marker bg-success rounded-circle position-absolute translate-middle"
+          [style.top]="getMarkerPosition()"
+          style="width: 16px; height: 16px;"
+        ></div>
+      </div>
+    </div>
+  </div>
+  

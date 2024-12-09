@@ -1,0 +1,137 @@
+.incident-progress {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-medium);
+    margin-bottom: 1.5rem;
+  }
+
+  .incident-progress-header {
+    background-color: var(--secondary-color);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .progress-stages {
+    padding: 1rem;
+  }
+
+  .progress-stage {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .progress-stage-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1rem;
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+  }
+
+  .progress-stage-icon.active {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .progress-stage-line {
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: -20px;
+    width: 2px;
+    background-color: var(--border-color);
+  }
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
+  .progress-tracker {
+    position: relative;
+    margin-top: 20px;
+  }
+  
+  .progress-line {
+    background-color: #e0e0e0; 
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1; 
+  }
+  
+  .stage-icon {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .stage-icon .rounded-circle {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .progress-line::before {
+    content: '';
+    position: absolute;
+    height: 2px;
+    background-color: #28a745; 
+    left: 0;
+    z-index: 2; 
+    transition: width 0.3s ease;
+  }
+  
+  .progress-line[data-progress="0%"]::before {
+    width: 0%;
+  }
+  .progress-line[data-progress="25%"]::before {
+    width: 25%;
+  }
+  .progress-line[data-progress="50%"]::before {
+    width: 50%;
+  }
+  .progress-line[data-progress="75%"]::before {
+    width: 75%;
+  }
+  .progress-line[data-progress="100%"]::before {
+    width: 100%;
+  } */
+  
+
+  .progress-indicator-container {
+    position: relative;
+    width: 50px;
+  }
+  
+  .full-line {
+    background-color: #e0e0e0; /* Light gray for the full line */
+  }
+  
+  .completed-line {
+    background-color: #007bff; /* Blue for the completed line */
+  }
+  
+  .marker {
+    transition: top 0.3s ease-in-out; /* Smooth movement of the marker */
+  }
+  
+  .stage-icon .rounded-circle {
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  }
+  

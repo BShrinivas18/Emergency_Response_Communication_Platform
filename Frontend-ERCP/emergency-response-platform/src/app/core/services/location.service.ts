@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, from, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-// import { environment } from '../../../enviornments/enviornment';
+import { environment } from '../../../enviornments/enviornment';
 
 export interface LocationData {
   latitude: number;

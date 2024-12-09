@@ -14,6 +14,7 @@ import { IncidentType, IncidentStatus } from '../../../shared/models/incident.mo
 import { SOSAlertConfirmationComponent } from '../../../shared/components/sos-alert-modal/sos-alert-modal.component';
 // import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule, Router } from '@angular/router';
 @Component({
   selector: 'app-landing',
   standalone: true,
@@ -25,6 +26,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
+    RouterModule
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
@@ -53,7 +55,8 @@ export class LandingComponent implements OnInit {
     private dialog: MatDialog,
     private locationService: LocationService,
     private emergencyService: EmergencyService,
-    private weatherService: WeatherService
+    private weatherService: WeatherService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -131,32 +134,68 @@ export class LandingComponent implements OnInit {
     });
   }
 
-  sendSOSAlert() {
-    const currentLocation = this.mapCenter();
-    this.emergencyService.sendSOSAlert({
-      victimName: 'Anonymous',
-      victimContact: '',
-      location: {
-        latitude: currentLocation.lat,
-        longitude: currentLocation.lng
-      },
-      incidentType: IncidentType.MEDICAL,
-      status: IncidentStatus.REPORTED
-    }).subscribe({
-      next: () => {
-        this.dialog.open(SOSAlertConfirmationComponent, {
-          data: {
-            location: `Lat: ${currentLocation.lat}, Lng: ${currentLocation.lng}`
-          }
-        });
-      },
-      error: () => {
-        console.error('SOS Alert failed');
-      }
-    });
+  async sendSOSAlert() {
+   
+    try {
+      // Wait for the address to resolve (this is your ZoneAwarePromise)
+      const currentLocation = await this.locationService.getCurrentLocation();
+  
+      // Resolve the promise and get the address
+      const address = currentLocation.formattedAddress;
+  
+      // Log the formatted address
+      console.log("Formatted Address:", address);
+  
+      // Proceed with the dialog opening using the resolved address
+      this.dialog.open(SOSAlertConfirmationComponent, {
+        data: {
+          incident: {
+            victimName: 'Anonymous',
+            victimContact: '',
+            location: {
+              latitude: currentLocation.latitude,
+              longitude: currentLocation.longitude,
+              address: address, // Set the resolved address here
+            },
+            incidentType: IncidentType.EMERGENCY,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error retrieving address:", error);
+    }
   }
+  
+    // const currentLocation = this.locationService.getCurrentLocation();
+  
+    // this.emergencyService.sendSOSAlert({
+    //   victimName: 'Anonymous',
+    //   victimContact: '',
+    //   location: {
+    //     latitude: currentLocation.lat,
+    //     longitude: currentLocation.lng
+    //   },
+    //   incidentType: IncidentType.MEDICAL,
+    //   status: IncidentStatus.REPORTED
+    // }).subscribe({
+    //   next: () => {
+    //     this.dialog.open(SOSAlertConfirmationComponent, {
+    //       data: {
+    //         location: `Lat: ${currentLocation.lat}, Lng: ${currentLocation.lng}`
+    //       }
+    //     });
+    //   },
+    //   error: () => {
+    //     console.error('SOS Alert failed');
+    //   }
+    // });  
+
+  
 
   getAlertSeverityClass(severity: 'low' | 'medium' | 'high'): string {
     return `${severity}-severity`;
+  }
+  onLogin() {
+    this.router.navigate(['/login']);
   }
 }

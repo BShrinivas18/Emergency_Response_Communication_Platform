@@ -1,0 +1,39 @@
+.incident-report {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-medium);
+    margin-bottom: 1.5rem;
+  }
+
+  .incident-report-header {
+    background-color: var(--secondary-color);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .incident-report-badge {
+    background-color: var(--destructive-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  .incident-report-content {
+    padding: 1rem;
+  }
+
+  .incident-report-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .incident-report-item .material-icons {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+  }
