@@ -1,0 +1,46 @@
+<!-- <table class="table table-bordered table-hover table-striped">
+  <thead class="thead-dark">
+    <tr>
+      <th>Log ID</th>
+      <th>Incident ID</th>
+      <th>Status Update</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let log of incidentLogs">
+      <td>{{ log.logId }}</td>
+      <td>{{ log.incidentId }}</td>
+      <td>
+        <span [ngClass]="{
+            'badge bg-success': log.statusUpdate === 'Resolved',
+            'badge bg-warning': log.statusUpdate === 'In Progress',
+            'badge bg-danger': log.statusUpdate === 'Active'
+          }">
+          {{ log.statusUpdate }}
+        </span>
+      </td>
+      <td>{{ log.timestamp | date: 'short' }}</td>
+    </tr>
+  </tbody>
+</table> -->
+
+
+<table class="table table-bordered table-hover table-striped">
+  <thead class="thead-dark">
+    <tr>
+      <th>Log ID</th>
+      <th>Incident ID</th>
+      <th>Status Update</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let log of incidentLogs">
+      <td>{{ log.logId }}</td>
+      <td>{{ log.incidentId }}</td>
+      <td>{{ log.statusUpdate }}</td>
+      <td>{{ log.timestamp | date: 'short' }}</td>
+    </tr>
+  </tbody>
+</table>

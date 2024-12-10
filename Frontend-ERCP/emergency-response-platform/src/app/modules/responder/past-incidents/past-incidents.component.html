@@ -1,0 +1,18 @@
+<div class="card">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Incident History</h5>
+    </div>
+    <div class="card-body">
+      <div *ngFor="let incident of incidents" 
+           class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+        <div>
+          <p class="mb-0 fw-bold">{{ incident.id }}</p>
+          <p class="text-muted mb-0">{{ incident.date }}</p>
+        </div>
+        <div>
+          <span class="badge bg-secondary me-2">{{ incident.type }}</span>
+          <span class="badge bg-success">{{ incident.status }}</span>
+        </div>
+      </div>
+    </div>
+  </div>

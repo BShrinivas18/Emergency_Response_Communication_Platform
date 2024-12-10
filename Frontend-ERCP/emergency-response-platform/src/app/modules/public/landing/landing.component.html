@@ -1,0 +1,108 @@
+<div class="container-fluid emergency-platform">
+    <!-- Header -->
+    <header class="emergency-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <!-- <img src="/assets/emergency-logo.svg" alt="Emergency Response Logo" class="logo"> -->
+          <h2 class="platform-title">Emergency Response Platform</h2>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" class="login-btn" (click)="onLogin()">
+            <mat-icon>account_circle</mat-icon>
+            Login
+          </button>
+        </div>
+      </div>
+    </header>
+  
+    <!-- Main Content Grid -->
+    <div class="emergency-grid">
+      <!-- Left Sidebar: Emergency Guidelines -->
+      <div class="emergency-guidelines">
+        <h3>Emergency Types</h3>
+        <div class="emergency-type-buttons">
+          <button 
+            *ngFor="let type of emergencyTypes" 
+            mat-raised-button 
+            [color]="selectedEmergency === type ? 'primary' : 'basic'"
+            (click)="selectEmergency(type)">
+            {{ type }}
+          </button>
+        </div>
+  
+        <!-- Dynamic Guidelines Section -->
+        <div class="guidelines-details" *ngIf="selectedEmergency">
+          <h4>{{ selectedEmergency }} Guidelines</h4>
+          <p>{{ guidelines[selectedEmergency] }}</p>
+        </div>
+      </div>
+  
+      <!-- Central Map Section -->
+      <div class="emergency-map">
+        <google-map 
+          height="100%" 
+          width="100%" 
+          [center]="mapCenter()" 
+          [zoom]="5">
+          @for (marker of mapMarkers(); track marker.position) {
+            <map-marker 
+              [position]="marker.position"
+              [title]="marker.title">
+            </map-marker>
+          }
+        </google-map>
+      </div>
+  
+      <!-- Right Sidebar: Emergency Actions -->
+      <div class="emergency-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="report-incident-btn"
+            (click)="openIncidentReportModal()">
+            <mat-icon>report_problem</mat-icon>
+            Report an Incident
+          </button>
+          <button 
+            mat-raised-button 
+            color="warn" 
+            class="sos-alert-btn"
+            (click)="sendSOSAlert()">
+            <mat-icon>warning</mat-icon>
+            Send SOS Alert
+          </button>
+        </div>
+  
+        <!-- Weather Alerts Section -->
+        <div class="weather-alerts">
+          <h4>Current Weather Alerts</h4>
+          <div *ngIf="weatherAlerts().length; else noAlerts" class="alerts-container">
+            <div *ngFor="let alert of weatherAlerts()" class="alert-card">
+              <div class="alert-icon">
+                <mat-icon [ngClass]="getAlertSeverityClass(alert.severity)">warning</mat-icon>
+              </div>
+              <div class="alert-details">
+                <h5>{{ alert.type }}</h5>
+                <p>{{ alert.description }}</p>
+                <small>{{ alert.location }}</small>
+              </div>
+            </div>
+          </div>
+          <ng-template #noAlerts>
+            <p class="no-alerts">No current weather alerts</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Floating SOS Button -->
+    <button 
+      mat-fab 
+      color="warn" 
+      class="floating-sos-btn" 
+      (click)="sendSOSAlert()">
+      <mat-icon>emergency</mat-icon>
+    </button>
+  </div>

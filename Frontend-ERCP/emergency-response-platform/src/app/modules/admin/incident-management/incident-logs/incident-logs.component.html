@@ -1,0 +1,49 @@
+<!-- <div class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Incident Logs (ID: {{ incidentId }})</h2>
+        <button mat-icon-button (click)="closeLogs()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li *ngFor="let log of logs">
+            <span class="timestamp">{{ log.timestamp }}</span>
+            <span class="message">{{ log.message }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+   -->
+   <div class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Incident Logs (ID: {{ incidentId }})</h2>
+        <button mat-icon-button (click)="closeLogs()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Log ID</th>
+              <th>Incident ID</th>
+              <th>Status Update</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of logs">
+              <td>{{ log.logId }}</td>
+              <td>{{ log.incidentId }}</td>
+              <td>{{ log.statusUpdate }}</td>
+              <td>{{ log.timestamp | date:'medium' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

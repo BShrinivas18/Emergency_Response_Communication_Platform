@@ -1,0 +1,39 @@
+<div class="card shadow-sm mb-4">
+ 
+  <div class="card-header bg-warning text-white">
+    <h2 class="card-title mb-0 d-flex align-items-center">
+      Incident Report: {{ incident.id }}
+      <span 
+        class="badge ms-3" 
+        [ngClass]="{'bg-danger': incident.priority === 'Critical', 'bg-secondary': incident.priority !== 'Critical'}"
+      >
+        {{ incident.priority }}
+      </span>
+    </h2>
+  </div>
+
+  <div class="card-body">
+    <div class="d-flex align-items-center mb-3">
+        <i class="material-icons text-secondary me-2">person</i>
+        <span>{{ incident.victimName }}</span>
+      </div>
+      <div class="d-flex align-items-center mb-3">
+        <i class="material-icons text-muted me-2">phone</i>
+        <span>{{ incident.victimContact }}</span>
+      </div>
+    <div class="d-flex align-items-center mb-3">
+      <i class="material-icons text-danger me-2">warning</i>
+      <span>{{ incident.incidentTypes }}</span>
+    </div>
+    <div class="d-flex align-items-center mb-3">
+      <i class="material-icons text-primary me-2">place</i>
+      <span>{{ incident.incidentLocation }}</span>
+    </div>
+    <div class="d-flex align-items-center">
+      <i class="material-icons text-success me-2">access_time</i>
+      <span>Reported at: {{ incident.reportedAt | date:'medium' }}</span>
+    </div>
+  </div>
+</div>
+
+

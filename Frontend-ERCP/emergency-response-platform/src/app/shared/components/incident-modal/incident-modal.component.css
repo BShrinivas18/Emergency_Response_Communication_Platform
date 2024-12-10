@@ -1,0 +1,28 @@
+/* incident-modal.component.css */
+.incident-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.full-width {
+  flex: 1 1 100%;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 16px;
+}
+
+  
