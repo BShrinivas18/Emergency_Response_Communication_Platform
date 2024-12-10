@@ -1,1 +1,53 @@
-<p>active-incidents works!</p>
+<div class="card">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Incident Assigned</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">Incident ID:</span>
+            <span>#INC-2023-001</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">Type:</span>
+            <span class="badge bg-primary">Fire</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">Location:</span>
+            <span>123 Main St, Anytown, USA</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">Reported:</span>
+            <span>10 minutes ago</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fw-bold">Status:</span>
+            <span class="badge bg-warning">In Progress</span>
+          </div>
+        </div>
+      </div>
+      
+      <form [formGroup]="responderForm" (ngSubmit)="requestResponders()">
+        <div class="row">
+          <div class="col-12">
+            <div class="mb-3">
+              <label class="form-label">Number of Additional Responders</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                formControlName="responderCount" 
+                min="1"
+              >
+            </div>
+            <button 
+              type="submit" 
+              class="btn btn-primary w-100" 
+              [disabled]="responderForm.invalid">
+              Request Additional Responders
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
