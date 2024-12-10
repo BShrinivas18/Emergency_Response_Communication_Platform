@@ -1,2 +1,4 @@
-package com.Api_Gateway_Server.Model;public record jwtToken() {
+package com.Api_Gateway_Server.Model;
+
+public record jwtToken(String jwt) {
 }

@@ -2,11 +2,16 @@
 // }
 
 export interface User {
-    id: string;
+    id: number;
     username: string;
     email: string;
-    role: 'Dispatcher' | 'First Responder' | 'Coordinator' | 'Administrator';
-    department: string;
+    role: Role;
+    // role: 'Dispatcher' | 'First Responder' | 'Coordinator' | 'Administrator';
+    // department: string;
+  }
+  export enum Role {
+    ADMIN = 'ADMIN',
+    RESPONDER = 'RESPONDER'
   }
   
   export interface LoginCredentials {

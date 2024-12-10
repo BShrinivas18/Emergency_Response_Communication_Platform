@@ -22,7 +22,7 @@ public class ResponderController {
 
 
 //    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/create")
     public ResponderDTO createResponder(@RequestBody ResponderDTO responder) {
         return responderService.createResponder(responder);
     }

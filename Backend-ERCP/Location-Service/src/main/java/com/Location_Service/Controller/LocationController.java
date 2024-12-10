@@ -25,6 +25,7 @@ public class LocationController {
 //    @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<LocationDTO> createLocation(@Valid @RequestBody LocationDTO location) {
+        System.out.println("reached location controller");
         return new ResponseEntity<>(locationService.createLocation(location), HttpStatus.CREATED);
     }
 

@@ -145,7 +145,7 @@ export class LandingComponent implements OnInit {
   
       // Log the formatted address
       console.log("Formatted Address:", address);
-  
+      // this.emergencyService.reportIncident(incident);
       // Proceed with the dialog opening using the resolved address
       this.dialog.open(SOSAlertConfirmationComponent, {
         data: {
@@ -157,7 +157,7 @@ export class LandingComponent implements OnInit {
               longitude: currentLocation.longitude,
               address: address, // Set the resolved address here
             },
-            incidentType: IncidentType.EMERGENCY,
+            incidentType: IncidentType.SOS_REQUEST,
           },
         },
       });

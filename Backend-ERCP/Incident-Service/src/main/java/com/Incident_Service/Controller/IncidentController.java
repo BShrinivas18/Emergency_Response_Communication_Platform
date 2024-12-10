@@ -27,14 +27,26 @@ public class IncidentController {
 
 //    @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
-    public ResponseEntity<?> createIncident(
-            @RequestBody(required = false) IncidentDTO incident,
-            @RequestParam(required = false) Double latitude,
-            @RequestParam(required = false) Double longitude,
-            @RequestParam(required = false, defaultValue = "false") boolean isSOS
-    ) {
+//    public ResponseEntity<?> createIncident(
+//            @RequestBody(required = false) IncidentDTO incident,
+//            @RequestParam(required = false) Double latitude,
+//            @RequestParam(required = false) Double longitude,
+//            @RequestParam(required = false, defaultValue = "false") boolean isSOS
+//    ) {
+//        try {
+//            IncidentDTO response = incidentService.reportIncident(incident, latitude, longitude, isSOS);
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            return ResponseEntity
+//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(Collections.singletonMap("error", e.getMessage()));
+//        }
+//    }
+    public ResponseEntity<?> createIncident(@RequestBody IncidentDTO incident) {
         try {
-            IncidentDTO response = incidentService.reportIncident(incident, latitude, longitude, isSOS);
+
+            System.out.println("Received incident type: " + incident.getType());
+            IncidentDTO response = incidentService.reportIncident(incident);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity
@@ -43,7 +55,8 @@ public class IncidentController {
         }
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+
+    //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<IncidentDTO> getAllIncidents() {
         return incidentService.getAllIncidents();

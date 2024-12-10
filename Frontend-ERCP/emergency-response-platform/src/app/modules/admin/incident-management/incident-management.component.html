@@ -1,4 +1,4 @@
-<div class="space-y-8">
+<!-- <div class="space-y-8">
     <h1 class="text-3xl font-bold text-gray-800">Incident Management</h1>
     <div class="card">
       <div class="card-content p-6">
@@ -20,5 +20,44 @@
       [incidentId]="selectedIncident" 
       (close)="closeLogs()">
     </app-incident-logs>
+  </div> -->
+  
+  <div class="container py-5">
+    <h1 class="display-4 font-weight-bold text-dark">Incident Management</h1>
+    
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <!-- Bootstrap Nav Tabs for incident categories -->
+        <ul class="nav nav-tabs" id="incidentTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="all-incidents-tab" data-bs-toggle="tab" href="#all-incidents" role="tab" aria-controls="all-incidents" aria-selected="true">All Incidents</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="active-incidents-tab" data-bs-toggle="tab" href="#active-incidents" role="tab" aria-controls="active-incidents" aria-selected="false">Active Incidents</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="resolved-incidents-tab" data-bs-toggle="tab" href="#resolved-incidents" role="tab" aria-controls="resolved-incidents" aria-selected="false">Resolved Incidents</a>
+          </li>
+        </ul>
+        <div class="tab-content mt-3" id="incidentTabsContent">
+          <div class="tab-pane fade show active" id="all-incidents" role="tabpanel" aria-labelledby="all-incidents-tab">
+            <app-incident-table (selectIncident)="selectIncident($event)"></app-incident-table>
+          </div>
+          <div class="tab-pane fade" id="active-incidents" role="tabpanel" aria-labelledby="active-incidents-tab">
+            <app-incident-table [status]="'active'" (selectIncident)="selectIncident($event)"></app-incident-table>
+          </div>
+          <div class="tab-pane fade" id="resolved-incidents" role="tabpanel" aria-labelledby="resolved-incidents-tab">
+            <app-incident-table [status]="'resolved'" (selectIncident)="selectIncident($event)"></app-incident-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Conditionally displaying the incident logs -->
+    <app-incident-logs *ngIf="selectedIncident" 
+      [incidentId]="selectedIncident" 
+      (close)="closeLogs()">
+    </app-incident-logs>
   </div>
+  
   

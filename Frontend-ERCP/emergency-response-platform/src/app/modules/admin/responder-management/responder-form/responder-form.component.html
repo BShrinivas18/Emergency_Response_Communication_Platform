@@ -52,7 +52,7 @@
 
 
  <!-- responder-form.component.html -->
- <mat-card class="form-card">
+ <!-- <mat-card class="form-card">
   <mat-card-title class="form-card-title">
     {{ responder ? 'Update Responder' : 'Create Responder' }}
   </mat-card-title>
@@ -91,4 +91,71 @@
       </div>
     </form>
   </mat-card-content>
-</mat-card>
+</mat-card> -->
+
+
+<div class="card shadow-sm">
+  <div class="card-header">
+    <h5 class="card-title mb-0">{{ responder ? 'Update Responder' : 'Create Responder' }}</h5>
+  </div>
+  <div class="card-body">
+    <form (ngSubmit)="handleSubmit()">
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="name" 
+          [(ngModel)]="name" 
+          name="name" 
+          required 
+        />
+      </div>
+
+      <!-- Station Location -->
+      <div class="mb-3">
+        <label for="stationLocation" class="form-label">Station Location</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="stationLocation" 
+          [(ngModel)]="stationLocation" 
+          name="stationLocation" 
+          required 
+        />
+      </div>
+      
+      <!-- Responder Type -->
+      <div class="mb-3">
+        <label for="type" class="form-label">Responder Type</label>
+        <select 
+          class="form-select" 
+          id="type" 
+          [(ngModel)]="type" 
+          name="type" 
+          required
+        >
+          <option *ngFor="let t of RESPONDER_TYPES" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex justify-content-end">
+        <button 
+          type="button" 
+          class="btn btn-secondary me-2" 
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+        >
+          {{ responder ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

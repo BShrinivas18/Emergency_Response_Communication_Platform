@@ -95,6 +95,7 @@ export class IncidentTableComponent implements OnInit {
     } else {
       // Default case for 'All Incidents'
       this.incidentService.getIncidents().subscribe({
+        
         next: (data) => {
           this.incidents = data;
         },
@@ -104,7 +105,7 @@ export class IncidentTableComponent implements OnInit {
       });
     }
   }
-
+  
   onViewLogs(incidentId: number): void {
     this.selectIncident.emit(incidentId);
   }

@@ -60,14 +60,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface ResponderDTO {
-  responderId?: number;
+  responderId: number;
   name: string;
   stationLocation: string;
   status: ResponderStatus;
   type: ResponderType;
   lastUpdate?: Date;
   locationId?: number;
-  incidentId?: number;
+  incidentId: number|0;
 }
 
 export enum ResponderStatus {
@@ -99,7 +99,7 @@ export class ResponderService {
 
   getAvailableResponders(): Observable<ResponderDTO[]> {
     // Retrieve the JWT token from local storage
-    const token = localStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('jwt');
     
     // Create headers with Authorization
     const headers = new HttpHeaders({
@@ -110,20 +110,61 @@ export class ResponderService {
     // Make the HTTP request with headers
     return this.http.get<ResponderDTO[]>(`${this.apiUrl}/status/AVAILABLE`, { headers });
   }
+  private getAuthHeaders(): HttpHeaders {
+    const token = sessionStorage.getItem('jwt');
+    return new HttpHeaders({
+      // 'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
 
   getRespondersByType(type: ResponderType): Observable<ResponderDTO[]> {
-    return this.http.get<ResponderDTO[]>(`${this.apiUrl}/responders/type/${type}`);
+    const token = sessionStorage.getItem('jwt');
+    
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    return this.http.get<ResponderDTO[]>(`${this.apiUrl}/type/${type}`,{headers});
   }
 
   getResponderById(id: number): Observable<ResponderDTO> {
-    return this.http.get<ResponderDTO>(`${this.apiUrl}/responders/${id}`);
+    const token = sessionStorage.getItem('jwt');
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    // console.log(headers.get+" coming from get responder by id");
+    return this.http.get<ResponderDTO>(`${this.apiUrl}/${id}`, {headers});
   }
 
   createResponder(responder: ResponderDTO): Observable<ResponderDTO> {
-    return this.http.post<ResponderDTO>(`${this.apiUrl}/responders`, responder);
+    const token = sessionStorage.getItem('jwt');
+    console.log("token is "+token);
+    
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      // 'Content-Type': 'application/json'
+    });
+    console.log("Coming to create responder");
+    console.log(headers);
+    return this.http.post<ResponderDTO>(`${this.apiUrl}/create`,  new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      // 'Content-Type': 'application/json'
+    }));
   }
 
   updateResponder(id: number, responder: ResponderDTO): Observable<ResponderDTO> {
-    return this.http.put<ResponderDTO>(`${this.apiUrl}/responders/${id}`, responder);
+    const token = sessionStorage.getItem('jwt');
+    console.log("Coming to update responder");
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    return this.http.put<ResponderDTO>(`${this.apiUrl}/${id}`, responder, {headers});
   }
 }
