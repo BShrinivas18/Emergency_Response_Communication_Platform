@@ -3,12 +3,12 @@ export interface Incident {
     incidentId: number;
     victimName: string;
     victimContact: string;
-    victimlocation: {
+    victimLocation: {
       latitude: number;
       longitude: number;
       address?: string;
     };
-    incidentlocation: {
+    incidentLocation: {
       latitude: number;
       longitude: number;
       address?: string;
@@ -19,18 +19,6 @@ export interface Incident {
     // description?: string;
    timestamp?: Date;
     responderIds: number[];
-
-// incidentLocationId
-// : 
-// 17
-
-// victimId
-// : 
-// 2
-// victimLocationId
-// : 
-// 17
-
 
   }
   
@@ -50,7 +38,7 @@ export interface Incident {
     'Fire': 'FIRE',
     'Natural Disaster': 'NATURAL_DISASTER',
     'Chemical/Hazmat': 'HAZMAT',
-    'SOS Request': 'SOS_REQUEST',
+    'Emergency': 'SOS_REQUEST',
   };;
 
   // MEDICAL_EMERGENCY,
@@ -66,8 +54,14 @@ export interface Incident {
   //   IN_PROGRESS = 'In Progress',
   //   RESOLVED = 'Resolved'
   // }
+  // export const IncidentStatusMapping: Record<string, string> = {
+  //   'Reported': 'REPORTED',
+  //   'Acknowledged': 'ACKNOWLEDGED',
+  //   'In Progress': 'IN_PROGRESS',
+  //   'Resolved': 'RESOLVED'
+  // };
 
-  export type IncidentStatus = 'Reported' | 'Assigned' | 'Enroute' | 'OnScene' | 'Resolved';
+  export type IncidentStatus = 'Reported' | 'Assigned' | 'Enroute' | 'OnScene' | 'Resolved'|'NEW';
 
 export interface IncidentReport {
   id: string;

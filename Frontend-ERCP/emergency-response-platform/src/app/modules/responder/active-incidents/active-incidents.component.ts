@@ -30,7 +30,7 @@ export class IncidentComponent {
   }
 
   fetchResponderData(): void {
-    this.responderService.getResponderById(1).subscribe({
+    this.responderService.getResponderById(Number(sessionStorage.getItem('userId'))).subscribe({
       next: (responder) => {
         this.responder = responder
         console.log('Responder data fetched: ', this.responder);
@@ -46,7 +46,7 @@ export class IncidentComponent {
             console.log('Incident responder Id:', this.incident.responderIds);
             console.log('Incident Status', this.incident.status);
             this.status = this.incident.status;
-            console.log('Incident responder Id:', this.incident.incidentlocation.address);
+            console.log('Incident responder address:', this.incident.incidentLocation);
             
           },
           error: (error) => {

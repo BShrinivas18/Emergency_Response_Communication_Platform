@@ -19,14 +19,16 @@ public class UserService implements UserCrudService {
     public User saveUser(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+
         return userRepository.save(user);
     }
     public User findByUsername(String username){
         return userRepository.findByUsername(username).orElse(null);
     }
 
-    public int getIdByUsername(String username){
-        return userRepository.getIdByUsername(username);
+    public Long getIdByUsername(String username){
+        User user = userRepository.getIdByUsername(username);
+        return user.getId();
 
     }
 }

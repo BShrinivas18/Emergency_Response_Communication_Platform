@@ -90,6 +90,9 @@ export class LoginComponent {
               if(loginRequest.role ==="ADMIN"){
                 this.router.navigate(['/admin-dashboard']);
               }
+              else {
+                this.router.navigate(['/responder-dashboard']);
+              }
             }
               // else if(loginRequest.role==="RESPONDER"){
               //   this.router.navigate(['/responder-dashboard']);

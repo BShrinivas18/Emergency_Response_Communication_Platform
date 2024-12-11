@@ -22,13 +22,13 @@ export class IncidentManagementService {
     });
   }
 
-  getUserById(id: number): Observable<User> {
-    return this.http.get<any>(`${this.baseUrl}/user`, { 
-      headers: this.getAuthHeaders() 
-    }).pipe(
-      catchError(this.handleError)
-    );
-  }
+  // getUserById(id: number): Observable<User> {
+  //   return this.http.get<any>(`${this.baseUrl}/user`, { 
+  //     headers: this.getAuthHeaders() 
+  //   }).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
 
   getUserId(): Observable<number|null> {
    const username = sessionStorage.getItem('username');
@@ -37,7 +37,7 @@ export class IncidentManagementService {
    const headers = this.getAuthHeaders();
   
   //  headers.append('username', username);
-   return this.http.get<number>(`${this.baseUrl}/user/${username}`, { 
+   return this.http.get<number>(`${this.baseUrl}/user/${username}?username=${username}`, { 
      headers: headers
    }).pipe(
      catchError(this.handleError)

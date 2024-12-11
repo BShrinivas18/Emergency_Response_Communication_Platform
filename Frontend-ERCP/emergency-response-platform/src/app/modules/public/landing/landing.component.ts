@@ -10,7 +10,7 @@ import { IncidentReportModalComponent } from '../../../shared/components/inciden
 import { LocationService } from '../../../core/services/location.service';
 import { EmergencyService } from '../../../core/services/emergency.service';
 import { WeatherService, WeatherAlert } from '../../../core/services/weather.service';
-import { IncidentType, IncidentStatus } from '../../../shared/models/incident.model';
+import { IncidentType, IncidentStatus,Incident } from '../../../shared/models/incident.model';
 import { SOSAlertConfirmationComponent } from '../../../shared/components/sos-alert-modal/sos-alert-modal.component';
 // import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,6 +32,7 @@ import { RouterModule, Router } from '@angular/router';
   styleUrls: ['./landing.component.css']
 })
 export class LandingComponent implements OnInit {
+  incident!:Incident;
   mapCenter = signal<google.maps.LatLngLiteral>({
     lat: 20.5937,
     lng: 78.9629
@@ -80,15 +81,15 @@ export class LandingComponent implements OnInit {
   }
 
   
-  private requestLocationPermission() {
+  // private requestLocationPermission() {
   
-    this.locationService.requestLocationPermission().then(permissionGranted => {
-      if (permissionGranted) {
-        localStorage.setItem('locationPermissionGranted', 'true');
-        this.getCurrentLocation();
-      }
-    });
-  }
+  //   this.locationService.requestLocationPermission().then(permissionGranted => {
+  //     if (permissionGranted) {
+  //       localStorage.setItem('locationPermissionGranted', 'true');
+  //       this.getCurrentLocation();
+  //     }
+  //   });
+  // }
 
   getCurrentLocation() {
     this.locationService.getCurrentLocation()
@@ -145,6 +146,26 @@ export class LandingComponent implements OnInit {
   
       // Log the formatted address
       console.log("Formatted Address:", address);
+
+       this.incident = {
+        incidentLocation:  {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          address: address, // Set the resolved address here
+        } ,
+        victimLocation:{
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          address: address, // Set the resolved address here
+        },
+        timestamp: new Date(),
+        victimName: 'Anonymous',
+        victimContact: '',
+        status: 'NEW',
+        type: IncidentType.SOS_REQUEST,
+        responderIds:[],
+        incidentId:0,
+      } 
       // this.emergencyService.reportIncident(incident);
       // Proceed with the dialog opening using the resolved address
       this.dialog.open(SOSAlertConfirmationComponent, {
@@ -157,13 +178,27 @@ export class LandingComponent implements OnInit {
               longitude: currentLocation.longitude,
               address: address, // Set the resolved address here
             },
+            status: 'Reported',
             incidentType: IncidentType.SOS_REQUEST,
+            timestamp: new Date(),
           },
         },
+      });
+
+      this.emergencyService.reportIncident(this.incident).subscribe({
+        next: (response) => {
+          console.log("Sent SOS Alert");
+          console.log(response);
+        },
+        error: (error) => {
+          console.error("Error sending SOS Alert:", error);
+        }
       });
     } catch (error) {
       console.error("Error retrieving address:", error);
     }
+  
+     
   }
   
     // const currentLocation = this.locationService.getCurrentLocation();

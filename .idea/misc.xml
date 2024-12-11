@@ -13,6 +13,7 @@
         <option value="$PROJECT_DIR$/Backend-ERCP/Incident-Service/pom.xml" />
         <option value="$PROJECT_DIR$/Backend-ERCP/Victim-Service/pom.xml" />
         <option value="$PROJECT_DIR$/Backend-ERCP/Location-Service/pom.xml" />
+        <option value="$PROJECT_DIR$/Backend-ERCP/User-Service/pom.xml" />
       </list>
     </option>
   </component>
