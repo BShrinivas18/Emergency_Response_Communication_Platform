@@ -14,7 +14,7 @@ public class LocationDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int locationId;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private String address;
 }

@@ -21,4 +21,12 @@ public class UserService implements UserCrudService {
         user.setPassword(encodedPassword);
         return userRepository.save(user);
     }
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public int getIdByUsername(String username){
+        return userRepository.getIdByUsername(username);
+
+    }
 }
