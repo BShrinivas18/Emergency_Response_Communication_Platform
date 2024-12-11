@@ -21,7 +21,7 @@ export class ProfileHeaderComponent implements OnInit {
   }
 
   fetchResponderData(): void {
-    this.responderService.getResponderById(1).subscribe({
+    this.responderService.getResponderById(Number(sessionStorage.getItem('userId'))).subscribe({
       next: (responder) => {
         this.responder = responder;
         console.log('Responder data fetched:', this.responder);

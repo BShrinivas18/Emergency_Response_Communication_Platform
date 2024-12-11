@@ -127,6 +127,7 @@ export class IncidentReportModalComponent implements OnInit {
         status: 'NEW',
         timestamp: new Date(),
       };
+      console.log("incoming data from incidentform : "+ this.incidentForm.value);
       console.log("incoming data from form : ")
       console.log(incidentData)
       this.emergencyService.reportIncident(incidentData).subscribe((response) => {

@@ -33,6 +33,7 @@ public class UserController {
     @PostMapping("/register")
     public User register(@RequestBody User user) {
         return userService.saveUser(user);
+
     }
 
     @PostMapping("/login")
@@ -52,24 +53,14 @@ public class UserController {
             LoginResponse loginResponse = new LoginResponse(token);
             return ResponseEntity.ok(loginResponse);
 
-
-            // Extract authorities (roles) from the authenticated user
-//            String authorities = authentication.getAuthorities().stream()
-//                    .map(GrantedAuthority::getAuthority)
-//                    .collect(Collectors.joining(","));
-
-            // Generate and return the JWT token including roles/authorities
-//            Role role = user.getRole();
-
-//            return jwtService.generateToken(user.getUsername(), role);  // Pass roles/authorities to JWT
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid Credentials"));
         }
         }
 
         @GetMapping("/user/{username}")
-        public User getUser(@PathVariable String username) {
-            return userService.findByUsername(username);
+        public Long getUser(@PathVariable String username) {
+            return userService.getIdByUsername(username);
         }
 
 

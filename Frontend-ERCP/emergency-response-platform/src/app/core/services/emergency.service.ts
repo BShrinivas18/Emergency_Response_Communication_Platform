@@ -28,14 +28,14 @@ export class EmergencyService {
 
     const incidentData = {
       incidentLocation: {
-        latitude:incident.incidentlocation.latitude,
-        longitude: incident.incidentlocation.longitude,
-        address: incident.incidentlocation.address
+        latitude:incident.incidentLocation.latitude,
+        longitude: incident.incidentLocation.longitude,
+        address: incident.incidentLocation.address
       },
       victimLocation: {
-        latitude: incident.victimlocation.latitude,
-        longitude: incident.victimlocation.longitude, 
-        address: incident.victimlocation.address
+        latitude: incident.victimLocation.latitude,
+        longitude: incident.victimLocation.longitude, 
+        address: incident.victimLocation.address
       },
       type:mappedType,
       status: incident.status,

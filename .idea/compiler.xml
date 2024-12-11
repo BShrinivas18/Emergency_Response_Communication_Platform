@@ -14,6 +14,7 @@
         <module name="Incident-Service" />
         <module name="Log-Service" />
         <module name="Api-Gateway-Server" />
+        <module name="User-Service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -25,6 +26,7 @@
       <module name="Location-Service" options="-parameters" />
       <module name="Log-Service" options="-parameters" />
       <module name="Responder-Service" options="-parameters" />
+      <module name="User-Service" options="-parameters" />
       <module name="Victim-Service" options="-parameters" />
     </option>
   </component>
