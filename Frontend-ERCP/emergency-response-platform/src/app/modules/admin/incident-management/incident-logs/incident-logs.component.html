@@ -17,33 +17,34 @@
     </div>
   </div>
    -->
-   <div class="overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Incident Logs (ID: {{ incidentId }})</h2>
-        <button mat-icon-button (click)="closeLogs()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-      <div class="modal-body">
-        <table>
-          <thead>
-            <tr>
-              <th>Log ID</th>
-              <th>Incident ID</th>
-              <th>Status Update</th>
-              <th>Timestamp</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let log of logs">
-              <td>{{ log.logId }}</td>
-              <td>{{ log.incidentId }}</td>
-              <td>{{ log.statusUpdate }}</td>
-              <td>{{ log.timestamp | date:'medium' }}</td>
-            </tr>
-          </tbody>
-        </table>
+   <div class="modal fade show" *ngIf="incidentId" style="display: block;" aria-labelledby="incidentLogsModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="incidentLogsModalLabel">Incident Logs (ID: {{ incidentId }})</h5>
+          <button type="button" class="btn-close" (click)="closeLogs()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Log ID</th>
+                <th>Incident ID</th>
+                <th>Status Update</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let log of logs">
+                <td>{{ log.logId }}</td>
+                <td>{{ log.incidentId }}</td>
+                <td>{{ log.statusUpdate }}</td>
+                <td>{{ log.timestamp | date:'medium' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
+  

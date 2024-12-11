@@ -21,8 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncidentDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int incidentId;
     @NotNull(message = "Incident type cannot be null")
     private IncidentType type;
@@ -33,7 +31,7 @@ public class IncidentDTO {
 
     //Location Details
     //This is also victim location ID
-    private Integer incidentLocationId; // This is the location ID in the Location Service
+    private LocationDTO incidentLocation; // This is the location ID in the Location Service
 
     // Victim details
     private Integer victimId;
@@ -44,7 +42,7 @@ public class IncidentDTO {
     @Pattern(regexp = "^\\[1-9]\\d{1,14}$", message = "Victim contact number must be in the format of [1-9]XXXXXXXXXX")
     private String victimContact;
 
-    private Integer victimLocationId;
+    private LocationDTO victimLocation;
     // Responder details
     private List<Integer> responderIds = new ArrayList<>();
 }

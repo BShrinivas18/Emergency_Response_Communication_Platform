@@ -45,9 +45,9 @@ public class SecurityConfig {
 
         http.csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request->request
-                        .requestMatchers("/responders/create","/responders/update","/responders/delete","/responders/getAll").hasAuthority("ADMIN")
-                        .requestMatchers(("/responders/request-additional/{id}/{type}")).hasRole("RESPONDER")
-                        .requestMatchers("/register","/login","/incidents/incident/status/{id}","/incidents/create").permitAll()
+//                        .requestMatchers("/responders/create/**","/responders/update","/responders/delete","/responders/getAll", "/incidents/{id}").hasRole("ADMIN")
+//                        .requestMatchers(("/responders/request-additional/{id}/{type}")).hasRole("RESPONDER")
+                        .requestMatchers("/register","/login","/incidents/incident/status/{id}","/incidents/create/**","**").permitAll()
 
                         .anyRequest().authenticated())
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -83,3 +83,4 @@ public class SecurityConfig {
 
 
 }
+

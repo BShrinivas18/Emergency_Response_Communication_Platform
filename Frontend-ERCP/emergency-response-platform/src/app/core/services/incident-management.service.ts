@@ -1,39 +1,10 @@
-// import { Injectable } from '@angular/core';
-// import { Observable, of } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class IncidentManagementService {
-//   private incidents = [
-//     { id: 1, type: 'Fire', location: 'Downtown', status: 'Active', date: '2023-06-01' },
-//     { id: 2, type: 'Medical', location: 'Suburb', status: 'Resolved', date: '2023-05-30' },
-//     { id: 3, type: 'Traffic Accident', location: 'Highway', status: 'Active', date: '2023-06-02' },
-//   ];
-
-//   private logs = [
-//     { id: 1, timestamp: '2023-06-01 10:00', message: 'Incident reported' },
-//     { id: 2, timestamp: '2023-06-01 10:05', message: 'Responders dispatched' },
-//     { id: 3, timestamp: '2023-06-01 10:15', message: 'Responders arrived on scene' },
-//     { id: 4, timestamp: '2023-06-01 10:30', message: 'Situation assessment completed' },
-//     { id: 5, timestamp: '2023-06-01 11:00', message: 'Additional resources requested' },
-//   ];
-
-//   getIncidents(): Observable<any[]> {
-//     return of(this.incidents);
-//   }
-
-//   getIncidentLogs(incidentId: number): Observable<any[]> {
-//     // Here we could associate logs with incidents if applicable.
-//     return of(this.logs);
-//   }
-// }
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { User } from '../../shared/models/user.model';  
+import { Incident } from '../../shared/models/incident.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -44,16 +15,39 @@ export class IncidentManagementService {
 
   // Method to get JWT token from local storage
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('jwt');
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
   }
 
+  getUserById(id: number): Observable<User> {
+    return this.http.get<any>(`${this.baseUrl}/user`, { 
+      headers: this.getAuthHeaders() 
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getUserId(): Observable<number|null> {
+   const username = sessionStorage.getItem('username');
+   const token = sessionStorage.getItem('jwt');
+   
+   const headers = this.getAuthHeaders();
+  
+  //  headers.append('username', username);
+   return this.http.get<number>(`${this.baseUrl}/user/${username}`, { 
+     headers: headers
+   }).pipe(
+     catchError(this.handleError)
+   );
+
+  }
   // Get all incidents
-  getIncidents(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/incidents`, { 
+  getIncidents(): Observable<Incident[]> {
+   
+    return this.http.get<Incident[]>(`${this.baseUrl}/incidents`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
       catchError(this.handleError)
@@ -71,8 +65,17 @@ export class IncidentManagementService {
 
   // Get logs for a specific incident
   getIncidentLogs(incidentId: number): Observable<any[]> {
+    const token = sessionStorage.getItem('jwt');
+    
+    console.log('Fetching incidents with headers:', this.getAuthHeaders());
+
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    })
     return this.http.get<any[]>(`${this.baseUrl}/logs/incident/${incidentId}`, { 
-      headers: this.getAuthHeaders() 
+      headers
     }).pipe(
       catchError(this.handleError)
     );
@@ -83,6 +86,21 @@ export class IncidentManagementService {
     console.error('An error occurred:', error);
     // You might want to implement more sophisticated error handling
     throw error;
+  }
+  getIncidentById(id: number): Observable<Incident> {
+    console.log("Coming to get incident by id");
+    const token = sessionStorage.getItem('jwt');
+    
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    })
+    return this.http.get<Incident>(`${this.baseUrl}/incidents/${id}`, { 
+      headers
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
 }
 

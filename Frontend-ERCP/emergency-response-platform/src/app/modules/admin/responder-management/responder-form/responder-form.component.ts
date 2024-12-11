@@ -101,7 +101,7 @@ import { MatCardModule } from '@angular/material/card';
 export class ResponderFormComponent implements OnInit {
   @Input() responder?: ResponderDTO;
   @Output() submit = new EventEmitter<ResponderDTO>();
-
+  responderId: number = 1;
   name: string = '';
   stationLocation: string = '';
   status: ResponderStatus = ResponderStatus.AVAILABLE; // Default status is 'AVAILABLE'
@@ -129,12 +129,14 @@ RESPONDER_STATUS: any;
 
   handleSubmit() {
     const responderData: ResponderDTO = {
+      responderId: this.responderId,
       name: this.name,
       stationLocation: this.stationLocation,
-      status: this.status,
+      status: ResponderStatus.AVAILABLE,
       type: this.type,
       lastUpdate: new Date(),
-      locationId: this.locationId || undefined
+      locationId: this.locationId || undefined,
+      incidentId: 0
     };
 
     if (this.responder && this.responder.responderId) {
