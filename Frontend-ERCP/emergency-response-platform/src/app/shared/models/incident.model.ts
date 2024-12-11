@@ -1,27 +1,64 @@
 // src/app/shared/models/incident.model.ts
 export interface Incident {
-    id?: string;
+    incidentId: number;
     victimName: string;
     victimContact: string;
-    location: {
+    victimlocation: {
       latitude: number;
       longitude: number;
       address?: string;
     };
-    incidentType: IncidentType;
+    incidentlocation: {
+      latitude: number;
+      longitude: number;
+      address?: string;
+    };
+
+    type: IncidentType;
     status: IncidentStatus;
     // description?: string;
-    reportedAt?: Date;
+   timestamp?: Date;
+    responderIds: number[];
+
+// incidentLocationId
+// : 
+// 17
+
+// victimId
+// : 
+// 2
+// victimLocationId
+// : 
+// 17
+
+
   }
   
   export enum IncidentType {
-    MEDICAL = 'Medical Emergency',
+    MEDICAL_EMERGENCY = 'Medical Emergency',
     FIRE = 'Fire',
     ACCIDENT = 'Accident',
     CRIME = 'Crime',
     NATURAL_DISASTER = 'Natural Disaster',
-    EMERGENCY = 'Emergency'
+    SOS_REQUEST = 'Emergency',
+    HAZMAT = 'Chemical/Hazmat'
   }
+
+  export const IncidentTypeMapping: Record<string, string> = {
+    'Crime': 'CRIME',
+    'Medical Emergency': 'MEDICAL_EMERGENCY',
+    'Fire': 'FIRE',
+    'Natural Disaster': 'NATURAL_DISASTER',
+    'Chemical/Hazmat': 'HAZMAT',
+    'SOS Request': 'SOS_REQUEST',
+  };;
+
+  // MEDICAL_EMERGENCY,
+  //   FIRE,
+  //   NATURAL_DISASTER,
+  //   HAZMAT,
+  //   SOS_REQUEST,
+  //   CRIME
   
   // export enum IncidentStatus {
   //   REPORTED = 'Reported',

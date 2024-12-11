@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient , HttpHeaders} from '@angular/common/http';
 import { environment } from '../../../enviornments/enviornment';
 
 export interface LocationData {
@@ -34,11 +34,25 @@ export class LocationService {
     // Initialize Google Maps Geocoder
     this.geocoder = new google.maps.Geocoder();
   }
-
+  private apiUrl = 'http://localhost:8888/locations';
+ 
   /**
    * Request location permission from the user
    * @returns Promise resolving to boolean indicating permission status
    */
+  getlocationById(id: number): Observable<LocationData> {
+    // Retrieve the JWT token from local storage
+    const token = sessionStorage.getItem('jwt');
+    
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+    
+    return this.http.get<LocationData>(`${this.apiUrl}/${id}`, { 
+      headers
+    });
+  }
   requestLocationPermission(): Promise<boolean> {
     return new Promise((resolve) => {
       // Check if geolocation is supported

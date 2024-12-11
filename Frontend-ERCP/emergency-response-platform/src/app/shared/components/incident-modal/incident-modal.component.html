@@ -145,7 +145,7 @@
 </mat-dialog-content> -->
 <mat-dialog-content>
   <h2 mat-dialog-title>Report an Incident</h2>
-  <form [formGroup]="incidentForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="incidentForm" (submit)="onSubmit()">
     <!-- Victim Name -->
     <div class="form-group">
       <label for="victimName">Victim Name</label>
@@ -172,12 +172,12 @@
 
     <!-- Incident Type -->
     <div class="form-group">
-      <label for="incidentTypes">Incident Type</label>
+      <label for="type">Incident Type</label>
       
-      <select class="form-control" id="incidentTypes" formControlName="incidentTypes" required>
+      <select class="form-control" id="type" formControlName="type" required>
         <option value="" disabled selected>Select an option</option>
     
-        <option *ngFor="let option of incidentTypes" [value]="option"> {{ option }}</option>
+        <option *ngFor="let option of type" [value]="option"> {{ option }}</option>
       </select>
     </div>
     

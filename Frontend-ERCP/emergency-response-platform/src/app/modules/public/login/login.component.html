@@ -33,6 +33,14 @@
                 Password must be at least 6 characters
               </div>
             </div>
+
+            <div class="form-group">
+                <label>Role</label>
+                <select formControlName="role" class="form-control" placeholder="Select a role">
+                  <option value="ADMIN">Admin</option>
+                  <option value="RESPONDER">Responder</option>
+                </select>
+              </div>
             
             <div *ngIf="loginError" class="login-error">
               {{ loginError }}
@@ -46,6 +54,8 @@
               <a href="#">Forgot Password?</a>
               <a href="mailto:emergencyresponse@emergencyresponse.org">Contact Support</a>
             </div>
+
+            
           </form>
         </div>
         

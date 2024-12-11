@@ -1,42 +1,39 @@
 <div class="container my-5">
-    <h1 class="text-center display-4 mb-4 text-primary">Responder Management</h1>
+  <h1 class="text-center display-4 mb-4 text-primary">Responder Management</h1>
   
-    <!-- Create Responder Button -->
-    <div class="d-flex justify-content-end mb-4">
-      <button mat-raised-button color="primary" (click)="openCreateResponderForm()">
-        <mat-icon>add</mat-icon> Create Responder
-      </button>
-    </div>
-  
-    <!-- Responder Type Cards -->
-    <app-responder-type-cards
-      *ngIf="!selectedResponderType"
-      (selectType)="onSelectResponderType($event)"
-      class="mb-5">
-    </app-responder-type-cards>
-  
-    <!-- Responder Table -->
-    <div *ngIf="selectedResponderType" class="mb-5">
-      <button mat-button (click)="selectedResponderType = null" class="mb-3">
-        <mat-icon>arrow_back</mat-icon> Back to Responder Types
-      </button>
-  
-      <mat-card class="shadow-lg p-4">
-        <app-responder-table
-          [responderType]="selectedResponderType"
-          (selectResponder)="onSelectResponder($event)">
-        </app-responder-table>
-      </mat-card>
-    </div>
-  
-    <!-- Responder Details Modal -->
-    <app-responder-details
-      *ngIf="selectedResponderId"
-      [responderId]="selectedResponderId"
-      (close)="closeDetails()"
-      class="mb-5">
-    </app-responder-details>
-  
-    <!-- Responder Form Modal is removed because it's now shown in a dialog -->
+  <!-- Create Responder Button -->
+  <div class="d-flex justify-content-end mb-4">
+    <button mat-raised-button color="primary" (click)="openCreateResponderForm()">
+      <mat-icon>add</mat-icon> Create Responder
+    </button>
   </div>
   
+  <!-- Responder Type Cards -->
+  <app-responder-type-cards
+    *ngIf="!selectedResponderType"
+    (selectType)="onSelectResponderType($event)"
+    class="mb-5">
+  </app-responder-type-cards>
+  
+  <!-- Responder Table -->
+  <div *ngIf="selectedResponderType" class="mb-5">
+    <button mat-button (click)="selectedResponderType = null" class="mb-3">
+      <mat-icon>arrow_back</mat-icon> Back to Responder Types
+    </button>
+  
+    <mat-card class="shadow-lg p-4">
+      <app-responder-table
+        [responderType]="selectedResponderType"
+        (selectResponder)="onSelectResponder($event)">
+      </app-responder-table>
+    </mat-card>
+  </div>
+  
+  <!-- Responder Details Modal -->
+  <app-responder-details
+    *ngIf="selectedResponderId"
+    [responderId]="selectedResponderId"
+    (close)="closeDetails()"
+    class="mb-5">
+  </app-responder-details>
+</div>

@@ -1,27 +1,97 @@
-/* Sidebar link styles */
+/* Sidebar Styles */
+.sidebar {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.sidebar-header {
+  background-color: #0056b3; /* Dark blue background */
+  color: white;
+  text-align: center;
+  padding: 16px 0;
+  border-bottom: 2px solid #e2e8f0; /* Subtle border */
+}
+
+.sidebar-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
 .sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #333;
-    transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 10px; /* Margin between links */
+}
+
+.sidebar-link:hover {
+  background-color: #f1f5f9;
+  color: #0056b3; /* Blue hover effect */
+}
+
+.sidebar-link i {
+  margin-right: 10px;
+  font-size: 18px; /* Slightly smaller icon */
+}
+
+.sidebar-link:hover i {
+  color: #0056b3;
+}
+
+/* Sidebar active state */
+.sidebar-link.active {
+  background-color: #d1e7ff;
+  color: #004085; /* Darker blue for active link */
+}
+
+.sidebar-link.active i {
+  color: #004085;
+}
+
+/* Responsive styles: Hide sidebar on small screens and show on hover */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 250px;
+    position: absolute;
+    top: 0;
+    left: -250px; /* Initially hide sidebar offscreen */
+    z-index: 1000;
+    transition: left 0.3s ease;
   }
-  
-  .sidebar-link:hover {
-    background-color: #f0f4f8;
-    color: #0056b3;
-    border-radius: 5px;
+
+  .sidebar.open {
+    left: 0; /* Show sidebar when open */
   }
-  
+
+  .sidebar-header {
+    padding: 12px;
+  }
+
+  .sidebar-link {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
   .sidebar-link i {
-    margin-right: 12px; /* Space between icon and text */
+    font-size: 16px;
   }
-  
-  /* Hover effect on sidebar link */
-  .sidebar-link:hover i {
-    color: #0056b3;
+}
+
+.main-content {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
   }
-  
+}

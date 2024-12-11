@@ -28,7 +28,7 @@
 
 
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResponderService, ResponderDTO } from '../../../../core/services/responder.service'; // Import the ResponderService
 
@@ -41,6 +41,7 @@ import { ResponderService, ResponderDTO } from '../../../../core/services/respon
 })
 export class ResponderTableComponent implements OnInit {
   responders: ResponderDTO[] = [];
+  
 
   constructor(private responderService: ResponderService) {}
 

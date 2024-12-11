@@ -1,77 +1,3 @@
-// import { CommonModule } from '@angular/common';
-// import { Component, Input, Output, EventEmitter } from '@angular/core';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatCardModule } from '@angular/material/card';
-// import { MatSelectModule } from '@angular/material/select';
-// import { FormsModule } from '@angular/forms';
-// import { MatInputModule } from '@angular/material/input';
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-
-// @Component({
-//   selector: 'app-responder-form',
-//   standalone: true,
-//   imports: [MatFormFieldModule, 
-//     CommonModule, MatCardModule, MatSelectModule, FormsModule,MatInputModule,MatButtonModule, MatDialogModule],
-//   templateUrl: './responder-form.component.html',
-//   styleUrls: ['./responder-form.component.css']
-// })
-// export class ResponderFormComponent {
-//   @Input() responder?: any;
-//   @Output() close = new EventEmitter<void>();
-//   @Output() submit = new EventEmitter<any>();
-
-//   constructor(private dialogRef: MatDialogRef<ResponderFormComponent>) {}
-
-//   name: string = '';
-//   stationLocation: string = '';
-//   status: string = '';
-//   type: string = '';
-//   contact: string = '';
-//   yearsOfExperience: number = 0;
-
-//   RESPONDER_STATUSES = [
-//     'AVAILABLE', 'ASSIGNED', 'ON_ROUTE', 'REACHED_LOCATION',
-//     'OFFLINE', 'ON_SCENE', 'NOT_AVAILABLE', 'OFF_DUTY'
-//   ];
-
-//   RESPONDER_TYPES = [
-//     'PARAMEDIC', 'FIREFIGHTER', 'POLICE_OFFICER',
-//     'HAZMAT_SPECIALIST', 'RESCUE_TEAM'
-//   ];
-
-//   ngOnInit() {
-//     if (this.responder) {
-//       this.name = this.responder.name;
-//       this.stationLocation = this.responder.stationLocation;
-//       this.status = this.responder.status;
-//       this.type = this.responder.type;
-//       this.contact = this.responder.contact;
-//       this.yearsOfExperience = this.responder.yearsOfExperience;
-//     }
-//   }
-
-//   handleSubmit() {
-//     const updatedResponder = {
-//       id: this.responder?.id || Date.now(),
-//       name: this.name,
-//       stationLocation: this.stationLocation,
-//       status: this.status,
-//       type: this.type,
-//       contact: this.contact,
-//       yearsOfExperience: this.yearsOfExperience
-//     };
-//     this.submit.emit(updatedResponder);
-//     this.dialogRef.close(); // Close the dialog after submission
-//   }
-
-//   cancel() {
-//     this.dialogRef.close(); // Close the dialog on cancel
-//   }
-  
-// }
-
-
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -101,16 +27,15 @@ import { MatCardModule } from '@angular/material/card';
 export class ResponderFormComponent implements OnInit {
   @Input() responder?: ResponderDTO;
   @Output() submit = new EventEmitter<ResponderDTO>();
-
+  
   name: string = '';
   stationLocation: string = '';
-  status: ResponderStatus = ResponderStatus.AVAILABLE; // Default status is 'AVAILABLE'
+  status: ResponderStatus = ResponderStatus.AVAILABLE;
   type: ResponderType = ResponderType.PARAMEDIC;
   locationId: number | null = null;
 
   RESPONDER_STATUSES = Object.values(ResponderStatus);
   RESPONDER_TYPES = Object.values(ResponderType);
-RESPONDER_STATUS: any;
 
   constructor(
     private dialogRef: MatDialogRef<ResponderFormComponent>,
@@ -119,33 +44,38 @@ RESPONDER_STATUS: any;
 
   ngOnInit() {
     if (this.responder) {
-      this.name = this.responder.name;
-      this.stationLocation = this.responder.stationLocation;
-      this.status = this.responder.status;
-      this.type = this.responder.type;
+      // this.responderId = this.responder.responderId;
+      this.name = this.responder.name || '';
+      this.stationLocation = this.responder.stationLocation || '';
+      this.status = this.responder.status || ResponderStatus.AVAILABLE;
+      this.type = this.responder.type || ResponderType.PARAMEDIC;
       this.locationId = this.responder.locationId || null;
     }
   }
 
   handleSubmit() {
     const responderData: ResponderDTO = {
+      responderId: this.responder ? this.responder.responderId : 0, // Use existing ID if updating
       name: this.name,
       stationLocation: this.stationLocation,
       status: this.status,
       type: this.type,
       lastUpdate: new Date(),
-      locationId: this.locationId || undefined
+      locationId: this.locationId || undefined, // Optional chaining
+      incidentId: this.responder ? (this.responder.incidentId || 0) : 0
     };
-
+  
     if (this.responder && this.responder.responderId) {
       // Updating existing responder
       this.responderService.updateResponder(this.responder.responderId, responderData)
         .subscribe({
           next: (updatedResponder) => {
+            console.log('Responder updated successfully:', updatedResponder);
             this.dialogRef.close(updatedResponder);
           },
           error: (error) => {
             console.error('Error updating responder', error);
+            // Optionally show an error message to the user
           }
         });
     } else {
@@ -153,10 +83,12 @@ RESPONDER_STATUS: any;
       this.responderService.createResponder(responderData)
         .subscribe({
           next: (newResponder) => {
+            console.log('New responder created successfully:', newResponder);
             this.dialogRef.close(newResponder);
           },
           error: (error) => {
             console.error('Error creating responder', error);
+            // Optionally show an error message to the user
           }
         });
     }

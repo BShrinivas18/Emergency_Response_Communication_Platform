@@ -51,12 +51,11 @@ export class LogService {
 
   getAllLogs(): Observable<LogDTO[]> {
     // Retrieve the JWT token from local storage
-    const token = localStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('jwt');
     
     // Create headers with Authorization
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
     });
 
     // Make the HTTP request with headers

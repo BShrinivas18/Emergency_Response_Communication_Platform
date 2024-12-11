@@ -1,4 +1,4 @@
-<div class="card">
+<!-- <div class="card">
     <div class="card-body d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
         <img 
@@ -9,41 +9,94 @@
           height="64"
         >
         <div>
-          <h2 class="mb-0">John Doe</h2>
-          <p class="text-muted mb-0">Emergency Responder</p>
+          <h2 class="mb-0">{{ responder.name }}</h2>
+        <p class="text-muted mb-0">{{ responder.type }}</p>
+        <p>Station Location: {{ responder.stationLocation }}</p>
+        <p>Status: {{ responder.status }}</p>
         </div>
       </div>
       <div class="d-flex align-items-center">
-        <!-- <span class="badge me-3" 
+        <span class="badge me-3" 
           [ngClass]="{
-            'bg-success': status === 'available',
-            'bg-warning': status === 'busy',
-            'bg-secondary': status === 'offline'
+            'bg-success': responder.status === ResponderStatus.AVAILABLE,
+            'bg-warning': responder.status === ResponderStatus.ON_ROUTE,
+            'bg-secondary': responder.status === ResponderStatus.OFF_DUTY
+            
           }">
           {{ status.charAt(0).toUpperCase() + status.slice(1) }}
-        </span> -->
+        </span>
         <div class="btn-group">
-          <!-- <button 
+          <button 
             class="btn" 
             [ngClass]="status === 'available' ? 'btn-primary' : 'btn-outline-primary'"
             (click)="setStatus('available')">
             Available
-          </button> -->
-          <!-- <button 
+          </button> 
+          <button 
             class="btn" 
             [ngClass]="status === 'busy' ? 'btn-warning' : 'btn-outline-warning'"
             (click)="setStatus('busy')">
             Busy
-          </button> -->
-          <!-- <button 
+          </button>
+           <button 
             class="btn" 
             [ngClass]="status === 'offline' ? 'btn-secondary' : 'btn-outline-secondary'"
             (click)="setStatus('offline')">
             Offline
-          </button> -->
+          </button> 
         </div>
       </div>
     </div>
   </div>
 
+ -->
 
+ <div class="card">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img 
+          alt="Responder Avatar" 
+          class="rounded-circle me-3" 
+          width="64" 
+          height="64"
+        >
+        <div>
+          <h2 class="mb-0">{{ responder.name }}</h2>
+          <p class="text-muted mb-0">{{ responder.type }}</p>
+          <p>Station Location: {{ responder.stationLocation }}</p>
+           <!-- Showing current status -->
+        </div>
+      </div>
+      <div class="d-flex align-items-center">
+        <span class="badge me-3" 
+          [ngClass]="{
+            'bg-success': status === 'AVAILABLE',
+            'bg-warning': status === 'ASSIGNED',
+            'bg-secondary': status === 'OFF_DUTY'
+          }">
+          {{ status | titlecase }}  <!-- Using titlecase pipe to format the status -->
+        </span>
+        <div class="btn-group">
+          <button 
+            class="btn" 
+            [ngClass]="status === 'AVAILABLE' ? 'btn-primary' : 'btn-outline-primary'"
+            (click)="setStatus('AVAILABLE')">
+            Available
+          </button> 
+          <button 
+            class="btn" 
+            [ngClass]="status === 'ASSIGNED' ? 'btn-warning' : 'btn-outline-warning'"
+            (click)="setStatus('ASSIGNED')">
+            Assigned
+          </button>
+          <button 
+            class="btn" 
+            [ngClass]="status === 'OFF_DUTY' ? 'btn-secondary' : 'btn-outline-secondary'"
+            (click)="setStatus('OFF_DUTY')">
+            Off Duty
+          </button> 
+        </div>
+      </div>
+    </div>
+  </div>
+  
