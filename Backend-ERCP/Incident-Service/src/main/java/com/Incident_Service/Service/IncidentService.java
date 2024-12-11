@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.xml.stream.Location;
+import javax.xml.stream.Location;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -48,21 +49,24 @@ public class IncidentService {
 
 
     public IncidentDTO reportIncident(IncidentDTO dto) {
+        // Determine or create location
+//        LocationDTO location = determineLocation(dto, latitude, longitude);
 
-         LocationDTO incidentLocation = determineLocation(dto.getIncidentLocation());// for incident location
-            int incidentLocationId = incidentLocation.getLocationId();
-          LocationDTO victimLocation = determineLocation(dto.getVictimLocation());
-          int victimLocationId = victimLocation.getLocationId();// for victim location
+            LocationDTO incidentLocation = dto.getIncidentLocation();
+            LocationDTO victimLocation = dto.getVictimLocation();
+            int incidentLocationId = determineLocation(incidentLocation, dto).getLocationId();
+            int victimLocationId = determineLocation(victimLocation, dto).getLocationId();
             // Create incident
-        System.out.println("incident location id : "+ incidentLocationId);
-        Incident incident = createIncident(dto, incidentLocationId);
+        Incident incident = createIncident(dto, incidentLocation);
 
         log.info("Incident created ");
         log.info(incident.toString());
         // Handle victim information if available (not for SOS)
         Integer victimId = null;
-        if (!"Anonymous".equals(dto.getVictimName()) && dto != null) {
-            victimId = handleVictimInformation(dto,victimLocationId);
+        if (dto.getVictimName() != "Anonymous" && dto != null) {
+//
+//            System.out.println("Its not SOS");
+            victimId = handleVictimInformation(dto);
             incident.setVictimId(victimId);
 
         }
@@ -73,56 +77,74 @@ public class IncidentService {
 
         // Log the incident
         logIncident(incident, incidentLocation);
+        logIncident(incident, incidentLocation);
 
         // Assign responder
         assignResponder(incident);
         return convertToDTO(incident);
     }
 
-    private Incident createIncident(IncidentDTO dto, int incidentLocation) {
+    private Incident createIncident(IncidentDTO dto, LocationDTO incidentLocation) {
+
         Incident incident = new Incident();
         incident.setType(dto.getVictimName().equals("Anonymous") ? IncidentType.SOS_REQUEST : dto.getType());
+        incident.setType(dto.getVictimName().equals("Anonymous") ? IncidentType.SOS_REQUEST : dto.getType());
         incident.setTimestamp(LocalDateTime.now());
-        incident.setStatus(IncidentStatus.NEW);  // This is where status is set
-        System.out.println("incident incidentId : " + incident.getIncidentId());
-        System.out.println("incident location : "+ incidentLocation);
-
-        // Ensure the location ID is set from the saved/found location
-        if(incidentLocation > 0) {
-            incident.setLocationId(incidentLocation);
-        }
-         else {
-            throw new RuntimeException("Invalid location for incident");
-        }
+        incident.setStatus(IncidentStatus.NEW);
+        incident.setLocationId(incidentLocation.getLocationId());
         return incident;
     }
 
-    private LocationDTO determineLocation(LocationDTO location) {
+    private LocationDTO determineLocation(LocationDTO location, IncidentDTO dto) {
+//        if(dto.getIncidentLocationId() != null) {
+//            return locationServiceClient.getLocationById(dto.getIncidentLocationId());
+//        }
+//        if (location.getLatitude().isNaN() && location.getLongitude().isNaN() ) {
+        // Try to find existing location or create new
         try {
-            // First, check if location already exists
-            Optional<LocationDTO> existingLocation = locationServiceClient.findByLatitudeAndLongitude(
-                    location.getLatitude(),
-                    location.getLongitude()
-            );
-            System.out.println("existing location : "+ existingLocation);
-            // If location exists, return the existing location
-            if (existingLocation.isPresent()) {
-                return existingLocation.get();
+            System.out.println("trying to find location by latitude and longitude");
+//                System.out.println(locationServiceClient.findByLatitudeAndLongitude(latitude, longitude)+"");
+            LocationDTO foundLocation = locationServiceClient.findByLatitudeAndLongitude(location.getLatitude(), location.getLongitude())
+                    .orElse(null);
+            if (foundLocation != null) {
+                return foundLocation;
             }
-            // If no existing location, create a new one
+
+            System.out.println("location not found, creating new location");
             LocationDTO newLocation = new LocationDTO();
             newLocation.setLatitude(location.getLatitude());
             newLocation.setLongitude(location.getLongitude());
             newLocation.setAddress(location.getAddress());
 
             LocationDTO savedLocation = locationServiceClient.createLocation(newLocation);
-            System.out.println("saved location : "+ savedLocation);
+            if (savedLocation == null || savedLocation.getLocationId() < 0) {
+                throw new RuntimeException("Failed to save location. Please check the location service.");
+            }
+
+            System.out.println("Saved Location ID: " + savedLocation.getLocationId());
+            System.out.println();
             newLocation.setLocationId(savedLocation.getLocationId());
+            System.out.println("Saved Location Id: " + savedLocation.getLocationId());
             return savedLocation;
 
-        } catch (Exception e) {
-            throw new RuntimeException("Location determination failed: " + e.getMessage(), e);
-        }
+
+            } catch (Exception e) {
+               e.printStackTrace();
+               throw new RuntimeException(e);
+                // Fallback to location from DTO
+//                return locationServiceClient.getLocationById(dto.getVictimLocation().getLocationId());
+            }
+//        }
+//        else {
+//            // Use location from DTO
+//            if(location == null) {
+//                System.out.println("incident location id is null");
+//                dto.setIncidentLocation(dto.getVictimLocation());
+//
+//            }
+//            System.out.println("incident location id: "+dto.getIncidentLocationId());
+//            return locationServiceClient.getLocationById(dto.getIncidentLocationId());
+//        }
     }
 
     private Integer handleVictimInformation(IncidentDTO dto,int victimLocation) {
@@ -133,8 +155,7 @@ public class IncidentService {
             victim.setName(dto.getVictimName());
             victim.setContactInfo(dto.getVictimContact());
 //            victim.setLocationId(dto.getVictimLocationId());
-            victim.setLocationId(victimLocation);
-            Integer victimId = (victimServiceClient.createVictim(victim)).getVictimId(); // victim id
+            victim.setLocationId(dto.getVictimLocation().getLocationId());
 
             return victimId;
         }
@@ -199,6 +220,8 @@ public class IncidentService {
                     dto.setStatus(incident.getStatus());
                     dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
 //                    dto.setIncidentLocationId(incident.getLocationId());
+                    dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
+//                    dto.setIncidentLocationId(incident.getLocationId());
                     dto.setVictimId(incident.getVictimId());
                     return dto;
                 })
@@ -212,6 +235,7 @@ public class IncidentService {
         dto.setTimestamp(incident.getTimestamp());
         dto.setStatus(incident.getStatus());
         dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
+        dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
 
         // Fetch additional details from other services
         if (incident.getVictimId() != null) {
@@ -221,6 +245,7 @@ public class IncidentService {
             dto.setVictimContact(victim.getContactInfo());
 //            System.out.println("victim : "+ victim);
 //            System.out.println("victim location id: "+victim.getLocationId());
+            dto.setVictimLocation(locationServiceClient.getLocationById(victim.getLocationId()));
             dto.setVictimLocation(locationServiceClient.getLocationById(victim.getLocationId()));
 
         }

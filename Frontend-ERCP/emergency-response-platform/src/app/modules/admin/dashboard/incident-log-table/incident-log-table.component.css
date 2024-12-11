@@ -1,0 +1,11 @@
+.table-responsive {
+    max-height: 400px; /* Adjust this height to fit your needs */
+    overflow-y: auto; /* Enables vertical scrolling */
+    display: block;
+  }
+  
+  table {
+    width: 100%;
+    table-layout: fixed; /* Optional: Prevents columns from resizing */
+  }
+  

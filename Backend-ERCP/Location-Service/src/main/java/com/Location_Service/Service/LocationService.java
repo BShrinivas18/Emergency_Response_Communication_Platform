@@ -22,6 +22,8 @@ public class LocationService {
     public LocationDTO createLocation(LocationDTO locationDTO) {
         System.out.println(locationDTO.getLatitude());
         System.out.println("address : "+locationDTO.getAddress());
+        System.out.println(locationDTO.getLatitude());
+        System.out.println("address : "+locationDTO.getAddress());
         Location location = convertToEntity(locationDTO);
         Location savedLocation = locationRepository.save(location);
         System.out.println("saved location: "+savedLocation);
@@ -81,6 +83,7 @@ public class LocationService {
             locationDTO.setLatitude(location.get().getLatitude());
             locationDTO.setLongitude(location.get().getLongitude());
             locationDTO.setAddress(location.get().getAddress());
+            locationDTO.setAddress(location.get().getAddress());
             // You can also map other fields if needed
             System.out.println("returning location: "+locationDTO);
             return Optional.of(locationDTO);
@@ -98,7 +101,7 @@ public class LocationService {
     }
 
     private Location convertToEntity(LocationDTO dto) {
-        System.out.println("Converting to entity: "+dto);
+        System.out.println("Converting to entity"+dto);
         Location location = new Location();
         location.setLocationId(dto.getLocationId());
         location.setLatitude(dto.getLatitude());

@@ -57,11 +57,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ResponderDetailsComponent } from '../responder-details/responder-details.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   standalone: true,
   selector: 'app-responder-table',
-  imports: [CommonModule, MatTableModule, MatIconModule, MatButtonModule, MatCardModule, MatDialogModule],
+  imports: [CommonModule, MatTableModule, MatIconModule, MatButtonModule, MatCardModule, MatDialogModule,MatFormFieldModule],
   templateUrl: './responder-table.component.html',
   styleUrls: ['./responder-table.component.css'],
 })
@@ -97,11 +98,36 @@ export class ResponderTableComponent implements OnInit {
     this.selectResponder.emit(id);
   }
 
+
+
   openResponderDetails(responderId: number) {
     const dialogRef = this.dialog.open(ResponderDetailsComponent, {
       data: { responderId: responderId },
       width: '500px'
     });
   }
+
+  changeResponderType(responder: ResponderDTO, newType: ResponderType) {
+    // Create a copy of the responder with the new type
+    const updatedResponder: ResponderDTO = {
+      ...responder,
+      type: newType
+    };
+
+    // Call service to update the responder
+    this.responderService.updateResponder(responder.responderId, updatedResponder)
+      .subscribe({
+        next: () => {
+          // Refresh the list of responders
+          this.fetchRespondersByType();
+        },
+        error: (error) => {
+          console.error('Error changing responder type', error);
+        }
+      });
+  }
+
+
+  
 }
 

@@ -1,30 +1,28 @@
 import { Component } from '@angular/core';
-import { ResponderFormComponent } from './responder-form/responder-form.component';
 import { MatIconModule } from '@angular/material/icon';
-import { ResponderTypeCardsComponent } from './responder-type-card/responder-type-card.component';
-import { ResponderTableComponent } from './responder-table/responder-table.component';
-import { ResponderDetailsComponent } from './responder-details/responder-details.component';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ResponderType } from '../../../core/services/responder.service';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ResponderTypeCardsComponent } from './responder-type-card/responder-type-card.component';
+import { ResponderTableComponent } from './responder-table/responder-table.component';
+import { ResponderDetailsComponent } from './responder-details/responder-details.component';
+import { ResponderFormComponent } from './responder-form/responder-form.component';
 
 @Component({
-  standalone:true,
+  standalone: true,
   selector: 'app-responder-management',
-  imports:[
+  imports: [
     MatIconModule,
     ResponderTypeCardsComponent,
     ResponderTableComponent,
     ResponderDetailsComponent,
     MatCardModule,
     CommonModule,
-    MatCardModule,
     MatButtonModule,
     MatDialogModule,
-    
+
   ],
   templateUrl: './responder-management.component.html',
   styleUrls: ['./responder-management.component.css']
@@ -32,7 +30,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 export class ResponderManagementComponent {
   selectedResponderId: number | null = null;
   selectedResponderType: ResponderType | null = null;
-  isCreating: boolean = false;
 
   constructor(private dialog: MatDialog) {}
 
@@ -48,22 +45,18 @@ export class ResponderManagementComponent {
     this.selectedResponderId = null;
   }
 
-  closeForm() {
-    this.isCreating = false;
-  }
-
   openCreateResponderForm() {
     const dialogRef = this.dialog.open(ResponderFormComponent, {
-      width: '500px', // Set the width of the dialog
-      height: 'auto', // Height can be adjusted automatically
-      panelClass: 'custom-dialog', // Optional: Custom CSS class for styling the dialog
+      width: '500px',
+      height: 'auto',
+      panelClass: 'custom-dialog'
     });
 
-
     dialogRef.afterClosed().subscribe(result => {
-      // Handle the form close event, if necessary
-      console.log('The dialog was closed');
+      if (result) {
+        // Handle the created responder if needed
+        console.log('New responder created', result);
+      }
     });
   }
 }
-

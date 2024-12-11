@@ -30,13 +30,15 @@ public class JwtService {
     public String generateToken(String username, Role role) {
         Map<String, Object> claims = new HashMap<>();
 //        claims.put("authorities", "ROLE_" + role.name());
+//        claims.put("authorities", "ROLE_" + role.name());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .claim("role", role.name())
+                .claim("role", role.name())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 )) // 60 minutes expiration
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) // 60 minutes expiration
                 .signWith(getKey(), SignatureAlgorithm.HS256) // Sign with the fixed key
                 .compact();
     }

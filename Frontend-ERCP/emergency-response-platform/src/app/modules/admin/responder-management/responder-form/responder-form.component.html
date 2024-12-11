@@ -1,107 +1,11 @@
-<!-- <mat-card class="form-card">
-    <mat-card-title class="form-card-title">
-      {{ responder ? 'Update Responder' : 'Create Responder' }}
-    </mat-card-title>
-  
-    <mat-card-content>
-      <form (ngSubmit)="handleSubmit()">
-        <mat-form-field class="full-width form-field">
-          <mat-label>Name</mat-label>
-          <input matInput [(ngModel)]="name" name="name" required />
-        </mat-form-field>
-  
-        <mat-form-field class="full-width form-field">
-          <mat-label>Station Location</mat-label>
-          <input matInput [(ngModel)]="stationLocation" name="stationLocation" required />
-        </mat-form-field>
-  
-        <mat-form-field class="full-width form-field">
-          <mat-label>Contact</mat-label>
-          <input matInput [(ngModel)]="contact" name="contact" required />
-        </mat-form-field>
-  
-        <mat-form-field class="full-width form-field">
-          <mat-label>Years of Experience</mat-label>
-          <input matInput type="number" [(ngModel)]="yearsOfExperience" name="yearsOfExperience" required />
-        </mat-form-field>
-  
-        <mat-form-field class="full-width form-field">
-          <mat-label>Responder Status</mat-label>
-          <mat-select [(ngModel)]="status" name="status" required>
-            <mat-option *ngFor="let s of RESPONDER_STATUSES" [value]="s">{{ s }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-  
-        <mat-form-field class="full-width form-field">
-          <mat-label>Responder Type</mat-label>
-          <mat-select [(ngModel)]="type" name="type" required>
-            <mat-option *ngFor="let t of RESPONDER_TYPES" [value]="t">{{ t }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-  
-        <div class="button-row">
-          <button mat-button type="button" (click)="cancel()" class="cancel-button">Cancel</button>
-          <button mat-raised-button color="primary" type="submit" class="submit-button">
-            {{ responder ? 'Update' : 'Create' }}
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-   -->
-
-
- <!-- responder-form.component.html -->
- <!-- <mat-card class="form-card">
-  <mat-card-title class="form-card-title">
-    {{ responder ? 'Update Responder' : 'Create Responder' }}
-  </mat-card-title>
-
-  <mat-card-content>
-    <form (ngSubmit)="handleSubmit()">
-      <mat-form-field class="full-width form-field">
-        <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="name" name="name" required />
-      </mat-form-field>
-
-      <mat-form-field class="full-width form-field">
-        <mat-label>Station Location</mat-label>
-        <input matInput [(ngModel)]="stationLocation" name="stationLocation" required />
-      </mat-form-field>
-
-      <mat-form-field class="full-width form-field">
-        <mat-label>Responder Status</mat-label>
-        <mat-select [(ngModel)]="status" name="status" required>
-          <mat-option *ngFor="let s of RESPONDER_STATUS" [value]="s">{{ s }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field class="full-width form-field">
-        <mat-label>Responder Type</mat-label>
-        <mat-select [(ngModel)]="type" name="type" required>
-          <mat-option *ngFor="let t of RESPONDER_TYPES" [value]="t">{{ t }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <div class="button-row">
-        <button mat-button type="button" (click)="cancel()" class="cancel-button">Cancel</button>
-        <button mat-raised-button color="primary" type="submit" class="submit-button">
-          {{ responder ? 'Update' : 'Create' }}
-        </button>
-      </div>
-    </form>
-  </mat-card-content>
-</mat-card> -->
-
-
 <div class="card shadow-sm">
   <div class="card-header">
     <h5 class="card-title mb-0">{{ responder ? 'Update Responder' : 'Create Responder' }}</h5>
   </div>
   <div class="card-body">
-    <form (ngSubmit)="handleSubmit()">
+    <form (ngSubmit)="handleSubmit()"> 
       <!-- Name -->
-      <div class="mb-3">
+       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input 
           type="text" 
@@ -113,7 +17,7 @@
         />
       </div>
 
-      <!-- Station Location -->
+
       <div class="mb-3">
         <label for="stationLocation" class="form-label">Station Location</label>
         <input 
@@ -125,8 +29,21 @@
           required 
         />
       </div>
+
+      <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <select 
+          class="form-select" 
+          id="status" 
+          [(ngModel)]="status" 
+          name="status" 
+          required
+        >
+          <option *ngFor="let s of RESPONDER_STATUSES" [value]="s">{{ s }}</option>
+        </select>
+      </div>
       
-      <!-- Responder Type -->
+
       <div class="mb-3">
         <label for="type" class="form-label">Responder Type</label>
         <select 
@@ -140,7 +57,7 @@
         </select>
       </div>
 
-      <!-- Buttons -->
+
       <div class="d-flex justify-content-end">
         <button 
           type="button" 
@@ -153,9 +70,10 @@
           type="submit" 
           class="btn btn-primary"
         >
-          {{ responder ? 'Update' : 'Create' }}
+          {{ responder ? 'Update' : 'Create' }} 
         </button>
       </div>
     </form>
   </div>
 </div>
+
