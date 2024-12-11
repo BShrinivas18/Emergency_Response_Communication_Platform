@@ -36,7 +36,7 @@ public class JwtService {
                 .setSubject(username)
                 .claim("role", role.name())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) // 60 minutes expiration
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 )) // 60 minutes expiration
                 .signWith(getKey(), SignatureAlgorithm.HS256) // Sign with the fixed key
                 .compact();
     }

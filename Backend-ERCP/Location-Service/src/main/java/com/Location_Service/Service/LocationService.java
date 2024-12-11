@@ -71,8 +71,11 @@ public class LocationService {
             return Optional.empty();
 
         } else {
-            System.out.println("location found ; converting to dto");
+            System.out.println("location found ; converting to dto : "+
+                    location
+            );
             LocationDTO locationDTO = new LocationDTO();
+            System.out.println("Trying to set location with location id : ");
             locationDTO.setLocationId(location.get().getLocationId());
             // Map fields from Location entity to LocationDTO
             locationDTO.setLatitude(location.get().getLatitude());
@@ -95,7 +98,7 @@ public class LocationService {
     }
 
     private Location convertToEntity(LocationDTO dto) {
-        System.out.println("Converting to entity"+dto);
+        System.out.println("Converting to entity: "+dto);
         Location location = new Location();
         location.setLocationId(dto.getLocationId());
         location.setLatitude(dto.getLatitude());

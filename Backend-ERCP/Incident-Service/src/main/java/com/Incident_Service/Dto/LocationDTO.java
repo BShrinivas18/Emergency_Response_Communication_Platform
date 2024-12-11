@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LocationDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int locationId;
     private Double latitude;
     private Double longitude;
