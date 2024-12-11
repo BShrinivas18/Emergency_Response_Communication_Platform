@@ -21,8 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncidentDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int incidentId;
     @NotNull(message = "Incident type cannot be null")
     private IncidentType type;

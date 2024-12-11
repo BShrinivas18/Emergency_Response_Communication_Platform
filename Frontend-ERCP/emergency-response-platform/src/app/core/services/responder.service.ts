@@ -53,6 +53,7 @@ export class ResponderService {
     // Make the HTTP request with headers
     return this.http.get<ResponderDTO[]>(`${this.apiUrl}/status/AVAILABLE`, { headers });
   }
+  
   private getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('jwt');
     return new HttpHeaders({
@@ -81,6 +82,7 @@ export class ResponderService {
     });
     // console.log(headers.get+" coming from get responder by id");
     return this.http.get<ResponderDTO>(`${this.apiUrl}/${id}`, {headers});
+  
   }
   createResponder(responder: ResponderDTO): Observable<ResponderDTO> {
     const token = sessionStorage.getItem('jwt');

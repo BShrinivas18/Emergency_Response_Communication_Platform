@@ -30,10 +30,12 @@ public class JwtService {
     public String generateToken(String username, Role role) {
         Map<String, Object> claims = new HashMap<>();
 //        claims.put("authorities", "ROLE_" + role.name());
+//        claims.put("authorities", "ROLE_" + role.name());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
+                .claim("role", role.name())
                 .claim("role", role.name())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) // 60 minutes expiration

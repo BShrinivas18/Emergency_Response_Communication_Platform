@@ -66,6 +66,7 @@ public class LocationController {
     @GetMapping("/coordinates")
     public ResponseEntity<Optional<LocationDTO>> getByCoordinates(@RequestParam Double latitude, @RequestParam Double longitude){
         System.out.println("trying to find location by latitude and longitude VIA CONTROLLER");
+        System.out.println("output : "+ locationService.findByLatitudeAndLongitude(latitude, longitude));
         return ResponseEntity.ok(locationService.findByLatitudeAndLongitude(latitude, longitude));
           }
 

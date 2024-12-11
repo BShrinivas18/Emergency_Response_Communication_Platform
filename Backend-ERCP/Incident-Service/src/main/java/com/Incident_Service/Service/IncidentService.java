@@ -9,16 +9,19 @@ import com.Incident_Service.FeignClient.ResponderServiceClient;
 import com.Incident_Service.FeignClient.VictimServiceClient;
 import com.Incident_Service.Model.Incident;
 import com.Incident_Service.Repository.IncidentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import javax.xml.stream.Location;
 import javax.xml.stream.Location;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class IncidentService {
 
@@ -56,6 +59,8 @@ public class IncidentService {
             // Create incident
         Incident incident = createIncident(dto, incidentLocation);
 
+        log.info("Incident created ");
+        log.info(incident.toString());
         // Handle victim information if available (not for SOS)
         Integer victimId = null;
         if (dto.getVictimName() != "Anonymous" && dto != null) {
@@ -65,24 +70,24 @@ public class IncidentService {
             incident.setVictimId(victimId);
 
         }
+        System.out.println("Incident: " + incident);
 
         // Save incident
         incident = incidentRepository.save(incident);
 
         // Log the incident
         logIncident(incident, incidentLocation);
+        logIncident(incident, incidentLocation);
 
         // Assign responder
         assignResponder(incident);
-
-//        incident = incidentRepository.save(incident);
-
         return convertToDTO(incident);
     }
 
     private Incident createIncident(IncidentDTO dto, LocationDTO incidentLocation) {
 
         Incident incident = new Incident();
+        incident.setType(dto.getVictimName().equals("Anonymous") ? IncidentType.SOS_REQUEST : dto.getType());
         incident.setType(dto.getVictimName().equals("Anonymous") ? IncidentType.SOS_REQUEST : dto.getType());
         incident.setTimestamp(LocalDateTime.now());
         incident.setStatus(IncidentStatus.NEW);
@@ -142,7 +147,7 @@ public class IncidentService {
 //        }
     }
 
-    private Integer handleVictimInformation(IncidentDTO dto) {
+    private Integer handleVictimInformation(IncidentDTO dto,int victimLocation) {
 //        System.out.println("handle victim information");
         if (dto.getVictimName() != null) {
 //            System.out.println("victim name: "+dto.getVictimName());
@@ -152,10 +157,6 @@ public class IncidentService {
 //            victim.setLocationId(dto.getVictimLocationId());
             victim.setLocationId(dto.getVictimLocation().getLocationId());
 
-            Integer victimId = (victimServiceClient.createVictim(victim)).getVictimId();
-//            System.out.println("victim name: "+victim.getName());
-//            System.out.println("victim id: "+victimId);
-//            System.out.println("victim contact: "+victim.getLocationId());
             return victimId;
         }
         return null;
@@ -166,7 +167,6 @@ public class IncidentService {
         log.setStatusUpdate(String.format("Incident reported at location: %s (Lat: %f, Long: %f)",
                 location.getAddress(), location.getLatitude(), location.getLongitude()));
         log.setTimestamp(LocalDateTime.now());
-//        log.setUpdatedBy(victimId);
         log.setIncidentId(incident.getIncidentId());
         logServiceClient.createLog(log);
     }
@@ -180,7 +180,6 @@ public class IncidentService {
         return incidentRepository.findById(id).map(Incident::getStatus).orElse(null);
     }
 
-
     public List<IncidentDTO> getAllIncidents() {
         return incidentRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -191,7 +190,6 @@ public class IncidentService {
         System.out.println("get incident by id in service works");
         return incidentRepository.findById(id).map(this::convertToDTO);
     }
-
     public List<IncidentDTO> getIncidentsByStatus(IncidentStatus status) {
         return incidentRepository.findByStatus(status).stream()
                 .map(this::convertToDTO)
@@ -222,6 +220,8 @@ public class IncidentService {
                     dto.setStatus(incident.getStatus());
                     dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
 //                    dto.setIncidentLocationId(incident.getLocationId());
+                    dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
+//                    dto.setIncidentLocationId(incident.getLocationId());
                     dto.setVictimId(incident.getVictimId());
                     return dto;
                 })
@@ -235,6 +235,7 @@ public class IncidentService {
         dto.setTimestamp(incident.getTimestamp());
         dto.setStatus(incident.getStatus());
         dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
+        dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
 
         // Fetch additional details from other services
         if (incident.getVictimId() != null) {
@@ -244,6 +245,7 @@ public class IncidentService {
             dto.setVictimContact(victim.getContactInfo());
 //            System.out.println("victim : "+ victim);
 //            System.out.println("victim location id: "+victim.getLocationId());
+            dto.setVictimLocation(locationServiceClient.getLocationById(victim.getLocationId()));
             dto.setVictimLocation(locationServiceClient.getLocationById(victim.getLocationId()));
 
         }

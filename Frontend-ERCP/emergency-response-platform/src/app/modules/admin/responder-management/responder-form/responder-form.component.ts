@@ -58,7 +58,7 @@ export class ResponderFormComponent implements OnInit {
       responderId: this.responder ? this.responder.responderId : 0, // Use existing ID if updating
       name: this.name,
       stationLocation: this.stationLocation,
-      status: this.status,
+      status: ResponderStatus.AVAILABLE,
       type: this.type,
       lastUpdate: new Date(),
       locationId: this.locationId || undefined, // Optional chaining
