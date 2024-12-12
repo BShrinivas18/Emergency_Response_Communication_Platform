@@ -103,3 +103,12 @@
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
   }
+  .danger-btn {
+    background-color: #d32f2f; /* Red color indicating danger */
+    color: white; /* Text color */
+    border: none; /* No border */
+  }
+  
+  .danger-btn:hover {
+    background-color: #c62828; /* Darker red for hover effect */
+  }

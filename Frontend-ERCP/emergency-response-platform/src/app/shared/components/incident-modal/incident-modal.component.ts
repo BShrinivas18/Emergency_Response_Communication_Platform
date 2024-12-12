@@ -114,12 +114,12 @@ export class IncidentReportModalComponent implements OnInit {
     if (this.incidentForm.valid) {
       const incidentData = {
         ...this.incidentForm.value,
-        incidentlocation: this.userLocation ? {
+        incidentLocation: this.userLocation ? {
           latitude: this.userLocation.lat,
           longitude: this.userLocation.lng,
           address: this.incidentForm.value.incidentLocation
         } : null,
-        victimlocation: this.userLocation ? {
+        victimLocation: this.userLocation ? {
           latitude: this.userLocation.lat,
           longitude: this.userLocation.lng,
           address: this.incidentForm.value.incidentLocation

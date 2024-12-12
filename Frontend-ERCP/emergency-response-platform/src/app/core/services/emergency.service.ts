@@ -14,48 +14,14 @@ export class EmergencyService {
   
   private incidentsSubject = new BehaviorSubject<Incident[]>([]);
   incidents$ = this.incidentsSubject.asObservable();
-
+  incidentTemp:Observable<Incident> = new Observable<Incident>()
+  currentIncidentId! : number;
   constructor(private http: HttpClient,
-    private dialog: MatDialog
-
-
+    private dialog: MatDialog,
     
-  ) {}
-
-  // reportIncident(incident: Incident): Observable<Incident> {
-  //   const token = sessionStorage.getItem('jwt');
-  //   const mappedType = IncidentTypeMapping[incident.type];
-
-
-  //   const incidentData = {
-  //     incidentLocation: {
-  //       latitude:incident.incidentlocation.latitude,
-  //       longitude: incident.incidentlocation.longitude,
-  //       address: incident.incidentlocation.address
-  //     },
-  //     victimLocation: {
-  //       latitude: incident.victimlocation.latitude,
-  //       longitude: incident.victimlocation.longitude, 
-  //       address: incident.victimlocation.address
-  //     },
-  //     type:mappedType,
-  //     status: incident.status,
-  //     timestamp: incident.timestamp,
-  //     victimName: incident.victimName,
-  //     victimContact: incident.victimContact,
-  //   };
-  //   // Create headers with Authorization
-  //   const headers = new HttpHeaders({
-  //     'Authorization': `Bearer ${token}`,
-  //     'Content-Type': 'application/json'
-  //   });
-
-  //   // console.log("Coming");
-  //   console.log("incident data being sent to backend");
-  //   console.log(incidentData);
-  //   console.log("incident Type : "+ incident.type);
-  //   return this.http.post<Incident>(`http://localhost:8888/incidents/create`,incidentData,{headers});
-  // }
+  ) {
+    
+  }
 
   reportIncident(incident: Incident): Observable<Incident> {
     const token = sessionStorage.getItem('jwt');
@@ -87,9 +53,20 @@ export class EmergencyService {
     });
   
     console.log("Incident data being sent to backend:", incidentData);
-    return this.http.post<Incident>(`http://localhost:8888/incidents/create`, incidentData, { headers });
+  this.http.post<Incident>(`http://localhost:8888/incidents/create`, incidentData, { headers }).subscribe(
+    data => {
+    console.log("data sent ");
+    console.log(data);
+    this.currentIncidentId= data.incidentId;
+    console.log("current incident id");
+    console.log(this.currentIncidentId);
+  });
+    return this.incidentTemp;
   }
 
+  getcurrentIncidentId(){
+    return this.currentIncidentId;
+  }
   // getIncidents(): Observable<Incident[]> {
   //   const token = sessionStorage.getItem('jwt');
     

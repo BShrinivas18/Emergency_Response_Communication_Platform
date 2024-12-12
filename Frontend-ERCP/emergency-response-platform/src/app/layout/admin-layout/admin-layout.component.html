@@ -1,9 +1,13 @@
-<div class="flex h-screen overflow-hidden bg-gray-100">
-  <app-admin-sidebar></app-admin-sidebar> <!-- Sidebar Component -->
-  <main class="flex-1 overflow-y-auto p-8">
-    <div class="mx-auto max-w-7xl">
+<div class="mat-app-background d-flex h-100">
+  <!-- Sidebar Component -->
+  <app-admin-sidebar class="mat-elevation-z4" style="width: 250px; height: 100%;"></app-admin-sidebar>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow-1 p-4">
+    <div class="container">
       <!-- Dynamic content based on route -->
       <router-outlet></router-outlet>
     </div>
   </main>
 </div>
+
