@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResponderDTO, ResponderService, ResponderStatus } from '../../../core/services/responder.service';  // Ensure correct import
-
+import {  Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-profile-header',
   standalone: true,
@@ -13,7 +14,7 @@ export class ProfileHeaderComponent implements OnInit {
   responder!: ResponderDTO;
   status!: string;  // Use string type to store the status temporarily
 
-  constructor(private responderService: ResponderService) {}
+  constructor(private responderService: ResponderService, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     // Call the service method to fetch the responder data dynamically
@@ -70,5 +71,12 @@ export class ProfileHeaderComponent implements OnInit {
       }
     });
     
+  }
+
+  logout() {
+    // Call the logout method from your AuthService to clear session or tokens
+    this.authService.logout();
+    // Navigate to the login page or homepage
+    this.router.navigate(['/login']);
   }
 }

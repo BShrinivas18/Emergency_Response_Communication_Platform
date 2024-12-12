@@ -134,7 +134,8 @@ public class ResponderService {
             responder.setLastUpdate(LocalDateTime.now());
             // Log the assignment
             LogDTO logDTO = createLogDTO(incident.getIncidentId(),
-                    "Responder automatically assigned: " + responder.getName());
+                    "Responder automatically assigned: " + responder.getName() +"\n"
+            + "Responder Type : " + responder.getType());
             logDTO.setIncidentId(incident.getIncidentId());
             logDTO.setTimestamp(LocalDateTime.now());
             logServiceClient.createLog(logDTO);
@@ -151,12 +152,18 @@ public class ResponderService {
             }
 
             // Log warning about no available responders
-            LogDTO logDTO = createLogDTO(incident.getIncidentId(),
-                    "WARNING: No available responders of type " + requiredResponderType);
+            LogDTO logDTO = createLogDTO(
+                    incident.getIncidentId(),
+                    "WARNING: No available responders of type. " + requiredResponderType + "\n" +
+                            "Don't Worry we will assign a " + requiredResponderType + " to the incident ASAP." + "\n" +
+                            "Default Responder assigned"
+            );
+
             logDTO.setTimestamp(LocalDateTime.now());
             logDTO.setIncidentId(incident.getIncidentId());
 
             logServiceClient.createLog(logDTO);
+
         }
     }
 

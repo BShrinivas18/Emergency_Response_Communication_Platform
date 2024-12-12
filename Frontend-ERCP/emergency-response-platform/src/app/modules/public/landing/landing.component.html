@@ -29,12 +29,17 @@
             {{ type }}
           </button>
         </div>
-  
+        <div><h3> Emergency Guidelines : </h3></div>
         <!-- Dynamic Guidelines Section -->
         <div class="guidelines-details" *ngIf="selectedEmergency">
-          <h4>{{ selectedEmergency }} Guidelines</h4>
-          <p>{{ guidelines[selectedEmergency] }}</p>
+          <h4>{{ selectedEmergency }}</h4>
+          <ul>
+            <li *ngFor="let guideline of guidelines[selectedEmergency]">
+              {{ guideline }}
+            </li>
+          </ul>
         </div>
+        
       </div>
   
       <!-- Central Map Section -->
@@ -100,8 +105,8 @@
     <!-- Floating SOS Button -->
     <button 
       mat-fab 
-      color="warn" 
-      class="floating-sos-btn" 
+      
+      class="floating-sos-btn danger-btn" 
       (click)="sendSOSAlert()">
       <mat-icon>emergency</mat-icon>
     </button>
