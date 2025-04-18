@@ -24,7 +24,7 @@ export class EmergencyService {
   }
 
   reportIncident(incident: Incident): Observable<Incident> {
-    const token = sessionStorage.getItem('jwt');
+    // const token = sessionStorage.getItem('jwt');
     const mappedType = IncidentTypeMapping[incident.type];
   
     const incidentData = {
@@ -47,13 +47,15 @@ export class EmergencyService {
       victimContact: incident.victimContact,
     };
   
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    // const headers = new HttpHeaders({
+    //   'Authorization': `Bearer ${token}`,
+    //   'Content-Type': 'application/json'
+    // });
   
     console.log("Incident data being sent to backend:", incidentData);
-  this.http.post<Incident>(`http://localhost:8888/incidents/create`, incidentData, { headers }).subscribe(
+  this.http.post<Incident>(`http://localhost:8888/incidents/create`, incidentData
+  //  { headers }
+  ).subscribe(
     data => {
     console.log("data sent ");
     console.log(data);
@@ -95,20 +97,21 @@ export class EmergencyService {
   }
 
   sendSOSAlert(incident: Incident): Observable<Incident> {
-    const token = sessionStorage.getItem('jwt');
+    // const token = sessionStorage.getItem('jwt');
     
     // Create headers with Authorization
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    // const headers = new HttpHeaders({
+    //   'Authorization': `Bearer ${token}`,
+    //   'Content-Type': 'application/json'
+    // });
     return this.http.post<Incident>(`${this.apiUrl}/sos`, {
       ...incident,
       incidentType: IncidentType.SOS_REQUEST,
       // status: IncidentStatus.REPORTED
       status: 'Reported'
     },
-  {headers});
+  // {headers}
+);
   }
   getFormData() {
     console.log("coming from get data method : ");

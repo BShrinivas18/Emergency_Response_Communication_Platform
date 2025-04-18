@@ -15,6 +15,8 @@ import { SOSAlertConfirmationComponent } from '../../../shared/components/sos-al
 // import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Router } from '@angular/router';
+import { WarningDialogComponent } from './warning-dialog/warning-dialog.component';
+import { DialogModule, DialogRef } from '@angular/cdk/dialog';
 @Component({
   selector: 'app-landing',
   standalone: true,
@@ -42,7 +44,8 @@ export class LandingComponent implements OnInit {
   weatherAlerts = signal<WeatherAlert[]>([]);
   
   emergencyTypes = ['Fire', 'Medical', 'Accident', 'Crime', 'Natural Disaster'];
-  selectedEmergency!: string;
+  // selectedEmergency!: string;
+  selectedEmergency: string | null = null;
   
   guidelines: { [key: string]: string[] } = {
     'Fire': [
@@ -121,6 +124,15 @@ export class LandingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.dialog.open(WarningDialogComponent, {
+      width: '500px',
+      height: 'auto',
+      disableClose: true // 
+    }); 
+    this.dialog.afterAllClosed.subscribe(result => {
+      console.log('User acknowledged the warning.', result);
+    });
+  
     this.initializeLocationAndAlerts();
   }
 

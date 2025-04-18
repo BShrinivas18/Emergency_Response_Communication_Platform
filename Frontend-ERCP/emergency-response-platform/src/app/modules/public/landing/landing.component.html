@@ -19,7 +19,9 @@
     <div class="emergency-grid">
       <!-- Left Sidebar: Emergency Guidelines -->
       <div class="emergency-guidelines">
-        <h3>Emergency Types</h3>
+        
+        
+        <div><h3> Emergency Guidelines : </h3></div>
         <div class="emergency-type-buttons">
           <button 
             *ngFor="let type of emergencyTypes" 
@@ -29,16 +31,23 @@
             {{ type }}
           </button>
         </div>
-        <div><h3> Emergency Guidelines : </h3></div>
+
+          <div  *ngIf="selectedEmergency === null">
+          <h6> Select Emergency Type to view guidelines </h6>
+          </div>
         <!-- Dynamic Guidelines Section -->
         <div class="guidelines-details" *ngIf="selectedEmergency">
-          <h4>{{ selectedEmergency }}</h4>
+          <h6>In Case Of</h6>
+          <h4>{{ selectedEmergency }} : </h4>
           <ul>
             <li *ngFor="let guideline of guidelines[selectedEmergency]">
-              {{ guideline }}
+              
+             {{ guideline }}
             </li>
           </ul>
         </div>
+        
+        
         
       </div>
   
