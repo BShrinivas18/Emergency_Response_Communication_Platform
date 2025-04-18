@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->request
 //                        .requestMatchers("/responders/create/**","/responders/update","/responders/delete","/responders/getAll", "/incidents/{id}").hasRole("ADMIN")
 //                        .requestMatchers(("/responders/request-additional/{id}/{type}")).hasRole("RESPONDER")
-                        .requestMatchers("/register","/login","/incidents/incident/status/{id}","/incidents/create/**").permitAll()
+                        .requestMatchers("/register","/login","/incidents/incident/status/{id}","/incidents/create").permitAll()
 
                         .anyRequest().authenticated())
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
