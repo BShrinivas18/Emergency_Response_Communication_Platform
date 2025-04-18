@@ -8,13 +8,19 @@ import { DashboardComponent } from '../app/modules/emergency/dashboard/dashboard
 import { LoginComponent } from '../app/modules/public/login/login.component';
 import { Routes } from '@angular/router';
 import { ResponderDashboardComponent } from './modules/responder/dashboard/dashboard.component';
+import { authGuard } from './core/auth-gaurd/auth.guard';
+import { AccessDeniedComponent } from './core/access-denied/access-denied.component';
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'incident-tracking', component: DashboardComponent },
   { path: 'login', component: LoginComponent },
+  {path :'access-denied', component: AccessDeniedComponent},
   {
     path: 'admin',
-    component: AdminLayoutComponent, // Wrap routes with AdminLayoutComponent
+    component: AdminLayoutComponent,
+    canActivate : [authGuard],
+    data : { roles : ['ADMIN']},
+    // Wrap routes with AdminLayoutComponent
     children: [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'incident-management', component: IncidentManagementComponent },
@@ -22,7 +28,10 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }  // Default route
     ]
   },
-  {path: 'responder-dashboard', component: ResponderDashboardComponent},
+  {path: 'responder-dashboard', component: ResponderDashboardComponent ,
+    canActivate : [authGuard],
+    data:{roles : ['ADMIN', 'RESPONDER']} 
+  },
   { path: '', redirectTo: 'admin/dashboard', pathMatch: 'full' }, // Root redirect
   { path: '**', redirectTo: 'admin/dashboard' }
   // Other routes will be added later

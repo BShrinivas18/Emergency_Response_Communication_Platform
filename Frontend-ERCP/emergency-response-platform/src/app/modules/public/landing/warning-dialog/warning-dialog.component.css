@@ -1,0 +1,81 @@
+.dialog-wrapper {
+    padding: 24px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .dialog-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #b71c1c;
+    margin: 0;
+  }
+  
+  .warning-icon {
+    font-size: 36px;
+    color: #b71c1c;
+  }
+  
+  .dialog-body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .main-message {
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  
+  .consequence {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .bullet-icon {
+    font-size: 24px;
+    color: #f44336;
+    flex-shrink: 0;
+  }
+  
+  .consequence span {
+    display: block;
+    flex: 1;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  
+  .consequence span strong {
+    font-weight: 600;
+    color: #d32f2f;
+  }
+  
+  .acknowledgement {
+    margin-top: 24px;
+    font-style: italic;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+  }
+  
+  button[mat-raised-button] {
+    padding: 8px 24px;
+    font-weight: 600;
+    text-transform: none;
+  }
+  
