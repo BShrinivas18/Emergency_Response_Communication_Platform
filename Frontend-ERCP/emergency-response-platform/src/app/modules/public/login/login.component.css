@@ -33,6 +33,7 @@
 
 .login-content {
   display: flex;
+  flex-wrap: wrap;
   min-height: 500px;
 }
 
@@ -125,4 +126,29 @@ button:disabled {
   font-size: 3rem;
   color: #0066cc;
   margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .login-content {
+    flex-direction: column;
+  }
+
+  .stats-grid,
+  .services-grid {
+    grid-template-columns: 1fr; /* Stack vertically */
+  }
+
+  .login-wrapper {
+    width: 100%;
+  }
+
+  .login-form,
+  .platform-stats {
+    padding: 20px;
+  }
+
+  .login-links {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

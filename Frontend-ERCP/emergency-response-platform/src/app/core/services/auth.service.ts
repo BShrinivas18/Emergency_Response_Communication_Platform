@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../enviornments/enviornment';
+// import { environment } from '../../../enviornments/enviornment';
 import { Observable, throwError,tap } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+// import { catchError } from 'rxjs/operators';
 import { Role, User } from '../../shared/models/user.model';
-import { coerceStringArray } from '@angular/cdk/coercion';
-
-interface LoginCredentials {
-  username: string;
-  password: string;
-  role: string;
-}
+// import { coerceStringArray } from '@angular/cdk/coercion';
+import { Router } from '@angular/router';
+// interface LoginCredentials {
+//   username: string;
+//   password: string;
+//   role: string;
+// }
 
 export interface LoginRequest {
   username: string;
@@ -31,7 +31,10 @@ export class AuthService {
 
   private baseUrl = 'http://localhost:8888/login'; // Adjust to your login endpoint
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private router: Router
+
+  ) {}
 
   // login(credentials: LoginCredentials): Observable<any> {
   //   return this.http.post(this.apiUrl, credentials).pipe(
@@ -112,7 +115,9 @@ export class AuthService {
  
   logout(): void {
     sessionStorage.removeItem('jwt'); // Remove the specific 'jwt' item from sessionStorage
-    sessionStorage.clear(); // Clear all items from sessionStorage
+    sessionStorage.clear(); 
+    this.router.navigate(['/login']);
+    // Clear all items from sessionStorage
   }
  
  

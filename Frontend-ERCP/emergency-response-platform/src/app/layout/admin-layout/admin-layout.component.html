@@ -1,13 +1,95 @@
-<div class="mat-app-background d-flex h-100">
-  <!-- Sidebar Component -->
-  <app-admin-sidebar class="mat-elevation-z4" style="width: 250px; height: 100%;"></app-admin-sidebar>
 
-  <!-- Main Content Area -->
-  <main class="flex-grow-1 p-4">
-    <div class="container">
-      <!-- Dynamic content based on route -->
-      <router-outlet></router-outlet>
+<!-- <div class="admin-wrapper">
+  <header class="admin-header">
+    <h1 class="admin-title">Admin Panel</h1>
+    <div class="admin-actions">
+      <a routerLink="/" class="btn btn-home">Home</a>
+      <button class="btn btn-logout" (click)="logout()">Logout</button>
     </div>
-  </main>
+  </header>
+
+  <nav class="admin-tabs">
+    <ul>
+      <li *ngFor="let link of links">
+        <button
+          type="button"
+          class="tab-btn"
+          [ngClass]="{ active: selectedTab === link.content }"
+          (click)="setTab(link.content)"
+        >
+          <span class="tab-icon">
+            <ng-container [ngSwitch]="link.content">
+              <i *ngSwitchCase="'Dashboard'">📊</i>
+              <i *ngSwitchCase="'Incident-Management'">🚨</i>
+              <i *ngSwitchCase="'Responder-Management'">👥</i>
+              <i *ngSwitchDefault>📁</i>
+            </ng-container>
+          </span>
+          {{ link.content.replace('-', ' ') }}
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <section class="admin-tab-content">
+    <div class="card" *ngIf="selectedTab === 'Dashboard'">
+      <h2>📊 Dashboard</h2>
+      <p>Here’s your overview.</p>
+      <app-dashboard></app-dashboard>
+    </div>
+
+    <div class="card" *ngIf="selectedTab === 'Incident-Management'">
+      <h2>🚨 Incident Management</h2>
+      <p>Track and manage all incidents.</p>
+      <app-incident-management></app-incident-management>
+    </div>
+
+    <div class="card" *ngIf="selectedTab === 'Responder-Management'">
+      <h2>👥 Responder Management</h2>
+      <p>Manage your teams effectively.</p>
+      <app-responder-management></app-responder-management>
+    </div>
+  </section>
+</div> -->
+
+
+
+<div class="admin-header">
+  <h1>Admin Panel</h1>
+  <div class="admin-actions">
+    <a routerLink="/" class="btn btn-home">Home</a>
+    <button class="btn btn-logout" (click)="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="admin-tabs">
+  <button
+    *ngFor="let link of links"
+    class="tab-button"
+    [ngClass]="{ active: selectedTab === link }"
+    (click)="setTab(link)"
+  >
+    {{ link }}
+  </button>
+</nav>
+
+<div class="admin-panel">
+  <div class="tab-card" *ngIf="selectedTab === 'Dashboard'">
+    <!-- <h2>📊 Dashboard</h2>
+    <p>Here’s your system overview.</p> -->
+    <app-dashboard></app-dashboard>
+  </div>
+
+  <div class="tab-card" *ngIf="selectedTab === 'Incident Management'">
+    <!-- <h2>🚨 Incident Management</h2>
+    <p>Track and manage all incidents here.</p> -->
+    <app-incident-management></app-incident-management>
+  </div>
+
+  <div class="tab-card" *ngIf="selectedTab === 'Responder Management'">
+    <!-- <h2>👥 Responder Management</h2>
+    <p>Manage your responders efficiently.</p> -->
+    <app-responder-management></app-responder-management>
+  </div>
 </div>
 
