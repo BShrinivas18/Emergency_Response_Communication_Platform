@@ -1,0 +1,72 @@
+/* Overall card styles */
+.type-card {
+    border-radius: 16px;
+    min-height: 200px;
+    background: linear-gradient(145deg, #f9f9fb, #ffffff); /* Subtle gradient for a fresh look */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Softer, more elegant shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    cursor: pointer;
+  
+    /* Hover Effect */
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+      background-color: #e3f2fd; /* Light blue background on hover */
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+  }
+  
+  /* Icon styling */
+  .icon-style {
+    /* font-size: 50px; Larger icon for better visibility */
+    color: #f47739; /* Material Primary color */
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+  }
+  
+  /* Hover effect for icons */
+  .type-card:hover .icon-style {
+    color: #1976d2; /* Slightly darker shade on hover */
+  }
+  
+  /* Card title styles */
+  h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+  }
+  
+  /* Subtitle styles */
+  small {
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Responsive Design Adjustments */
+  @media (max-width: 767px) {
+    .type-card {
+      padding: 16px;
+      min-height: 180px;
+    }
+  
+    .icon-style {
+      font-size: 40px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .type-card {
+      min-height: 160px;
+    }
+  }
+  

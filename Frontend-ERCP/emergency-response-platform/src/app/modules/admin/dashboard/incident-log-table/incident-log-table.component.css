@@ -1,11 +1,82 @@
 .table-responsive {
-    max-height: 400px; /* Adjust this height to fit your needs */
-    overflow-y: auto; /* Enables vertical scrolling */
-    display: block;
-  }
-  
-  table {
-    width: 100%;
-    table-layout: fixed; /* Optional: Prevents columns from resizing */
-  }
-  
+  max-height: 400px;
+  overflow-y: scroll;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  background: #ffffff;
+}
+
+/* Table base styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.95rem;
+  color: #343a40;
+}
+
+/* Sticky header */
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  font-weight: 600;
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+  z-index: 2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+thead th:hover {
+  background-color: #e9ecef;
+}
+
+/* Sorting indicator */
+thead th span {
+  margin-left: 6px;
+  font-size: 0.85em;
+  color: #6c757d;
+}
+
+/* Table row styles */
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+tbody td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f3f5;
+  white-space: normal;
+  overflow: hidden;
+   text-overflow: ellipsis;
+} 
+
+/* First and last column rounded (optional) */
+thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Optional scrollbar styling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+mat-form-field {
+  margin-top: 0.25rem;
+}
+
+

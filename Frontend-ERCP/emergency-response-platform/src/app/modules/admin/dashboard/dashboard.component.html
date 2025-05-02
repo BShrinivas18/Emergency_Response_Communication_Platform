@@ -1,72 +1,167 @@
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
-  <!-- Link to Bootstrap CSS -->
-  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJqLKP8XQ4AtZB5Z6t8DhK8v5eBzKz/jvnQNKz5r+X6Mk/l5y9A3OQhB0Hq0" crossorigin="anonymous"> -->
-</head>
 
-<body>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Dashboard Header -->
-      <!-- <div class="col-12 text-center mb-4">
-        <h1 class="display-4">Admin Dashboard</h1>
-      </div> -->
 
-      <!-- Cards Row -->
-      <div class="col-12">
-        <div class="row">
-          <div class="col-md-4 mb-4">
-            <div class="card text-center shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">Active Incidents</h5>
-                <p class="card-text display-4"> {{ activeIncidents }} <span class="fs-2">⚠️</span></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 mb-4">
-            <div class="card text-center shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">Available Responders</h5>
-                <p class="card-text display-4"> {{ numberOfResponders }} <span class="fs-2">👥</span> </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 mb-4">
-            <div class="card text-center shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">Total Incidents (This Month)</h5>
-                <p class="card-text display-4">47 <span class="fs-2">📈</span></p>
-              </div>
-            </div>
-          </div>
+<div class="dashboard-wrapper container-fluid py-4 px-3">
+ 
+  <div class="row g-4">
+    <div class="col-md-4" *ngIf="activeIncidents !== undefined">
+      <div class="card dashboard-stat-card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <p class="stat-label">Active Incidents</p>
+          <p class="stat-value text-danger"> <span>⚠️</span>{{ activeIncidents }} </p>
         </div>
       </div>
+    </div>
 
-      <!-- Available Responders Table -->
-      <div class="col-12 mt-4">
-        <h2 class="h3 text-primary">Available Responders</h2>
-        <div class="table-responsive">
-          <app-responder-table></app-responder-table>
+    <div class="col-md-4" *ngIf="numberOfResponders !== undefined"  (click)="togglerespondertable()">
+      <div class="card dashboard-stat-card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <p class="stat-label">Available Responders</p>
+          <p class="stat-value text-success"> <span>👥</span>{{ numberOfResponders }} </p>
         </div>
       </div>
+    </div>
 
-      <!-- All Incident Logs Table -->
-      <div class="col-12 mt-4">
-        <h2 class="h3 text-primary">All Incident Logs</h2>
-        <div class="table-responsive">
-          <app-incident-log-table></app-incident-log-table>
+    <div class="col-md-4">
+      <div class="card dashboard-stat-card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <p class="stat-label">Total Incidents (This Month)</p>
+          <p class="stat-value text-primary"> <span>📈</span>47 </p>
         </div>
       </div>
     </div>
   </div>
-<!-- 
-  Link to Bootstrap JS and dependencies
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBfcg2VA4k75O9T6b1F2YO1+7Ayy2t2f9f4eD/xQebk8V0a9" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0Xg6YkFX3fb3pC4d+VYN9Vn0PAh7P5aN1da0ymsHybY0m6Ww" crossorigin="anonymous"></script> -->
-</body>
+
+  
+  <div class="section mt-5" *ngIf="showrespondertable">
+    <h5 class="section-header">Available Responders</h5>
+    <div class="card table-section shadow-sm">
+      <div class="card-body p-0">
+        <app-responder-table></app-responder-table>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="section mt-5">
+    <h5 class="section-header">All Incident Logs</h5>
+    <div class="card table-section shadow-sm">
+      <div class="card-body p-0">
+        <app-incident-log-table></app-incident-log-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid py-4 px-3">
+  <!-- Tabs Section -->
+  <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="active-incidents-tab" data-bs-toggle="tab" href="#active-incidents" role="tab" aria-controls="active-incidents" aria-selected="true">Active Incidents</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="responders-tab" data-bs-toggle="tab" href="#responders" role="tab" aria-controls="responders" aria-selected="false">Available Responders</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="incident-logs-tab" data-bs-toggle="tab" href="#incident-logs" role="tab" aria-controls="incident-logs" aria-selected="false">Incident Logs</a>
+    </li>
+  </ul>
+
+  <!-- Tab Content Section -->
+  <div class="tab-content mt-3" id="dashboardTabsContent">
+    <!-- Active Incidents Tab -->
+    <div class="tab-pane fade show active" id="active-incidents" role="tabpanel" aria-labelledby="active-incidents-tab">
+      <div class="row g-4">
+        <div class="col-md-4" *ngIf="activeIncidents !== undefined">
+          <div class="card dashboard-stat-card border-0 shadow-sm">
+            <div class="card-body text-center">
+              <p class="stat-label">Active Incidents</p>
+              <p class="stat-value text-danger">{{ activeIncidents }} <span>⚠️</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Responders Tab -->
+    <div class="tab-pane fade" id="responders" role="tabpanel" aria-labelledby="responders-tab">
+      <div class="section">
+        <h5 class="section-header">Available Responders</h5>
+        <div class="card table-section shadow-sm">
+          <div class="card-body p-0">
+            <app-responder-table></app-responder-table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incident Logs Tab -->
+    <div class="tab-pane fade" id="incident-logs" role="tabpanel" aria-labelledby="incident-logs-tab">
+      <div class="section">
+        <h5 class="section-header">All Incident Logs</h5>
+        <div class="card table-section shadow-sm">
+          <div class="card-body p-0">
+            <app-incident-log-table></app-incident-log-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+
 
 

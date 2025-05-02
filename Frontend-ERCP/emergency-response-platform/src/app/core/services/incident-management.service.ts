@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { User } from '../../shared/models/user.model';  
 import { Incident } from '../../shared/models/incident.model';
 @Injectable({
@@ -30,20 +30,21 @@ export class IncidentManagementService {
   //   );
   // }
 
-  getUserId(): Observable<number|null> {
-   const username = sessionStorage.getItem('username');
-   const token = sessionStorage.getItem('jwt');
+  // getUserId(): Observable<string|null> {
+  //  const username = sessionStorage.getItem('username');
+  //  const token = sessionStorage.getItem('jwt');
    
-   const headers = this.getAuthHeaders();
+  //  const headers = this.getAuthHeaders();
   
-  //  headers.append('username', username);
-   return this.http.get<number>(`${this.baseUrl}/user/${username}?username=${username}`, { 
-     headers: headers
-   }).pipe(
-     catchError(this.handleError)
-   );
+  // //  headers.append('username', username);
+  //  return this.http.get<any>(`${this.baseUrl}/user/${username}`, { 
+  //    headers: headers
+  //  }).pipe(
+  //    map((user: any) => user?.id ?? null),
+  //    catchError(this.handleError)
+  //  );
 
-  }
+  // }
   // Get all incidents
   getIncidents(): Observable<Incident[]> {
    

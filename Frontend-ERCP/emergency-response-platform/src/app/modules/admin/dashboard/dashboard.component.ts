@@ -28,6 +28,8 @@ import { IncidentManagementService } from '../../../core/services/incident-manag
 export class AdminDashboardComponent {
   numberOfResponders: number = 0;  // Initialize with 0
   activeIncidents: number = 0;
+  showrespondertable : boolean = true;
+
   constructor(private responderService: ResponderService, private incidentService: IncidentManagementService) {}
 
   ngOnInit(): void {
@@ -41,8 +43,12 @@ export class AdminDashboardComponent {
     });
 
 
-
+   
     // console.log(this.incidentService.getIncidents());
+  }
+
+  togglerespondertable(){
+    this.showrespondertable = !this.showrespondertable;
   }
 }
 

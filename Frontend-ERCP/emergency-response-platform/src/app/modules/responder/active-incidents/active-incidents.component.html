@@ -5,7 +5,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-12">
-          <div class="d-flex justify-content-between mb-2">
+          <div class="d-flex justify-content-between mb-2" >
             <span class="fw-bold">Incident ID:</span>
             <span>{{incident.incidentId}}</span>
           </div>
@@ -15,7 +15,7 @@
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span class="fw-bold">Location:</span>
-            <span>{{incident.incidentLocation.address}}</span>
+            <span>{{incident.incidentLocation?.address}}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span class="fw-bold">Reported:</span>

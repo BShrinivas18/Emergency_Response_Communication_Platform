@@ -1,38 +1,25 @@
-<!-- <div class="container my-5">
-    <h1 class="text-center display-4 mb-4 text-primary">Responder Types</h1> -->
-  
-    <!-- Card Container for Responder Types -->
-    <!-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<div class="container my-5">
+  <!-- Section Title -->
+  <div class="text-center mb-4">
+    <!-- <h3 class="fw-bold text-primary">Select a Responder Type</h3> -->
+    <p class="text-muted">Choose the category of responders to view or manage</p>
+  </div>
+
+  <!-- Grid of Cards -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let responder of responderTypes">
       <mat-card 
-        *ngFor="let responder of responderTypes" 
-        class="type-card shadow-sm border-0" 
+        matRipple 
+        class="type-card hover-scale cursor-pointer text-center p-4"
         (click)="selectResponderType(responder.type)">
         
-        <mat-card-header class="text-center d-flex flex-column align-items-center p-4">
-          <mat-icon class="mb-3" style="font-size: 3rem;">{{ responder.icon }}</mat-icon>
-          <mat-card-title class="h5">{{ responder.label }}</mat-card-title>
-        </mat-card-header> -->
-<!--         
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+          <mat-icon *ngIf="responder.icon" class="mb-3 icon-style">{{ responder.icon }}</mat-icon>
+          <h5 class="fw-semibold mb-1">{{ responder.label }}</h5>
+          <small class="text-muted text-capitalize">{{ responder.type }}</small>
+        </div>
+        
       </mat-card>
     </div>
-  </div> -->
-
-  <!-- responder-type-card.component.html -->
-<div class="container my-5">
-  <!-- <h1 class="text-center display-4 mb-4 text-primary">Responder Types</h1> -->
-
-  <!-- Card Container for Responder Types -->
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    <mat-card 
-      *ngFor="let responder of responderTypes" 
-      class="type-card shadow-sm border-0 cursor-pointer" 
-      (click)="selectResponderType(responder.type)">
-      
-      <mat-card-header class="text-center d-flex flex-column align-items-center p-4">
-        <mat-icon class="mb-3" style="font-size: 3rem;">{{ responder.icon }}</mat-icon>
-        <mat-card-title class="h5">{{ responder.label }}</mat-card-title>
-      </mat-card-header>
-    </mat-card>
   </div>
 </div>
-  

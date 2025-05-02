@@ -2,15 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 // import { environment } from '../../../enviornments/enviornment';
 import { Observable, throwError,tap } from 'rxjs';
-// import { catchError } from 'rxjs/operators';
 import { Role, User } from '../../shared/models/user.model';
-// import { coerceStringArray } from '@angular/cdk/coercion';
 import { Router } from '@angular/router';
-// interface LoginCredentials {
-//   username: string;
-//   password: string;
-//   role: string;
-// }
 
 export interface LoginRequest {
   username: string;
@@ -36,48 +29,33 @@ export class AuthService {
 
   ) {}
 
-  // login(credentials: LoginCredentials): Observable<any> {
-  //   return this.http.post(this.apiUrl, credentials).pipe(
-  //     tap((response: any) => {
-  //       if (response.token) {
-  //         // Store the JWT token in localStorage
-  //         localStorage.setItem('jwtToken', response.token);
-  //       }
-  //     }),
-  //     catchError(error => {
-  //       // Handle the error gracefully
-  //       console.error('Login failed', error);
-  //       return throwError(error);
+  // login(loginRequest: { username: string; password: string; role: Role }): Observable<{ JwtToken: string }> {
+  //   // console.log("wsedfrghyuj");
+  //   return this.http.post<{ JwtToken: string }>(
+  //     "http://localhost:8888/login",
+  //     loginRequest
+  //   ).pipe(
+  //     tap((response) => {
+  //       // Save the username to session storage
+  //       sessionStorage.setItem('username', loginRequest.username);
   //     })
   //   );
+   
   // }
+ 
 
-  // logout() {
-  //   // Remove the JWT token from local storage
-  //   localStorage.removeItem('jwtToken');
-  // }
-
-  // isLoggedIn(): boolean {
-  //   // Check if a valid JWT token exists
-  //   const token = localStorage.getItem('jwtToken');
-  //   return !!token; // You can add additional validation here to check if the token is expired
-
-  
-  // }
-  login(loginRequest: { username: string; password: string; role: Role }): Observable<{ JwtToken: string }> {
-    // console.log("wsedfrghyuj");
-    return this.http.post<{ JwtToken: string }>(
+  login(loginRequest: { username: string; password: string; role: Role }): Observable<{ jwtToken: string, userId: number | null, responderId: number | null }> {
+    return this.http.post<{ jwtToken: string, userId: number | null, responderId: number | null }>(
       "http://localhost:8888/login",
       loginRequest
     ).pipe(
       tap((response) => {
-        // Save the username to session storage
+        console.log('Login response: hello', response);
         sessionStorage.setItem('username', loginRequest.username);
       })
     );
-   
   }
- 
+  
   saveToken(token: string): void {
     sessionStorage.setItem('jwt', token);
   }
@@ -102,12 +80,6 @@ export class AuthService {
     }
     return null;
   }
- 
-  // getUserId(){
-  //   const username = sessionStorage.getItem('username');
- 
-  // }
- 
  
   isAuthenticated(): boolean {
     return !!this.getToken();

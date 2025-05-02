@@ -69,27 +69,7 @@ export class EmergencyService {
   getcurrentIncidentId(){
     return this.currentIncidentId;
   }
-  // getIncidents(): Observable<Incident[]> {
-  //   const token = sessionStorage.getItem('jwt');
-    
-  //   // Create headers with Authorization
-  //   const headers = new HttpHeaders({
-  //     'Authorization': `Bearer ${token}`,
-  //     'Content-Type': 'application/json'
-  //   });
-  //   return this.http.get<Incident[]>(`${this.apiUrl}`, {headers});
-  // }
-  // getIncidents(): Observable<Incident[]> {
-  //   const token = sessionStorage.getItem('jwt');
-    
-  //   // Create headers with Authorization
-  //   const headers = new HttpHeaders({
-  //     'Authorization': `Bearer ${token}`,
-  //     'Content-Type': 'application/json'
-  //   });
-  //   return this.http.get<Incident[]>(`${this.apiUrl}`, {headers});
-  // }
-
+ 
   updateIncidentsList(incidents: Incident[]) {
     
     
@@ -97,13 +77,7 @@ export class EmergencyService {
   }
 
   sendSOSAlert(incident: Incident): Observable<Incident> {
-    // const token = sessionStorage.getItem('jwt');
-    
-    // Create headers with Authorization
-    // const headers = new HttpHeaders({
-    //   'Authorization': `Bearer ${token}`,
-    //   'Content-Type': 'application/json'
-    // });
+   
     return this.http.post<Incident>(`${this.apiUrl}/sos`, {
       ...incident,
       incidentType: IncidentType.SOS_REQUEST,
@@ -121,15 +95,12 @@ export class EmergencyService {
   setFormData(incident: Incident) {
     console.log("coming from get data method : ");
     // console.log(incident);
-    // console.log(incident);
     this.incidents$.subscribe(data => {
       data.push(incident);
-      // console.log(data[0]);
       // console.log(data[0]);
     });
   }
   openIncidentConfirmationModal(incident: Incident) {
-    // console.log(incident);
     // console.log(incident);
     return this.dialog.open(IncidentSubmissionConfirmationComponent, {
       // width: '400px',

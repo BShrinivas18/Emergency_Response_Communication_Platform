@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./profile-card.component.css']
 })
 export class ProfileHeaderComponent implements OnInit {
-  responder!: ResponderDTO;
+  responder: ResponderDTO = {} as ResponderDTO;
   status!: string;  // Use string type to store the status temporarily
 
   constructor(private responderService: ResponderService, private authService: AuthService, private router: Router) {}
@@ -22,7 +22,7 @@ export class ProfileHeaderComponent implements OnInit {
   }
 
   fetchResponderData(): void {
-    this.responderService.getResponderById(Number(sessionStorage.getItem('userId'))).subscribe({
+    this.responderService.getResponderById(Number(sessionStorage.getItem('responderId'))).subscribe({
       next: (responder) => {
         this.responder = responder;
         console.log('Responder data fetched:', this.responder);

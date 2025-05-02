@@ -1,0 +1,150 @@
+/* .dashboard-card {
+    border: none;
+    border-radius: 0.75rem;
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .section-title {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+    border-left: 4px solid #0d6efd;
+    padding-left: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .table-responsive {
+    background-color: #fff;
+    border-radius: 0.5rem;
+  }
+  
+  :host {
+    display: block;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  } */ 
+  
+
+
+
+
+
+
+
+
+
+   /* .dashboard-wrapper {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+  }
+  
+  .dashboard-stat-card {
+    background: #fff;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  
+  .dashboard-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+  }
+  
+  .stat-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.4rem;
+  }
+  
+  .stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .section-header {
+    border-left: 5px solid #0d6efd;
+    padding-left: 0.75rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 1rem;
+  }
+  
+  .table-section {
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+     */
+
+
+
+
+
+
+     .dashboard-wrapper {
+        background-color: #f0f2f5;
+        min-height: 100vh;
+      }
+      
+      .dashboard-stat-card {
+        background: #fff;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+      }
+      
+      .dashboard-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+      }
+      
+      .stat-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.4rem;
+      }
+      
+      .stat-value {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin: 0;
+      }
+      
+      .section-header {
+        border-left: 5px solid #0d6efd;
+        padding-left: 0.75rem;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 1rem;
+      }
+      
+      .table-section {
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      
+      .clickable-card {
+        cursor: pointer; /* Make the card clickable */
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+      
+      .clickable-card:hover {
+        transform: translateY(-3px); /* Subtle hover effect */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Slight box-shadow */
+      }
+      
+
+
+
+  
+  
+ 
