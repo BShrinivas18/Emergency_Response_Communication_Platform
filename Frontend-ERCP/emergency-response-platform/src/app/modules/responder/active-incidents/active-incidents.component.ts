@@ -14,8 +14,8 @@ import { IncidentManagementService } from '../../../core/services/incident-manag
 })
 export class IncidentComponent {
   responderForm: FormGroup;
-  responder!: ResponderDTO;
-  incident!:Incident;
+  responder: ResponderDTO = {} as ResponderDTO;
+  incident: Incident = {} as Incident;
   address!: string;
   status!: string;
   currentIncidentId!: number;
@@ -33,11 +33,13 @@ export class IncidentComponent {
   }
 
   fetchResponderData(): void {
-    this.responderService.getResponderById(Number(sessionStorage.getItem('userId'))).subscribe({
+    
+    this.responderService.getResponderById(Number(sessionStorage.getItem('responderId'))).subscribe({
       next: (responder) => {
         this.responder = responder
         console.log('Responder data fetched: ', this.responder);
         console.log('Responders incident ID:', this.responder.incidentId);
+        if(this.responder.incidentId){
         this.incidentService.getIncidentById(this.responder.incidentId).subscribe({
           next: (incident) => {
             this.incident = incident;
@@ -57,6 +59,7 @@ export class IncidentComponent {
             console.error('Error fetching incident data:', error);
           }
         });
+      }
         // Convert the responder's status to string and set
       //  this.address = this.locationService.getAddressFromCoordi
       },
@@ -64,6 +67,8 @@ export class IncidentComponent {
         console.error('Error fetching responder data:', error);
       }
     });
+    
+    
   }
   requestResponders() {
     

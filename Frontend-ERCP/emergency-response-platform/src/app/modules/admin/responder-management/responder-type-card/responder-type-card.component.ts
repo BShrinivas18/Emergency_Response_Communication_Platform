@@ -5,11 +5,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { ResponderType } from '../../../../core/services/responder.service';
 
-interface ResponderTypeCardConfig {
-  type: ResponderType;
-  label: string;
-  icon: string;
-}
+// interface ResponderTypeCardConfig {
+//   type: ResponderType;
+//   label: string;
+// }
 
 @Component({
   standalone: true,
@@ -21,12 +20,12 @@ interface ResponderTypeCardConfig {
 export class ResponderTypeCardsComponent {
   @Output() selectType = new EventEmitter<ResponderType>();
 
-  responderTypes: ResponderTypeCardConfig[] = [
-    { type: ResponderType.PARAMEDIC, label: 'Paramedic', icon: 'medical_services' },
+  responderTypes = [
+    { type: ResponderType.PARAMEDIC, label: 'Paramedic', icon: 'healing' },
     { type: ResponderType.FIREFIGHTER, label: 'Firefighter', icon: 'local_fire_department' },
-    { type: ResponderType.POLICE_OFFICER, label: 'Police Officer', icon: 'security' },
-    { type: ResponderType.HAZMAT_SPECIALIST, label: 'Hazmat Specialist', icon: 'science' },
-    { type: ResponderType.RESCUE_TEAM, label: 'Rescue Team', icon: 'emoji_people' }
+    { type: ResponderType.POLICE_OFFICER, label: 'Police Officer', icon: 'local_police' },
+    { type: ResponderType.HAZMAT_SPECIALIST, label: 'Hazmat Specialist', icon: 'dangerous' },
+    { type: ResponderType.RESCUE_TEAM, label: 'Rescue Team', icon: 'search' }
   ];
 
   selectResponderType(type: ResponderType) {

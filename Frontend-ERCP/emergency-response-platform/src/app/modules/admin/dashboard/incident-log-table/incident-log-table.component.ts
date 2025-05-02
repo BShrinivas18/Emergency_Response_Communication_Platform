@@ -1,36 +1,40 @@
-// import { CommonModule } from '@angular/common';
-// import { Component } from '@angular/core';
-
-// @Component({
-//   standalone:true,
-//   selector: 'app-incident-log-table',
-//   imports:[CommonModule],
-//   templateUrl: './incident-log-table.component.html',
-//   styleUrls: ['./incident-log-table.component.css']
-// })
-// export class IncidentLogTableComponent {
-//   incidentLogs = [
-//     { id: 1, type: 'Fire', location: 'Downtown', status: 'Active', timestamp: '2023-06-01 10:00 AM' },
-//     { id: 2, type: 'Medical Emergency', location: 'Suburb', status: 'Resolved', timestamp: '2023-06-01 11:30 AM' },
-//     { id: 3, type: 'Traffic Accident', location: 'Highway', status: 'In Progress', timestamp: '2023-06-01 12:45 PM' },
-//     { id: 4, type: 'Hazardous Material Spill', location: 'Industrial Park', status: 'Active', timestamp: '2023-06-01 02:15 PM' },
-//     { id: 5, type: 'Search and Rescue', location: 'Mountain Area', status: 'In Progress', timestamp: '2023-06-01 03:30 PM' },
-//   ];
-// }
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LogService, LogDTO } from '../../../../core/services/log.service'; // Import the LogService
+import { FormsModule } from '@angular/forms';
+import { LogService, LogDTO } from '../../../../core/services/log.service';
+
+// Angular Material imports
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   standalone: true,
   selector: 'app-incident-log-table',
-  imports: [CommonModule],
   templateUrl: './incident-log-table.component.html',
-  styleUrls: ['./incident-log-table.component.css']
+  styleUrls: ['./incident-log-table.component.css'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatNativeDateModule
+  ]
 })
 export class IncidentLogTableComponent implements OnInit {
   incidentLogs: LogDTO[] = [];
+
+  // Sorting
+  sortColumn: keyof LogDTO | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Filtering
+  filterColumn: keyof LogDTO | null = null;
+  filterValue: string = '';
+  filterDate: Date | null = null;
 
   constructor(private logService: LogService) {}
 
@@ -42,13 +46,73 @@ export class IncidentLogTableComponent implements OnInit {
     this.logService.getAllLogs().subscribe({
       next: (data: LogDTO[]) => {
         this.incidentLogs = data;
-        console.log('Incident Logs:', this.incidentLogs);
       },
       error: (error) => {
         console.error('Error fetching incident logs:', error);
-        // Handle error (e.g., show error message)
       }
     });
+  }
+
+  get filteredAndSortedLogs(): LogDTO[] {
+    let logs = [...this.incidentLogs];
+
+    // Filter
+    if (this.filterColumn && (this.filterValue.trim() || this.filterDate)) {
+      logs = logs.filter(log => {
+        const value = log[this.filterColumn!];
+        if (value == null) return false;
+
+        if (this.filterColumn === 'timestamp') {
+          if (!this.filterDate) return true;
+          const logDate = new Date(value).toISOString().split('T')[0];
+          const filterDateStr = this.filterDate.toISOString().split('T')[0];
+          return logDate === filterDateStr;
+        }
+
+        const filter = this.filterValue.trim().toLowerCase();
+        return value.toString().toLowerCase().includes(filter);
+      });
+    }
+
+    // Sort
+    if (this.sortColumn) {
+      logs.sort((a, b) => {
+        const valA = a[this.sortColumn!];
+        const valB = b[this.sortColumn!];
+
+        if (valA == null || valB == null) return 0;
+
+        return this.sortDirection === 'asc'
+          ? valA > valB ? 1 : valA < valB ? -1 : 0
+          : valA < valB ? 1 : valA > valB ? -1 : 0;
+      });
+    }
+
+    return logs;
+  }
+
+  changeSort(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.sortColumn = value ? value as keyof LogDTO : null;
+  }
+
+  changeFilter(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.filterColumn = value ? value as keyof LogDTO : null;
+
+    // Clear any previous filter input
+    this.filterValue = '';
+    this.filterDate = null;
+  }
+
+  toggleSortDirection() {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  }
+
+  clearFilter() {
+    this.filterColumn = null;
+    this.filterValue = '';
+    this.filterDate = null;
   }
 }
 

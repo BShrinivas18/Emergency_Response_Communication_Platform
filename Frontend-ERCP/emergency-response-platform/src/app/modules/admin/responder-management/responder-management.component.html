@@ -1,39 +1,46 @@
-<div class="container my-5">
-  <!-- <h1 class="text-center display-4 mb-4 text-primary">Responder Management</h1> -->
-  
-  <!-- Create Responder Button -->
-  <div class="d-flex justify-content-end mb-4">
+<div class="container my-10 px-4">
+  <!-- Header Row -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap mb-6 gap-2">
+    <!-- <h2 class="fw-bold mb-0 text-primary">Responder Management</h2> -->
     <button mat-raised-button color="primary" (click)="openCreateResponderForm()">
-      <mat-icon>add</mat-icon> Create Responder
+      <mat-icon class="me-2">add</mat-icon>
+      Create Responder
     </button>
   </div>
-  
-  <!-- Responder Type Cards -->
-  <app-responder-type-cards
-    *ngIf="!selectedResponderType"
-    (selectType)="onSelectResponderType($event)"
-    class="mb-5">
-  </app-responder-type-cards>
-  
-  <!-- Responder Table -->
-  <div *ngIf="selectedResponderType" class="mb-5">
-    <button mat-button (click)="selectedResponderType = null" class="mb-3">
-      <mat-icon>arrow_back</mat-icon> Back to Responder Types
-    </button>
-  
-    <mat-card class="shadow-lg p-4">
+
+  <!-- Responder Type Cards Section -->
+  <section *ngIf="!selectedResponderType" class="fade-in">
+    <!-- <h4 class="mb-4">Select a Responder Type</h4> -->
+    <app-responder-type-cards
+      (selectType)="onSelectResponderType($event)"
+      class="mb-6">
+    </app-responder-type-cards>
+  </section>
+
+  <!-- Responder Table Section -->
+  <section *ngIf="selectedResponderType" class="fade-in">
+    <div class="d-flex align-items-center mb-4">
+      <!-- <h4 class="mb-0 ms-4 text-capitalize">{{ selectedResponderType }} Responders</h4> -->
+    </div>
+
+    <mat-card class="p-4 shadow-lg rounded-4 border">
+      <button mat-stroked-button color="accent" (click)="selectedResponderType = null">
+        <mat-icon class="me-2">arrow_back</mat-icon>
+        Back
+      </button>
       <app-responder-table
         [responderType]="selectedResponderType"
         (selectResponder)="onSelectResponder($event)">
+        
       </app-responder-table>
     </mat-card>
-  </div>
-  
-  <!-- Responder Details Modal -->
-  <app-responder-details
-    *ngIf="selectedResponderId"
-    [responderId]="selectedResponderId"
-    (close)="closeDetails()"
-    class="mb-5">
-  </app-responder-details>
+  </section>
+
+  <!-- Responder Details Modal Section -->
+  <section *ngIf="selectedResponderId" class="fade-in mt-6">
+    <app-responder-details
+      [responderId]="selectedResponderId"
+      (close)="closeDetails()">
+    </app-responder-details>
+  </section>
 </div>

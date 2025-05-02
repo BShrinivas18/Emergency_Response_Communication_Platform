@@ -1,30 +1,63 @@
-<!-- <table class="table table-bordered table-hover table-striped">
-  <thead class="thead-dark">
-    <tr>
-      <th>Log ID</th>
-      <th>Incident ID</th>
-      <th>Status Update</th>
-      <th>Timestamp</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let log of incidentLogs">
-      <td>{{ log.logId }}</td>
-      <td>{{ log.incidentId }}</td>
-      <td>
-        <span [ngClass]="{
-            'badge bg-success': log.statusUpdate === 'Resolved',
-            'badge bg-warning': log.statusUpdate === 'In Progress',
-            'badge bg-danger': log.statusUpdate === 'Active'
-          }">
-          {{ log.statusUpdate }}
-        </span>
-      </td>
-      <td>{{ log.timestamp | date: 'short' }}</td>
-    </tr>
-  </tbody>
-</table> -->
 
+<div class="card p-3 mb-4 shadow-sm">
+  <div class="row g-3">
+    <!-- Sort By -->
+    <div class="col-md-4">
+      <label for="sortBy">Sort By</label>
+      <select id="sortBy" class="form-control" (change)="changeSort($event)">
+        <option [value]="''">None</option>
+        <option value="logId">Log ID</option>
+        <option value="incidentId">Incident ID</option>
+        <option value="statusUpdate">Status Update</option>
+        <option value="timestamp">Timestamp</option>
+      </select>
+      <button class="btn btn-outline-secondary btn-sm mt-2" (click)="toggleSortDirection()">
+        Sort Direction: {{ sortDirection === 'asc' ? '⬆️ Asc' : '⬇️ Desc' }}
+      </button>
+    </div>
+
+    <!-- Filter By -->
+    <div class="col-md-4">
+      <label for="filterBy">Filter By</label>
+      <select id="filterBy" class="form-control" (change)="changeFilter($event)">
+        <option [value]="''">None</option>
+        <option value="logId">Log ID</option>
+        <option value="incidentId">Incident ID</option>
+        <option value="statusUpdate">Status Update</option>
+        <option value="timestamp">Date</option>
+      </select>
+    </div>
+
+    <!-- Filter Value -->
+    <div class="col-md-4">
+      <label>Filter Value</label>
+
+      <!-- Date picker for timestamp -->
+      <mat-form-field appearance="outline" class="w-100" *ngIf="filterColumn === 'timestamp'; else textInput">
+        <input matInput [matDatepicker]="picker" [(ngModel)]="filterDate" placeholder="Choose date" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Text input for other filter types -->
+      <ng-template #textInput>
+        <input
+          id="filterValue"
+          type="text"
+          class="form-control"
+          [(ngModel)]="filterValue"
+          placeholder="Enter value to filter"
+        />
+      </ng-template>
+
+      <!-- <button class="btn btn-outline-danger btn-sm mt-2" (click)="clearFilter()">
+        Clear Filter
+      </button> -->
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
 <div class="table-responsive">
   <table class="table table-bordered table-hover table-striped">
     <thead class="thead-dark">
@@ -36,7 +69,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let log of incidentLogs">
+      <tr *ngFor="let log of filteredAndSortedLogs">
         <td>{{ log.logId }}</td>
         <td>{{ log.incidentId }}</td>
         <td>{{ log.statusUpdate }}</td>

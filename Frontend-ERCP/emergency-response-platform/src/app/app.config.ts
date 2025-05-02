@@ -81,6 +81,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -105,6 +106,6 @@ export const appConfig: ApplicationConfig = {
       MatButtonModule,
       MatDialogModule,
       AuthInterceptor
-    ])
+    ]), provideAnimationsAsync()
   ]
 };
