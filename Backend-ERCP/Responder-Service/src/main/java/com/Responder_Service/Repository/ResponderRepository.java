@@ -13,5 +13,6 @@ public interface ResponderRepository extends JpaRepository<Responder,Integer> {
     public List<Responder> findByType(ResponderType type);
     public List<Responder> findByStatusAndType(ResponderStatus status, ResponderType type);
     public List<Responder> findByIncidentId(Integer incidentId);
+    public Responder findByName(String name);
 
 }

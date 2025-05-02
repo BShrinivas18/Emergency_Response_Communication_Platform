@@ -36,6 +36,9 @@ public class ResponderService {
     @Autowired
     private LogServiceClient logServiceClient;
 
+    public Responder getByName(String name) {
+        return responderRepository.findByName(name);
+    }
     public ResponderDTO createResponder(ResponderDTO responderDTO) {
         Responder responder = convertToEntity(responderDTO);
         Responder savedResponder = responderRepository.save(responder);
