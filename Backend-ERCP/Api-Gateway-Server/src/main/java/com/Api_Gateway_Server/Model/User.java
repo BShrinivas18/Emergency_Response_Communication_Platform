@@ -1,5 +1,6 @@
 package com.Api_Gateway_Server.Model;
 
+import com.Api_Gateway_Server.Model.Enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

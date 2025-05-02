@@ -1,6 +1,6 @@
 package com.Api_Gateway_Server.Service;
 
-import com.Api_Gateway_Server.Model.Role;
+import com.Api_Gateway_Server.Model.Enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,10 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -36,7 +33,7 @@ public class JwtService {
                 .setSubject(username)
                 .claim("role", role.name())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 )) // 60 minutes expiration
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 *60 )) // 60 minutes expiration
                 .signWith(getKey(), SignatureAlgorithm.HS256) // Sign with the fixed key
                 .compact();
     }

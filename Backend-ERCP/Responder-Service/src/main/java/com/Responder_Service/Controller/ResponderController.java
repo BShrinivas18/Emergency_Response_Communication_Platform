@@ -91,6 +91,13 @@ public class ResponderController {
     public List<Responder> getRespondersByIncidentId(@PathVariable Integer incidentId) {
         return responderService.getResponderByIncidentId(incidentId);
     }
+    @GetMapping("/name/{name}")
+    public Responder getByName(@PathVariable("name") String name) {
+        System.out.println("name -> " + name);
+        Responder res= responderService.getByName(name);
+        System.out.println("res -> " + res);
+        return res;
+    }
 
 
 
