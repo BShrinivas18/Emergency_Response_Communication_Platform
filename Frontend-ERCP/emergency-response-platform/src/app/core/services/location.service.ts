@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '../api.config';
 import { Injectable } from '@angular/core';
 import { Observable, from, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -28,13 +29,13 @@ export interface LocationError {
   providedIn: 'root'
 })
 export class LocationService {
-  private geocoder: google.maps.Geocoder;
+  private geocoder?: google.maps.Geocoder;
 
   constructor(private http: HttpClient) {
     // Initialize Google Maps Geocoder
-    this.geocoder = new google.maps.Geocoder();
+    if (typeof google !== 'undefined' && google.maps?.Geocoder) this.geocoder = new google.maps.Geocoder();
   }
-  private apiUrl = 'http://localhost:8888/locations';
+  private apiUrl = `${API_ORIGIN}/locations`;
  
   /**
    * Request location permission from the user
@@ -87,28 +88,8 @@ export class LocationService {
 
       // Request location with high accuracy
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const locationDetails = await this.getAddressFromCoordinates(
-              position.coords.latitude, 
-              position.coords.longitude
-            );
-            
-            resolve({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              accuracy: position.coords.accuracy,
-              ...locationDetails
-            });
-          } catch (error) {
-            // If geocoding fails, return basic location
-            resolve({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              accuracy: position.coords.accuracy
-            });
-          }
-        },
+        (position) => resolve({latitude: position.coords.latitude,
+          longitude: position.coords.longitude, accuracy: position.coords.accuracy}),
         (error) => {
           let errorMessage = '';
           switch (error.code) {
@@ -152,7 +133,7 @@ export class LocationService {
     return new Promise((resolve, reject) => {
       const latLng = new google.maps.LatLng(latitude, longitude);
 
-      this.geocoder.geocode({ location: latLng }, (results, status) => {
+      this.geocoder!.geocode({ location: latLng }, (results, status) => {
         if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
           const addressComponents = results[0].address_components;
           const locationInfo: Partial<LocationData> = {
@@ -200,7 +181,7 @@ export class LocationService {
    */
   getCoordinatesFromAddress(address: string): Promise<{lat: number, lng: number}> {
     return new Promise((resolve, reject) => {
-      this.geocoder.geocode({ address: address }, (results, status) => {
+      this.geocoder!.geocode({ address: address }, (results, status) => {
         if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
           const location = results[0].geometry.location;
           resolve({

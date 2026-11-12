@@ -53,7 +53,7 @@ export class LandingComponent implements OnInit {
       '- Leave the building as quickly as possible.',
       '- Use stairs, not elevators.',
       '- Follow the designated escape routes.',
-      'Report and incident into our system, help will be on the way ASAP',
+      'A report does not confirm responder assignment. For urgent help use official emergency calling.',
       'Use a fire extinguisher only if safe:',
       '- Only attempt to extinguish the fire if it\'s small and manageable.',
       '- Stand with your back to an exit in case you need to escape.',
@@ -65,7 +65,7 @@ export class LandingComponent implements OnInit {
       'Check for responsiveness:',
       '- Gently tap the person and shout to see if they respond.',
       '- If there is no response, check for breathing and a pulse.',
-      'Report and incident into our system, help will be on the way ASAP',
+      'A report does not confirm responder assignment. For urgent help use official emergency calling.',
       'Provide first aid if trained:',
       '- CPR: If the person is not breathing, begin CPR if you\'re trained.',
       '- Control bleeding: Apply pressure to wounds with a clean cloth to stop bleeding.',
@@ -88,7 +88,7 @@ export class LandingComponent implements OnInit {
       'Ensure personal safety:',
       '- Avoid engaging or confronting the perpetrator.',
       '- Keep a safe distance from the scene.',
-      'Report and incident into our system, help will be on the way ASAP',
+      'A report does not confirm responder assignment. For urgent help use official emergency calling.',
       '- Give detailed information about the crime, location, and description of the suspect(s).',
       'Do not confront perpetrators:',
       '- Do not attempt to stop the perpetrator or interfere with their actions.',
@@ -124,15 +124,6 @@ export class LandingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.dialog.open(WarningDialogComponent, {
-      width: '500px',
-      height: 'auto',
-      disableClose: true // 
-    }); 
-    this.dialog.afterAllClosed.subscribe(result => {
-      console.log('User acknowledged the warning.', result);
-    });
-  
     this.initializeLocationAndAlerts();
   }
 
@@ -191,75 +182,36 @@ export class LandingComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Handle incident report submission
-        console.log('Incident reported:', result);
+
       }
     });
   }
 
+  submissionPending = false;
+  submissionError = '';
   async sendSOSAlert() {
-   
+    if (this.submissionPending) return;
+    this.submissionPending = true;
+    this.submissionError = '';
     try {
-      // Wait for the address to resolve (this is your ZoneAwarePromise)
-      const currentLocation = await this.locationService.getCurrentLocation();
-  
-      // Resolve the promise and get the address
-      const address = currentLocation.formattedAddress;
-  
-      // Log the formatted address
-      console.log("Formatted Address:", address);
-
-       this.incident = {
-        incidentLocation:  {
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-          address: address, // Set the resolved address here
-        } ,
-        victimLocation:{
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-          address: address, // Set the resolved address here
-        },
-        timestamp: new Date(),
-        victimName: 'Anonymous',
-        victimContact: '',
-        status: 'NEW',
-        type: IncidentType.SOS_REQUEST,
-        responderIds:[],
-        incidentId:0,
-      } 
-      // this.emergencyService.reportIncident(incident);
-      // Proceed with the dialog opening using the resolved address
-      this.dialog.open(SOSAlertConfirmationComponent, {
-        data: {
-          incident: {
-            victimName: 'Anonymous',
-            victimContact: '',
-            location: {
-              latitude: currentLocation.latitude,
-              longitude: currentLocation.longitude,
-              address: address, // Set the resolved address here
-            },
-            status: 'Reported',
-            incidentType: IncidentType.SOS_REQUEST,
-            timestamp: new Date(),
-          },
-        },
-      });
-
+      const location = await this.locationService.getCurrentLocation();
+      const coordinates = { latitude: location.latitude, longitude: location.longitude, address: location.formattedAddress };
+      this.incident = {incidentId: 0, type: IncidentType.SOS_REQUEST, status: 'NEW',
+        incidentLocation: coordinates, victimLocation: coordinates, victimName: '', victimContact: '', responderIds: []};
       this.emergencyService.reportIncident(this.incident).subscribe({
-        next: (response) => {
-          console.log("Sent SOS Alert");
-          console.log(response);
+        next: receipt => {
+          this.submissionPending = false;
+          this.dialog.open(SOSAlertConfirmationComponent, {data: {incident: receipt}});
         },
-        error: (error) => {
-          console.error("Error sending SOS Alert:", error);
+        error: () => {
+          this.submissionPending = false;
+          this.submissionError = 'Receipt not confirmed. Use official emergency calling where appropriate (India: 112).';
         }
       });
-    } catch (error) {
-      console.error("Error retrieving address:", error);
+    } catch {
+      this.submissionPending = false;
+      this.submissionError = 'Unable to locate you; no report sent. Use official emergency calling (India: 112).';
     }
-  
-     
   }
 
   getAlertSeverityClass(severity: 'low' | 'medium' | 'high'): string {

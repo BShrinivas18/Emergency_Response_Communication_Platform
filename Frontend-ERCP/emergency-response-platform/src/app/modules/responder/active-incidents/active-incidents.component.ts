@@ -37,22 +37,21 @@ export class IncidentComponent {
     this.responderService.getResponderById(Number(sessionStorage.getItem('responderId'))).subscribe({
       next: (responder) => {
         this.responder = responder
-        console.log('Responder data fetched: ', this.responder);
-        console.log('Responders incident ID:', this.responder.incidentId);
+
+
         if(this.responder.incidentId){
         this.incidentService.getIncidentById(this.responder.incidentId).subscribe({
           next: (incident) => {
             this.incident = incident;
-            // console.log('Incident data fetched:', this.incident);
-            // console.log('Incident ID:', Number(this.incident.incidentId));
-            // console.log('Incident type:', this.incident.type);
-            // console.log('Incident victim name:', this.incident.victimName);
-            // console.log('Incident victim contact:', this.incident.victimContact);
-            // console.log('Incident responder Id:', this.incident.responderIds);
-            // console.log('Incident Status', this.incident.status);
+
+
+
+
+
+
+
             this.status = this.incident.status;
             this.currentIncidentId = this.incident.incidentId;
-            // console.log('Incident responder address:', this.incident.incidentLocation);
             
           },
           error: (error) => {
@@ -74,7 +73,7 @@ export class IncidentComponent {
     
     this.responderService.requestAdditionalResponders(this.currentIncidentId, this.type ).subscribe({
       next: (responders) => {
-        console.log('Responders requested: ', responders);
+
       },
       error: (error) => {
         console.error('Error requesting responders:', error);

@@ -34,6 +34,7 @@ export interface Incident {
 
   export const IncidentTypeMapping: Record<string, string> = {
     'Crime': 'CRIME',
+    'Accident': 'TRAFFIC_ACCIDENT',
     'Medical Emergency': 'MEDICAL_EMERGENCY',
     'Fire': 'FIRE',
     'Natural Disaster': 'NATURAL_DISASTER',

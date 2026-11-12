@@ -1,3 +1,6 @@
+<p role="alert" *ngIf="submissionError">{{ submissionError }}</p>
+<p *ngIf="submissionPending">Sending report; receipt not yet confirmed.</p>
+<a href="tel:112">Call 112 (India)</a>
 <div class="container-fluid emergency-platform">
     <!-- Header -->
     <header class="emergency-header">

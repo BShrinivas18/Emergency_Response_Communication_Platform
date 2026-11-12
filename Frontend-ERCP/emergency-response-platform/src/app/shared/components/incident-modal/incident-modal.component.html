@@ -1,17 +1,19 @@
+<p role="alert" *ngIf="submissionError">{{ submissionError }}</p>
+<a href="tel:112">Call 112 (India)</a>
 
 <mat-dialog-content>
   <h2 mat-dialog-title>Report an Incident</h2>
   <form [formGroup]="incidentForm" (submit)="onSubmit()">
     <!-- Victim Name -->
     <div class="form-group">
-      <label for="victimName">Victim Name</label>
-      <input class="form-control" id="victimName" formControlName="victimName" required />
+      <label for="victimName">Victim Name (optional)</label>
+      <input class="form-control" id="victimName" formControlName="victimName" />
     </div>
 
     <!-- Victim Contact -->
     <div class="form-group">
-      <label for="victimContact">Contact Details</label>
-      <input class="form-control" id="victimContact" formControlName="victimContact" required />
+      <label for="victimContact">Contact Details (optional)</label>
+      <input class="form-control" id="victimContact" formControlName="victimContact" />
     </div>
 
     <!-- Victim Address -->
@@ -37,7 +39,7 @@
     <div class="form-check">
       <input class="form-check-input" type="checkbox" formControlName="useSameLocation" (change)="updateIncidentLocation()" />
       <label class="form-check-label" for="useSameLocation">
-        Incident Location Same as Victim Address
+        Incident is at my current GPS location
       </label>
     </div>
 
@@ -52,7 +54,7 @@
 
     <!-- Submit Button -->
     <div class="form-actions">
-      <button class="btn btn-primary" type="submit" [disabled]="!incidentForm.valid">
+      <button class="btn btn-primary" type="submit" [disabled]="!incidentForm.valid || submissionPending">
         Submit Report
       </button>
     </div>

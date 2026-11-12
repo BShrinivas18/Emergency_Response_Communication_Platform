@@ -27,11 +27,9 @@ export class IncidentReportComponent {
     
   }
  ngOnInit() {
-    console.log("From incident report Component");
     
     this.incident = this.emergencyService.getFormData();
-    // console.log(this.incident);
-    // console.log(this.incident.incidentLocation);
+
 
   }
 }

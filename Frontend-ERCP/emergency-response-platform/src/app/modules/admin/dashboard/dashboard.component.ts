@@ -42,9 +42,6 @@ export class AdminDashboardComponent {
       this.activeIncidents = incidents.length;
     });
 
-
-   
-    // console.log(this.incidentService.getIncidents());
   }
 
   togglerespondertable(){

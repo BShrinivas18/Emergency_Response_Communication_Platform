@@ -55,7 +55,7 @@ export class ResponderManagementComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Handle the created responder if needed
-        console.log('New responder created', result);
+
       }
     });
   }

@@ -29,15 +29,15 @@ export class AdminLayoutComponent implements OnInit {
   constructor(
     private authService: AuthService
   ) {
-    console.log('AdminLayoutComponent constructed');
+
   }
 
   ngOnInit() {
-    console.log('AdminLayoutComponent initialized');
+
   }
   // add logout function
   logout() {
-    console.log('Logging out');
+
     this.authService.logout();
   }
   setTab(tab: string) {

@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '../api.config';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 // import { environment } from '../../../enviornments/enviornment';
@@ -22,7 +23,7 @@ export interface LoginResponse {
 })
 export class AuthService {
 
-  private baseUrl = 'http://localhost:8888/login'; // Adjust to your login endpoint
+  private baseUrl = `${API_ORIGIN}`;
 
   constructor(private http: HttpClient,
     private router: Router
@@ -32,7 +33,7 @@ export class AuthService {
   // login(loginRequest: { username: string; password: string; role: Role }): Observable<{ JwtToken: string }> {
   //   // console.log("wsedfrghyuj");
   //   return this.http.post<{ JwtToken: string }>(
-  //     "http://localhost:8888/login",
+  //     `${API_ORIGIN}/login`,
   //     loginRequest
   //   ).pipe(
   //     tap((response) => {
@@ -46,11 +47,11 @@ export class AuthService {
 
   login(loginRequest: { username: string; password: string; role: Role }): Observable<{ jwtToken: string, userId: number | null, responderId: number | null }> {
     return this.http.post<{ jwtToken: string, userId: number | null, responderId: number | null }>(
-      "http://localhost:8888/login",
+      `${API_ORIGIN}/login`,
       loginRequest
     ).pipe(
       tap((response) => {
-        console.log('Login response: hello', response);
+
         sessionStorage.setItem('username', loginRequest.username);
       })
     );
@@ -100,6 +101,6 @@ export class AuthService {
   signup(user: User): Observable<string>
   {
  
-    return this.http.post<string>(`${this.baseUrl}/register`, user);
+    return this.http.post<string>(`${API_ORIGIN}/register`, user);
   }
 }

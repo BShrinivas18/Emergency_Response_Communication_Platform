@@ -70,7 +70,7 @@
 //       this.responderService.updateResponder(this.responder.responderId, responderData)
 //         .subscribe({
 //           next: (updatedResponder) => {
-//             console.log('Responder updated successfully:', updatedResponder);
+
 //             this.dialogRef.close(updatedResponder);
 //           },
 //           error: (error) => {
@@ -83,7 +83,7 @@
 //       this.responderService.createResponder(responderData)
 //         .subscribe({
 //           next: (newResponder) => {
-//             console.log('New responder created successfully:', newResponder);
+
 //             this.dialogRef.close(newResponder);
 //           },
 //           error: (error) => {
@@ -160,7 +160,7 @@ export class ResponderFormComponent implements OnInit {
       responderId: this.responder ? this.responder.responderId : 0, // Use existing ID if updating
       name: this.name,
       stationLocation: this.stationLocation,
-      status: ResponderStatus.AVAILABLE,
+      status: this.responder ? this.responder.status : ResponderStatus.AVAILABLE,
       type: this.type,
       lastUpdate: new Date(),
       locationId: this.locationId || undefined, // Optional chaining
@@ -172,7 +172,7 @@ export class ResponderFormComponent implements OnInit {
       this.responderService.updateResponder(this.responder.responderId, responderData)
         .subscribe({
           next: (updatedResponder) => {
-            console.log('Responder updated successfully:', updatedResponder);
+
             this.dialogRef.close(updatedResponder);
           },
           error: (error) => {
@@ -185,7 +185,7 @@ export class ResponderFormComponent implements OnInit {
       this.responderService.createResponder(responderData)
         .subscribe({
           next: (newResponder) => {
-            console.log('New responder created successfully:', newResponder);
+
             this.dialogRef.close(newResponder);
           },
           error: (error) => {

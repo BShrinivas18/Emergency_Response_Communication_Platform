@@ -25,12 +25,10 @@ export class ProfileHeaderComponent implements OnInit {
     this.responderService.getResponderById(Number(sessionStorage.getItem('responderId'))).subscribe({
       next: (responder) => {
         this.responder = responder;
-        console.log('Responder data fetched:', this.responder);
-        console.log('Responder ID:', this.responder.responderId);  // Direct access
-        console.log('Responder Name:', this.responder.name);  // Direct access
-        console.log('Station Location:', this.responder.stationLocation);  // Direct access
-        console.log('Status:', this.responder.status);  // Direct access
-        console.log('Responder Type:', this.responder.type);
+
+
+
+
 
         // Convert the responder's status to string and set
         this.status = this.responder.status;
@@ -41,36 +39,15 @@ export class ProfileHeaderComponent implements OnInit {
     });
   }
 
+  statusError = '';
+  statusPending = false;
   setStatus(newStatus: string): void {
-    // Map the string value to ResponderStatus enum
-    switch (newStatus) {
-      case 'AVAILABLE':
-        this.status = 'AVAILABLE'; // If using string status
-        break;
-      case 'ASSIGNED':
-        this.status = 'ASSIGNED';  // If using string status
-        break;
-      case 'OFF_DUTY':
-        this.status = 'OFF_DUTY';  // If using string status
-        break;
-      default:
-        console.error('Unknown status:', newStatus);
-    }
-
-    if (this.responder) {
-      console.log('Updating responder status:', this.status);
-      this.responder.status = newStatus as ResponderStatus;  // Ensure it maps correctly to the enum
-    }
-    // Optionally, update the responder status in the backend
-    this.responderService.updateResponder(this.responder.responderId, this.responder).subscribe({
-      next: (updatedResponder) => {
-        console.log('Responder status updated:', updatedResponder.status);
-      },
-      error: (error) => {
-        console.error('Error updating responder status:', error);
-      }
+    if (this.statusPending || !['AVAILABLE', 'OFF_DUTY'].includes(newStatus)) return;
+    this.statusPending = true; this.statusError = '';
+    this.responderService.updateStatus(this.responder.responderId, newStatus as ResponderStatus).subscribe({
+      next: updated => { this.responder = updated; this.status = updated.status; this.statusPending = false; },
+      error: () => { this.statusError = 'Status update not confirmed.'; this.statusPending = false; }
     });
-    
   }
 
   logout() {

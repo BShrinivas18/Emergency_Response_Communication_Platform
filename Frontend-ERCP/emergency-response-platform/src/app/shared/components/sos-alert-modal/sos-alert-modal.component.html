@@ -1,19 +1,7 @@
-<!-- <p>sos-alert-modal works!</p> -->
-
-<div class="sos-confirmation-dialog">
-    <h2 mat-dialog-title>SOS Alert Sent</h2>
-    <mat-dialog-content>
-      <div class="alert-details">
-        <mat-icon color="warn">warning</mat-icon>
-        <p>Your emergency alert has been sent successfully!</p>
-        <p>Location: {{ data.incident.location.address }}</p>
-        <!-- <p>Location: {{ data.location }}</p> -->
-        <p>Help is on the way. Stay calm and safe.</p>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-raised-button color="primary" (click)="dialogRef.close()">
-        Close
-      </button>
-    </mat-dialog-actions>
-  </div>
+<h2 mat-dialog-title>Incident recorded</h2>
+<mat-dialog-content>
+  <p>Reference: {{ data.incident.incidentId }}</p>
+  <p>Responder assignment is not confirmed. This platform is not connected to ERSS-112.</p>
+  <a href="tel:112">Call 112 (India)</a>
+</mat-dialog-content>
+<mat-dialog-actions><button mat-button (click)="dialogRef.close()">Close</button></mat-dialog-actions>

@@ -70,7 +70,7 @@ export class LoginComponent {
   //   if (this.loginForm.valid) {
   //     this.authService.login(this.loginForm.value).subscribe({
   //       next: (token) => {
-  //         console.log('Login successful', token);
+
   //         this.authService.saveToken(token.JwtToken);
 
 
@@ -80,9 +80,8 @@ export class LoginComponent {
   //             if(userId!==null){
   //               sessionStorage.setItem('userId', userId.toString());
               
-  //             console.log('User ID:', userId);
   //             if(loginRequest.role ==="ADMIN"){
-  //               this.router.navigate(['/admin-dashboard']);
+  //               this.router.navigate(['/admin/dashboard']);
   //             }
   //             else {
   //               this.router.navigate(['/responder-dashboard'], {queryParams:{userId:userId}});
@@ -116,19 +115,19 @@ export class LoginComponent {
         password,
         role
       };
-      // console.log('Login request:', loginRequest);
+
       this.authService.login(loginRequest).subscribe({
         next: (response) => {
-          console.log('Login response:', response);
+
           if (response && response.jwtToken) {
             this.authService.saveToken(response.jwtToken);
 
             // this.incidentManagementService.getUserId().subscribe({
             //   next: (userId) => {
-            //     console.log('User ID:', userId);
+
             //     if (role === 'ADMIN' && response.userId != null) {
             //       sessionStorage.setItem('userId', response.userId.toString());
-            //       this.router.navigate(['/admin-dashboard']);
+            //       this.router.navigate(['/admin/dashboard']);
             //     } else if (role === 'RESPONDER' && response.responderId != null) {
             //       sessionStorage.setItem('responderId', response.responderId.toString());
             //       this.router.navigate(['/responder-dashboard'], {
@@ -146,18 +145,18 @@ export class LoginComponent {
             //Save user ID or responder ID depending on the role
             if (role === 'ADMIN' && response.userId != null) {
               sessionStorage.setItem('userId', response.userId.toString());
-              this.router.navigate(['/admin-dashboard']);
+              this.router.navigate(['/admin/dashboard']);
             } else if (role === 'RESPONDER' && response.responderId != null) {
               sessionStorage.setItem('responderId', response.responderId.toString());
-              console.log('Responder ID:', response.responderId);
+
               this.responderservice.getResponderById(response.responderId).subscribe({
                 next: (responder) => {
-                  console.log('Responder data fetched:', responder);
-                  console.log('Responder ID:', responder.responderId);
-                  console.log('Responder Name:', responder.name);
-                  console.log('Station Location:', responder.stationLocation);
-                  console.log('Status:', responder.status);
-                  console.log('Responder Type:', responder.type);
+
+
+
+
+
+
                 }
               });  
               

@@ -74,22 +74,17 @@ export class IncidentSubmissionConfirmationComponent {
 
   }
 ngOnInit() {
-  console.log();
+
 }
  
   onClose() {
-    console.log('closing');
-    // console.log(this.data);
-
-
-
 
 
     this.dialogRef.close();
   }
 
   viewProgress() {
-    console.log(this.data);
+
     // alert('redirecting to progress report page');
     //redirect to google.com
     // window.location.href = 'https://www.google.com';

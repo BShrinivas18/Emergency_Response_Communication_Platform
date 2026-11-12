@@ -53,7 +53,7 @@ export class ResponderTableComponent implements OnInit {
     this.responderService.getAvailableResponders().subscribe({
       next: (data: ResponderDTO[]) => {
         this.responders = data;
-        console.log('Available Responders:', this.responders);
+
       },
       error: (error) => {
         console.error('Error fetching responders:', error);

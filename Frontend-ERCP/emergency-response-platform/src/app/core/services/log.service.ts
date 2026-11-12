@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '../api.config';
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -14,7 +15,7 @@ export interface LogDTO {
   providedIn: 'root'
 })
 export class LogService {
-  private apiUrl = 'http://localhost:8888/logs';
+  private apiUrl = `${API_ORIGIN}/logs`;
 
   constructor(private http: HttpClient) { }
 

@@ -22,6 +22,6 @@ export class SOSAlertConfirmationComponent {
     public dialogRef: MatDialogRef<SOSAlertConfirmationComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    console.log(data);
+
      }
 }

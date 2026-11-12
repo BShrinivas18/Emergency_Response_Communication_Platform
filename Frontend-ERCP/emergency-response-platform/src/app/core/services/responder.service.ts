@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '../api.config';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -37,10 +38,13 @@ export enum ResponderType {
   providedIn: 'root'
 })
 export class ResponderService {
-  private apiUrl = 'http://localhost:8888/responders';
+  private apiUrl = `${API_ORIGIN}/responders`;
 
   constructor(private http: HttpClient) { }
 
+  updateStatus(id: number, status: ResponderStatus): Observable<ResponderDTO> {
+    return this.http.patch<ResponderDTO>(`${this.apiUrl}/${id}/${status}`, {});
+  }
   getAvailableResponders(): Observable<ResponderDTO[]> {
     // Retrieve the JWT token from local storage
     const token = sessionStorage.getItem('jwt');
@@ -82,7 +86,7 @@ export class ResponderService {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
-    return this.http.get<ResponderDTO>(`${this.apiUrl}/username/${username}`,{headers});
+    return this.http.get<ResponderDTO>(`${this.apiUrl}/name/${username}`,{headers});
   }
 
   getResponderById(id: number): Observable<ResponderDTO> {
@@ -92,8 +96,8 @@ export class ResponderService {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
-    // console.log({id});
-    // console.log(headers.get+" coming from get responder by id");
+
+
     return this.http.get<ResponderDTO>(`${this.apiUrl}/${id}`, {headers});
 
   }
@@ -114,8 +118,6 @@ export class ResponderService {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
-    
-    console.log('Updating responder:', responder);
     
     return this.http.put<ResponderDTO>(`${this.apiUrl}/${id}`, responder, { headers });
   }

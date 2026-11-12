@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '../api.config';
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -9,7 +10,7 @@ import { Incident } from '../../shared/models/incident.model';
   providedIn: 'root'
 })
 export class IncidentManagementService {
-  private baseUrl = 'http://localhost:8888';
+  private baseUrl = `${API_ORIGIN}`;
 
   constructor(private http: HttpClient) {}
 
@@ -68,8 +69,6 @@ export class IncidentManagementService {
   getIncidentLogs(incidentId: number): Observable<any[]> {
     const token = sessionStorage.getItem('jwt');
     
-    console.log('Fetching incidents with headers:', this.getAuthHeaders());
-
     // Create headers with Authorization
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
@@ -89,7 +88,7 @@ export class IncidentManagementService {
     throw error;
   }
   getIncidentById(id: number): Observable<Incident> {
-    console.log("Coming to get incident by id");
+
     const token = sessionStorage.getItem('jwt');
     
     // Create headers with Authorization

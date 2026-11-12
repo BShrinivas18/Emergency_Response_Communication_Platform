@@ -38,6 +38,8 @@ import { timestamp } from 'rxjs';
 export class IncidentReportModalComponent implements OnInit {
   
   incidentForm!: FormGroup;
+  submissionError = '';
+  submissionPending = false;
   type: string[] = ['Fire', 'Medical Emergency', 'Crime', 'Natural Disaster', 'Accident','Chemical/Hazmat'];
   userLocation: { lat: number; lng: number } | null = null;
  
@@ -55,9 +57,9 @@ export class IncidentReportModalComponent implements OnInit {
 
   initForm() {
     this.incidentForm = this.fb.group({
-      victimName: ['', Validators.required],
-      victimContact: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      victimAddress: ['', Validators.required],
+      victimName: [''],
+      victimContact: ['', Validators.pattern(/^\d{10}$/)],
+      victimAddress: [''],
       type: ['', Validators.required],
       incidentLocation: [''],
       useSameLocation: [true],  // Add this field to the form
@@ -111,32 +113,27 @@ export class IncidentReportModalComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.incidentForm.valid) {
-      const incidentData = {
-        ...this.incidentForm.value,
-        incidentLocation: this.userLocation ? {
-          latitude: this.userLocation.lat,
-          longitude: this.userLocation.lng,
-          address: this.incidentForm.value.incidentLocation
-        } : null,
-        victimLocation: this.userLocation ? {
-          latitude: this.userLocation.lat,
-          longitude: this.userLocation.lng,
-          address: this.incidentForm.value.incidentLocation
-        } : null,
-        status: 'NEW',
-        timestamp: new Date(),
-      };
-      console.log("incoming data from incidentform : "+ this.incidentForm.value);
-      console.log("incoming data from form : ")
-      console.log(incidentData)
-      this.emergencyService.reportIncident(incidentData).subscribe((response) => {
-        console.log("sent request")
-        console.log(response)
-      });
-      this.emergencyService.setFormData(incidentData);
-      this.emergencyService.openIncidentConfirmationModal(incidentData);
-      this.dialogRef.close();
+    if (this.submissionPending || !this.incidentForm.valid) return;
+    if (!this.userLocation || !this.incidentForm.value.useSameLocation) {
+      this.submissionError = 'Incident location is not confirmed. This form currently supports your current location only. Call 112 in India for urgent help elsewhere.';
+      return;
     }
+    this.submissionPending = true;
+    this.submissionError = '';
+    const location = { latitude: this.userLocation.lat, longitude: this.userLocation.lng,
+      address: this.incidentForm.value.incidentLocation };
+    const incident = {...this.incidentForm.value, incidentLocation: location, victimLocation: location, status: 'NEW'};
+    this.emergencyService.reportIncident(incident).subscribe({
+      next: receipt => {
+        this.submissionPending = false;
+        this.emergencyService.setFormData(receipt);
+        this.emergencyService.openIncidentConfirmationModal(receipt);
+        this.dialogRef.close(receipt);
+      },
+      error: () => {
+        this.submissionPending = false;
+        this.submissionError = 'Receipt not confirmed. Use official emergency calling where appropriate (India: 112).';
+      }
+    });
   }
 }
