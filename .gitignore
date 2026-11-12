@@ -11,3 +11,4 @@ scan-secrets.py
 **/*-tests*.log
 **/build-*.log
 diff-check.log
+.local-run/
