@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.Api_Gateway_Server.SecurityBoundaryTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 46.09 s -- in com.Api_Gateway_Server.SecurityBoundaryTest

@@ -56,6 +56,20 @@ class ResponderHistoryTest {
         verify(repository,never()).findByType(any()); verify(events).save(any()); assertEquals(ResponderStatus.ASSIGNED,responder.getStatus());
     }
     @Test void historyUsesRequestedResponder() { service.history(1); verify(events).findByResponderIdOrderByIdAsc(1); }
+    @Test void onRouteStillAdvancesNewIncident() {
+        when(repository.findById(1)).thenReturn(Optional.of(responder));
+        IncidentDTO incident = new IncidentDTO(); incident.setIncidentId(42); incident.setStatus(IncidentStatus.NEW);
+        when(incidents.getIncidentById(42)).thenReturn(incident);
+        service.updateStatus(1,ResponderStatus.ON_ROUTE);
+        verify(incidents).updateIncidentStatus(42,IncidentStatus.IN_PROGRESS); verify(events).save(any());
+    }
+    @Test void operationalProgressDoesNotReopenTerminalIncident() {
+        when(repository.findById(1)).thenReturn(Optional.of(responder));
+        IncidentDTO incident = new IncidentDTO(); incident.setIncidentId(42); incident.setStatus(IncidentStatus.RESOLVED);
+        when(incidents.getIncidentById(42)).thenReturn(incident);
+        service.updateStatus(1,ResponderStatus.ON_SCENE);
+        verify(incidents,never()).updateIncidentStatus(anyInt(),any()); verify(events).save(any());
+    }
     @Test void creationCannotOverwriteOrForgeAssignmentAndIsAudited() {
         ResponderDTO dto = new ResponderDTO(); dto.setResponderId(99); dto.setIncidentId(42); dto.setStatus(ResponderStatus.ASSIGNED);
         when(repository.save(any())).thenAnswer(call -> { Responder r = call.getArgument(0); assertEquals(0,r.getResponderId()); r.setResponderId(1); return r; });

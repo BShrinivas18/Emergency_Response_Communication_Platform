@@ -125,6 +125,15 @@ public class ResponderService {
         record(responder, incidentId, "STATUS_CHANGED", previous);
         // Duty changes never imply that the incident is resolved.
         if (incidentId != null) {
+            IncidentStatus target = determineIncidentStatus(status);
+            if (target != null) {
+                try {
+                    IncidentDTO incident = incidentServiceClient.getIncidentById(incidentId);
+                    // Preserve operational progress without reopening an already terminal incident.
+                    if (incident.getStatus() == IncidentStatus.NEW)
+                        incidentServiceClient.updateIncidentStatus(incidentId, target);
+                } catch (RuntimeException ignored) { /* Reconciliation remains a follow-up; local history is retained. */ }
+            }
             try { logServiceClient.createLog(createLogDTO(incidentId, "Responder " + id + " status changed to " + status)); }
             catch (RuntimeException ignored) { /* Local transactional event remains the authoritative history. */ }
         }
