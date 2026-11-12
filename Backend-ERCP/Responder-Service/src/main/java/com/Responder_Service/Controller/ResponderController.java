@@ -16,6 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/responders")
 public class ResponderController {
+    @GetMapping("/{id}/history")
+    public java.util.List<com.Responder_Service.Model.ResponderEvent> history(@PathVariable Integer id) {
+        return responderService.history(id);
+    }
 
     @Autowired
     private ResponderService responderService;
@@ -93,9 +97,9 @@ public class ResponderController {
     }
     @GetMapping("/name/{name}")
     public Responder getByName(@PathVariable("name") String name) {
-        System.out.println("name -> " + name);
+
         Responder res= responderService.getByName(name);
-        System.out.println("res -> " + res);
+
         return res;
     }
 

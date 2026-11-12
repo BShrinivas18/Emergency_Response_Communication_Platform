@@ -29,14 +29,14 @@ public class VictimService {
 
     @Transactional
     public VictimDTO createVictim(VictimDTO victimDTO) {
-//        System.out.println("victim name: "+victimDTO.getName());
+
         Victim victim = new Victim();
         victim.setName(victimDTO.getName());
         victim.setContactInfo(victimDTO.getContactInfo());
         victim.setLocationId(victimDTO.getLocationId());
 
         Victim savedVictim = victimRepository.save(victim);
-//        System.out.println("victim : " + savedVictim);
+
         return convertToDTO(savedVictim);
     }
 
@@ -47,8 +47,8 @@ public class VictimService {
     }
 
     public VictimDTO getVictimById(Integer id) {
-//        System.out.println("HEy its inside get victim by id method");
-//        System.out.println("victim: "+victimRepository.findById(id).map(this::convertToDTO));
+
+
         return victimRepository.findById(id)
                 .map(this::convertToDTO)
                 .orElseThrow(() -> new RuntimeException("Victim not found with id: " + id));

@@ -5,6 +5,8 @@ import com.Api_Gateway_Server.Model.LoginResponse;
 import com.Api_Gateway_Server.Model.ResponderDto;
 import com.Api_Gateway_Server.Model.Enums.Role;
 import com.Api_Gateway_Server.Model.User;
+import com.Api_Gateway_Server.Model.UserResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.Api_Gateway_Server.Service.JwtService;
 import com.Api_Gateway_Server.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +34,10 @@ public class UserController {
     private ResponderFeignClient ResponderService;
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.saveUser(user);
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse register(@RequestBody User user) {
+        user.setId(null);
+        return UserResponse.from(userService.saveUser(user));
 
     }
 
@@ -43,7 +47,6 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
-        System.out.println("authentication: "+authentication);
 
         // Check if authentication was successful
         if (authentication.isAuthenticated()) {
@@ -52,21 +55,18 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid response", null, null));
             }
             String token = jwtService.generateToken(user.getUsername(), dbuser.getRole());
-            System.out.println("token -> " + token);
             if (dbuser.getRole() == Role.ADMIN) {
                 LoginResponse loginResponse = new LoginResponse(token, dbuser.getId(), null);
                 return ResponseEntity.ok(loginResponse);
             } else if (dbuser.getRole() == Role.RESPONDER) {
                 try{
-                    System.out.println("dbuser.getUsername() -> " + dbuser.getUsername());
-                    System.out.println("inside if else or role responder");
                     ResponderDto responder = ResponderService.getResponderByUsername(dbuser.getUsername());
                     LoginResponse loginResponse = new LoginResponse(token, null, responder.getResponderId());
                     return ResponseEntity.ok(loginResponse);
                 }
                 catch (Exception e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(new LoginResponse(token, null, null));
+                            .body(new LoginResponse(null, null, null));
                 }
             }
 
@@ -77,8 +77,10 @@ public class UserController {
     }
 
         @GetMapping("/user/{username}")
-        public User getUser(@PathVariable String username) {
-            return userService.findByUsername(username);
+        @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
+        public ResponseEntity<UserResponse> getUser(@PathVariable String username) {
+            User user = userService.findByUsername(username);
+            return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(UserResponse.from(user));
         }
 
 

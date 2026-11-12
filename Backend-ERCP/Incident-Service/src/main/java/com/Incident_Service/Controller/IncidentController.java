@@ -31,13 +31,14 @@ public class IncidentController {
     public ResponseEntity<?> createIncident(@RequestBody IncidentDTO incident) {
         try {
 
-            System.out.println("Received incident type: " + incident.getType());
             IncidentDTO response = incidentService.reportIncident(incident);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Invalid incident type or coordinates"));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonMap("error", e.getMessage()));
+                    .body(Collections.singletonMap("error", "Incident receipt not confirmed"));
         }
     }
 
@@ -51,7 +52,7 @@ public class IncidentController {
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<IncidentDTO> getIncidentById(@PathVariable Integer id) {
-        System.out.println("Hurray!!! get incident by id works");
+
         return incidentService.getIncidentById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

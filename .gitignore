@@ -1,0 +1,13 @@
+
+**/node_modules/
+**/.npm-cache/
+**/target/
+.env
+.env.*
+!.env.example
+stabilize*.py
+scan-secrets.py
+*-tests*.log
+**/*-tests*.log
+**/build-*.log
+diff-check.log

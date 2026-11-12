@@ -50,44 +50,45 @@ public class IncidentService {
 
 
     public IncidentDTO reportIncident(IncidentDTO dto) {
-
-        LocationDTO incidentLocation = determineLocation(dto.getIncidentLocation());// for incident location
-        int incidentLocationId = incidentLocation.getLocationId();
-        LocationDTO victimLocation = determineLocation(dto.getVictimLocation());
-        int victimLocationId = victimLocation.getLocationId();// for victim location
-        // Create incident
-        System.out.println("incident location id : "+ incidentLocationId);
-        Incident incident = createIncident(dto, incidentLocationId);
-
-        log.info("Incident created ");
-        log.info(incident.toString());
-        // Handle victim information if available (not for SOS)
-        Integer victimId = null;
-        if (!"Anonymous".equals(dto.getVictimName()) && dto != null) {
-            victimId = handleVictimInformation(dto,victimLocationId);
-            incident.setVictimId(victimId);
-
+        if (dto == null || dto.getType() == null) throw new IllegalArgumentException("Incident type required");
+        validateLocation(dto.getIncidentLocation());
+        LocationDTO location = determineLocation(dto.getIncidentLocation());
+        Incident incident = createIncident(dto, location.getLocationId());
+        if (dto.getType() != IncidentType.SOS_REQUEST && dto.getVictimName() != null
+                && !dto.getVictimName().isBlank() && !"Anonymous".equals(dto.getVictimName())) {
+            LocationDTO victimLocation = dto.getVictimLocation() == null ? location : determineLocation(dto.getVictimLocation());
+            incident.setVictimId(handleVictimInformation(dto, victimLocation.getLocationId()));
         }
-        System.out.println("Incident: " + incident);
+        // Repository transaction commits before any downstream dispatch/logging call.
+        incident = incidentRepository.saveAndFlush(incident);
+        IncidentDTO receipt = new IncidentDTO();
+        receipt.setIncidentId(incident.getIncidentId());
+        receipt.setType(incident.getType());
+        receipt.setTimestamp(incident.getTimestamp());
+        receipt.setStatus(incident.getStatus());
+        receipt.setIncidentLocation(location);
+        // Best effort only. A durable retry/outbox is a separately reviewed follow-up.
+        try { logIncident(incident, location); }
+        catch (RuntimeException e) { log.warn("Incident stored; audit delivery not confirmed"); }
+        try { assignResponder(incident); }
+        catch (RuntimeException e) { log.warn("Incident stored; dispatch not confirmed"); }
+        return receipt;
+    }
 
-        // Save incident
-        incident = incidentRepository.save(incident);
-
-        // Log the incident
-        logIncident(incident, incidentLocation);
-
-        // Assign responder
-        assignResponder(incident);
-        return convertToDTO(incident);
+    private void validateLocation(LocationDTO location) {
+        if (location == null || location.getLatitude() == null || location.getLongitude() == null
+                || !Double.isFinite(location.getLatitude()) || !Double.isFinite(location.getLongitude())
+                || Math.abs(location.getLatitude()) > 90 || Math.abs(location.getLongitude()) > 180) {
+            throw new IllegalArgumentException("Valid incident coordinates required");
+        }
     }
 
     private Incident createIncident(IncidentDTO dto, int incidentLocation) {
         Incident incident = new Incident();
-        incident.setType(dto.getVictimName().equals("Anonymous") ? IncidentType.SOS_REQUEST : dto.getType());
+        incident.setType(dto.getType());
         incident.setTimestamp(LocalDateTime.now());
         incident.setStatus(IncidentStatus.NEW);  // This is where status is set
-        System.out.println("incident incidentId : " + incident.getIncidentId());
-        System.out.println("incident location : "+ incidentLocation);
+
 
         // Ensure the location ID is set from the saved/found location
         if(incidentLocation > 0) {
@@ -100,13 +101,14 @@ public class IncidentService {
     }
 
     private LocationDTO determineLocation(LocationDTO location) {
+        validateLocation(location);
         try {
             // First, check if location already exists
             Optional<LocationDTO> existingLocation = locationServiceClient.findByLatitudeAndLongitude(
                     location.getLatitude(),
                     location.getLongitude()
             );
-            System.out.println("existing location : "+ existingLocation);
+
             // If location exists, return the existing location
             if (existingLocation.isPresent()) {
                 return existingLocation.get();
@@ -118,7 +120,7 @@ public class IncidentService {
             newLocation.setAddress(location.getAddress());
 
             LocationDTO savedLocation = locationServiceClient.createLocation(newLocation);
-            System.out.println("saved location : "+ savedLocation);
+
             newLocation.setLocationId(savedLocation.getLocationId());
             return savedLocation;
 
@@ -128,9 +130,9 @@ public class IncidentService {
     }
 
     private Integer handleVictimInformation(IncidentDTO dto,int victimLocation) {
-//        System.out.println("handle victim information");
+
         if (dto.getVictimName() != null) {
-//            System.out.println("victim name: "+dto.getVictimName());
+
             VictimDTO victim = new VictimDTO();
             victim.setName(dto.getVictimName());
             victim.setContactInfo(dto.getVictimContact());
@@ -145,8 +147,7 @@ public class IncidentService {
 
     private void logIncident(Incident incident, LocationDTO location) {
         LogDTO log = new LogDTO();
-        log.setStatusUpdate(String.format("Incident reported at location: %s (Lat: %f, Long: %f)",
-                location.getAddress(), location.getLatitude(), location.getLongitude()));
+        log.setStatusUpdate("Incident stored; responder assignment unconfirmed");
         log.setTimestamp(LocalDateTime.now());
         log.setIncidentId(incident.getIncidentId());
         logServiceClient.createLog(log);
@@ -168,7 +169,7 @@ public class IncidentService {
     }
 
     public Optional<IncidentDTO> getIncidentById(Integer id) {
-        System.out.println("get incident by id in service works");
+
         return incidentRepository.findById(id).map(this::convertToDTO);
     }
     public List<IncidentDTO> getIncidentsByStatus(IncidentStatus status) {
@@ -178,12 +179,11 @@ public class IncidentService {
     }
 
     public void updateIncidentStatus(int incidentId, IncidentStatus status) {
-        System.out.println("update incident status in service works");
 
         Incident incident = incidentRepository.findById(incidentId).orElseThrow(()-> new RuntimeException("Incident not found"));
         incident.setStatus(status);
-        System.out.println("incident status: "+incident.getStatus());
-        System.out.println("incident: "+incident);
+
+
         incidentRepository.save(incident);
     }
 
@@ -221,8 +221,8 @@ public class IncidentService {
             dto.setVictimId(victim.getVictimId());
             dto.setVictimName(victim.getName());
             dto.setVictimContact(victim.getContactInfo());
-//            System.out.println("victim : "+ victim);
-//            System.out.println("victim location id: "+victim.getLocationId());
+
+
             dto.setVictimLocation(locationServiceClient.getLocationById(victim.getLocationId()));
 
         }

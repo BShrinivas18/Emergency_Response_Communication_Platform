@@ -9,12 +9,12 @@ spring:
   datasource:
     url: jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5432}/${RDS_DB_NAME:postgres}
     username: ${RDS_USERNAME:postgres}
-    password: ${RDS_PASSWORD:postgres}
+    password: ${RDS_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true

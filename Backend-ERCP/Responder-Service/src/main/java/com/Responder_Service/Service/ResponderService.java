@@ -23,6 +23,22 @@ import java.util.stream.Collectors;
 
 @Service
 public class ResponderService {
+    @Autowired
+    private com.Responder_Service.Repository.ResponderEventRepository events;
+    public java.util.List<com.Responder_Service.Model.ResponderEvent> history(Integer id) {
+        return events.findByResponderIdOrderByIdAsc(id);
+    }
+    private void record(Responder responder, Integer incidentId, String kind, ResponderStatus previous) {
+        var attributes = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+        String actor = "SYSTEM";
+        if (attributes instanceof org.springframework.web.context.request.ServletRequestAttributes servlet) {
+            String forwarded = servlet.getRequest().getHeader("X-ERCP-Actor");
+            if (forwarded != null && !forwarded.isBlank()) actor = forwarded;
+        }
+        events.save(new com.Responder_Service.Model.ResponderEvent(responder.getResponderId(), incidentId,
+            kind, previous == null ? null : previous.name(), responder.getStatus().name(), actor));
+    }
+
 
     @Autowired
     private ResponderRepository responderRepository;
@@ -39,9 +55,14 @@ public class ResponderService {
     public Responder getByName(String name) {
         return responderRepository.findByName(name);
     }
+    @org.springframework.transaction.annotation.Transactional
     public ResponderDTO createResponder(ResponderDTO responderDTO) {
         Responder responder = convertToEntity(responderDTO);
+        responder.setResponderId(0);
+        responder.setStatus(ResponderStatus.AVAILABLE);
+        responder.setIncidentId(null);
         Responder savedResponder = responderRepository.save(responder);
+        record(savedResponder, null, "CREATED", null);
         return convertToDTO(savedResponder);
     }
 
@@ -68,108 +89,65 @@ public class ResponderService {
     }
 
 
+    @org.springframework.transaction.annotation.Transactional
     public ResponderDTO updateResponder(Integer id, ResponderDTO responderDTO) {
         Responder existingResponder = responderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Responder Not Found"));
 
         existingResponder.setName(responderDTO.getName());
         existingResponder.setStationLocation(responderDTO.getStationLocation());
-        existingResponder.setStatus(responderDTO.getStatus());
+        // Operational status changes must use the audited status endpoint.
+        if (responderDTO.getStatus() != existingResponder.getStatus()) throw new IllegalArgumentException("Use status endpoint");
         existingResponder.setType(responderDTO.getType());
         existingResponder.setLastUpdate(LocalDateTime.now());
         existingResponder.setLocationId(responderDTO.getLocationId());
         existingResponder.setStationLocation(responderDTO.getStationLocation());
 
         Responder updatedResponder = responderRepository.save(existingResponder);
+        record(updatedResponder, updatedResponder.getIncidentId(), "PROFILE_UPDATED", updatedResponder.getStatus());
         return convertToDTO(updatedResponder);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public ResponderDTO updateStatus(Integer id, ResponderStatus status) {
         Responder responder = responderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Responder Not Found"));
-
+            .orElseThrow(() -> new IllegalArgumentException("Responder not found"));
+        if (status == null || status == ResponderStatus.ASSIGNED) throw new IllegalArgumentException("Invalid duty transition");
+        ResponderStatus previous = responder.getStatus();
+        Integer incidentId = responder.getIncidentId();
+        if ((status == ResponderStatus.ON_ROUTE || status == ResponderStatus.ON_SCENE || status == ResponderStatus.REACHED_LOCATION)
+                && incidentId == null) throw new IllegalArgumentException("No assigned incident");
         responder.setStatus(status);
-
-        if(status == ResponderStatus.NOT_AVAILABLE || status == ResponderStatus.AVAILABLE){
-            responder.setLastUpdate(LocalDateTime.now());
-//           Integer incidentId = responder.getIncidentId();
-//           System.out.println(incidentId);
-//           responder.setPastIncidentIds(List.of(incidentId));
-//           System.out.println(responder.getPastIncidentIds());
-            responder.setIncidentId(null);
-            responderRepository.save(responder);
-            return convertToDTO(responder);
+        responder.setLastUpdate(LocalDateTime.now());
+        if (status == ResponderStatus.AVAILABLE || status == ResponderStatus.NOT_AVAILABLE
+                || status == ResponderStatus.OFF_DUTY || status == ResponderStatus.OFFLINE) responder.setIncidentId(null);
+        responderRepository.save(responder);
+        record(responder, incidentId, "STATUS_CHANGED", previous);
+        // Duty changes never imply that the incident is resolved.
+        if (incidentId != null) {
+            try { logServiceClient.createLog(createLogDTO(incidentId, "Responder " + id + " status changed to " + status)); }
+            catch (RuntimeException ignored) { /* Local transactional event remains the authoritative history. */ }
         }
-//       responder.setLastUpdate(LocalDateTime.now());
-
-        // Fetch incident details
-
-        IncidentDTO incident = incidentServiceClient.getIncidentById(responder.getIncidentId());
-//        System.out.println("qwertyuiopasdfghjklZxcvbnm    sdfghjhgfdsaasdfghjjhgfdsasdfgh");
-//        System.out.println("incident "+ incident);
-        // Update incident status based on responder status
-        IncidentStatus incidentStatus = determineIncidentStatus(status);
-//        System.out.println("incident status: "+incidentStatus);
-        if (incidentStatus != null) {
-            incidentServiceClient.updateIncidentStatus(incident.getIncidentId(),incidentStatus);
-//            System.out.println("incident status updated");
-        }
-
-        LogDTO logDTO = createLogDTO(incident.getIncidentId(), "Status updated to " + status);
-        logServiceClient.createLog(logDTO);
-
-        Responder updatedResponder = responderRepository.save(responder);
-        System.out.println("updated responder: "+updatedResponder);
-        return convertToDTO(updatedResponder);
+        return convertToDTO(responder);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void assignAppropriateResponder(IncidentDTO incident) {
-        ResponderType requiredResponderType = getRequiredResponderType(incident.getType());
-        System.out.println("requiredResponderType returned: "+ requiredResponderType);
-        List<Responder> availableResponders = responderRepository.findByStatusAndType(
-                ResponderStatus.AVAILABLE, requiredResponderType
-        );
-
-        if (!availableResponders.isEmpty()) {
-            Responder responder = availableResponders.get(0);
-            responder.setStatus(ResponderStatus.ASSIGNED);
-            responder.setIncidentId(incident.getIncidentId());
-            responder.setLastUpdate(LocalDateTime.now());
-            // Log the assignment
-            LogDTO logDTO = createLogDTO(incident.getIncidentId(),
-                    "Responder automatically assigned: " + responder.getName() +"\n"
-            + "Responder Type : " + responder.getType());
-            logDTO.setIncidentId(incident.getIncidentId());
-            logDTO.setTimestamp(LocalDateTime.now());
-            logServiceClient.createLog(logDTO);
-
-            responderRepository.save(responder);
-        } else {
-            if(!responderRepository.findByStatusAndType(ResponderStatus.AVAILABLE, ResponderType.POLICE_OFFICER).isEmpty()) {
-
-                Responder responder = responderRepository.findByType(ResponderType.POLICE_OFFICER).get(0);
-                responder.setStatus(ResponderStatus.ASSIGNED);
-                responder.setIncidentId(incident.getIncidentId());
-                responder.setLastUpdate(LocalDateTime.now());
-                responderRepository.save(responder);
-            }
-
-            // Log warning about no available responders
-            LogDTO logDTO = createLogDTO(
-                    incident.getIncidentId(),
-                    "WARNING: No available responders of type. " + requiredResponderType + "\n" +
-                            "Don't Worry we will assign a " + requiredResponderType + " to the incident ASAP." + "\n" +
-                            "Default Responder assigned"
-            );
-
-            logDTO.setTimestamp(LocalDateTime.now());
-            logDTO.setIncidentId(incident.getIncidentId());
-
-            logServiceClient.createLog(logDTO);
-
-        }
+        ResponderType type = getRequiredResponderType(incident.getType());
+        List<Responder> candidates = responderRepository.findByStatusAndType(ResponderStatus.AVAILABLE, type);
+        if (candidates.isEmpty() && type != ResponderType.POLICE_OFFICER)
+            candidates = responderRepository.findByStatusAndType(ResponderStatus.AVAILABLE, ResponderType.POLICE_OFFICER);
+        if (candidates.isEmpty()) return;
+        Responder responder = candidates.get(0);
+        ResponderStatus previous = responder.getStatus();
+        responder.setStatus(ResponderStatus.ASSIGNED);
+        responder.setIncidentId(incident.getIncidentId());
+        responder.setLastUpdate(LocalDateTime.now());
+        responderRepository.save(responder);
+        record(responder, incident.getIncidentId(), "ASSIGNED", previous);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void requestAdditionalResponders(Integer incidentId, ResponderType requiredResponderType) {
         // Fetch incident details
         IncidentDTO incident = incidentServiceClient.getIncidentById(incidentId);
@@ -185,7 +163,6 @@ public class ResponderService {
         List<Responder> additionalResponders = responderRepository.findByStatusAndType(
                 ResponderStatus.AVAILABLE, requiredResponderType
         );
-        System.out.println("additional responders: "+additionalResponders);
 
         if(!additionalResponders.isEmpty()){
 
@@ -194,6 +171,7 @@ public class ResponderService {
             responder.setIncidentId(incident.getIncidentId());
             responder.setLastUpdate(LocalDateTime.now());
             responderRepository.save(responder);
+            record(responder, incidentId, "ADDITIONAL_ASSIGNMENT", ResponderStatus.AVAILABLE);
 
             // Log successful assignment
             LogDTO successLogDTO = createLogDTO(incidentId,
@@ -230,7 +208,7 @@ public class ResponderService {
     private IncidentStatus determineIncidentStatus(ResponderStatus responderStatus) {
         return switch (responderStatus) {
             case ON_ROUTE, ON_SCENE -> IncidentStatus.IN_PROGRESS;
-            case OFF_DUTY -> IncidentStatus.RESOLVED;
+
             default -> null;
         };
     }
@@ -239,6 +217,7 @@ public class ResponderService {
         LogDTO logDTO = new LogDTO();
         logDTO.setStatusUpdate(message);
         logDTO.setTimestamp(LocalDateTime.now());
+        logDTO.setIncidentId(incidentId);
         // System update
         return logDTO;
     }

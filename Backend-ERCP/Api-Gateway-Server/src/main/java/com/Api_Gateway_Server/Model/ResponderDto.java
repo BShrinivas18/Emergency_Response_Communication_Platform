@@ -18,6 +18,7 @@ public class ResponderDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int responderId;
+    private Integer incidentId;
     private String name;
     private String currentLocation;
     private ResponderStatus status;

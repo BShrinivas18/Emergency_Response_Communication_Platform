@@ -8,7 +8,8 @@ public enum IncidentType {
     FIRE("FIRE"),
     NATURAL_DISASTER("NATURAL_DISASTER"),
     HAZMAT("HAZMAT"),
-    SOS_REQUEST("SOS_REQUEST");
+    SOS_REQUEST("SOS_REQUEST"),
+    TRAFFIC_ACCIDENT("TRAFFIC_ACCIDENT");
 
     private final String value;
 

@@ -47,22 +47,11 @@ public class LogService {
                 .collect(Collectors.toList());
     }
 
-    public LogDTO updateLog(Integer id, LogDTO logDTO) {
-        Log existingLog = logRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Log not found with id: " + id));
-
-        existingLog.setStatusUpdate(logDTO.getStatusUpdate());
-        existingLog.setTimestamp(logDTO.getTimestamp());
-//        existingLog.setUpdatedBy(logDTO.getUpdatedBy());
-        existingLog.setIncidentId(logDTO.getIncidentId());
-        Log updatedLog = logRepository.save(existingLog);
-        return convertToDTO(updatedLog);
+    public LogDTO updateLog(Integer id, LogDTO dto) {
+        throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED, "Logs are append-only");
     }
-
     public void deleteLog(Integer id) {
-        Log log = logRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Log not found with id: " + id));
-        logRepository.delete(log);
+        throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED, "Logs are append-only");
     }
 
     private LogDTO convertToDTO(Log log) {
@@ -79,9 +68,9 @@ public class LogService {
     private Log convertToEntity(LogDTO dto) {
         Log log = new Log();
         log.setIncidentId(dto.getIncidentId());
-        log.setLogId(dto.getLogId());
+        // Ignore caller-supplied identifiers: append, never overwrite.
         log.setStatusUpdate(dto.getStatusUpdate());
-        log.setTimestamp(dto.getTimestamp());
+        log.setTimestamp(LocalDateTime.now());
         log.setIncidentId(dto.getIncidentId());
 //        log.setUpdatedBy(dto.getUpdatedBy());
         return log;

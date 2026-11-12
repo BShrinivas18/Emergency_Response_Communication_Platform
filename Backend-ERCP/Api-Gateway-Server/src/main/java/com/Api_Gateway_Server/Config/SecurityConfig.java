@@ -2,6 +2,10 @@ package com.Api_Gateway_Server.Config;
 
 import com.Api_Gateway_Server.Service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +29,10 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+    @Autowired
+    private ResponderAccess responderAccess;
+    @Value("${security.cors.origins:http://localhost:4200}")
+    private String origins;
 
     @Autowired
     MyUserDetailsService userDetailsService;
@@ -47,11 +55,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->request
 //                        .requestMatchers("/responders/create/**","/responders/update","/responders/delete","/responders/getAll", "/incidents/{id}").hasRole("ADMIN")
 //                        .requestMatchers(("/responders/request-additional/{id}/{type}")).hasRole("RESPONDER")
-                        .requestMatchers("/register","/login","/incidents/incident/status/{id}","/incidents/create").permitAll()
-
-                        .anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.POST, "/login", "/incidents/create").permitAll()
+                        .requestMatchers("/register").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/user/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/responders/{id}/history").access((auth, context) ->
+                            new org.springframework.security.authorization.AuthorizationDecision(responderAccess.owns(auth.get(), context.getVariables().get("id"))))
+                        .requestMatchers(HttpMethod.GET, "/incidents/**", "/responders/**", "/logs/**", "/locations/**").hasAnyRole("ADMIN", "RESPONDER")
+                        .requestMatchers(HttpMethod.PATCH, "/responders/{id}/{status}").access((auth, context) ->
+                            new org.springframework.security.authorization.AuthorizationDecision(responderAccess.owns(auth.get(), context.getVariables().get("id"))))
+                        .requestMatchers(HttpMethod.PUT, "/responders/request-additional/{id}/{type}").access((auth, context) ->
+                            new org.springframework.security.authorization.AuthorizationDecision(responderAccess.assignedTo(auth.get(), context.getVariables().get("id"))))
+                        .requestMatchers("/responders/assign-responder").denyAll()
+                        .requestMatchers(HttpMethod.POST, "/logs/**").denyAll()
+                        .requestMatchers(HttpMethod.PUT, "/logs/**").denyAll()
+                        .requestMatchers(HttpMethod.DELETE, "/logs/**").denyAll()
+                        .anyRequest().hasRole("ADMIN"))
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new TrustedActorFilter(), org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class)
 //                .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .cors(Customizer.withDefaults());
@@ -64,16 +85,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*"); // Allow all origins, you can replace "*" with your client URL
-        config.addAllowedHeader("*"); // Allow all headers
-        config.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
+        List<String> allowed = Arrays.stream(origins.split(",")).map(String::trim).toList();
+        if (allowed.stream().anyMatch(o -> o.isBlank() || o.contains("*"))) {
+            throw new IllegalArgumentException("Explicit CORS origins required");
+        }
+        config.setAllowCredentials(false);
+        config.setAllowedOrigins(allowed);
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         source.registerCorsConfiguration("/**", config);
 
-        return new CorsFilter(source);
+        return source;
     }
 
     @Bean
