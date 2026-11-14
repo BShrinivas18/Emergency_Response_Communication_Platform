@@ -15,9 +15,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.mockito.Mockito.*;
-@WebMvcTest(UserController.class)
+@WebMvcTest({UserController.class, com.Api_Gateway_Server.Controller.ApiInfoController.class})
 @Import({SecurityConfig.class, JwtFilter.class, ResponderAccess.class})
 class SecurityBoundaryTest {
+    @Test void rootExplainsApiWithoutExposingProtectedData() throws Exception {
+        mvc.perform(get("/")).andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("application/json"))
+            .andExpect(jsonPath("$.service").value("Emergency Response API"));
+        mvc.perform(get("/incidents")).andExpect(status().isUnauthorized());
+    }
     @Autowired MockMvc mvc;
     @MockBean UserService users;
     @MockBean MyUserDetailsService details;

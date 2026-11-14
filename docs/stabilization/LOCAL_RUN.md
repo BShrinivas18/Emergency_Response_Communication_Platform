@@ -22,3 +22,5 @@ To stop only this local stack from the repository root:
 ```
 
 Local helper scripts and credentials are machine-local runtime state, not a deployment system. No production deployment, remote push, or main-branch merge was performed.
+
+For current restart instructions and runtime fixes, see [RUNTIME_REPAIR.md](RUNTIME_REPAIR.md). The checked-in scripts supersede the earlier machine-local helpers.

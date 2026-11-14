@@ -17,18 +17,18 @@
         </div>
       </div>
     </header>
-  
+
     <!-- Main Content Grid -->
     <div class="emergency-grid">
       <!-- Left Sidebar: Emergency Guidelines -->
       <div class="emergency-guidelines">
-        
-        
+
+
         <div><h3> Emergency Guidelines : </h3></div>
         <div class="emergency-type-buttons">
-          <button 
-            *ngFor="let type of emergencyTypes" 
-            mat-raised-button 
+          <button
+            *ngFor="let type of emergencyTypes"
+            mat-raised-button
             [color]="selectedEmergency === type ? 'primary' : 'basic'"
             (click)="selectEmergency(type)">
             {{ type }}
@@ -44,54 +44,54 @@
           <h4>{{ selectedEmergency }} : </h4>
           <ul>
             <li *ngFor="let guideline of guidelines[selectedEmergency]">
-              
+
              {{ guideline }}
             </li>
           </ul>
         </div>
-        
-        
-        
+
+
+
       </div>
-  
+
       <!-- Central Map Section -->
       <div class="emergency-map">
-        <google-map 
-          height="100%" 
-          width="100%" 
-          [center]="mapCenter()" 
+        <google-map *ngIf="mapsAvailable; else mapUnavailable"
+          height="100%"
+          width="100%"
+          [center]="mapCenter()"
           [zoom]="5">
           @for (marker of mapMarkers(); track marker.position) {
-            <map-marker 
+            <map-marker
               [position]="marker.position"
               [title]="marker.title">
             </map-marker>
           }
-        </google-map>
+        </google-map><ng-template #mapUnavailable><p class="p-4" role="status">Map preview is unavailable. Location sharing and incident reporting use your browser location and do not require a map.</p></ng-template>
       </div>
-  
+
       <!-- Right Sidebar: Emergency Actions -->
       <div class="emergency-actions">
         <h3>Quick Actions</h3>
         <div class="action-buttons">
-          <button 
-            mat-raised-button 
-            color="primary" 
+          <button
+            mat-raised-button
+            color="primary"
             class="report-incident-btn"
             (click)="openIncidentReportModal()">
             <mat-icon>report_problem</mat-icon>
             Report an Incident
           </button>
-          <button 
-            mat-raised-button 
-            color="warn" 
+          <button
+            mat-raised-button
+            color="warn"
             class="sos-alert-btn"
             (click)="sendSOSAlert()">
             <mat-icon>warning</mat-icon>
             Send SOS Alert
           </button>
         </div>
-  
+
         <!-- Weather Alerts Section -->
         <div class="weather-alerts">
           <h4>Current Weather Alerts</h4>
@@ -108,17 +108,17 @@
             </div>
           </div>
           <ng-template #noAlerts>
-            <p class="no-alerts">No current weather alerts</p>
+            <p class="no-alerts">Weather alerts are unavailable: no provider is configured.</p>
           </ng-template>
         </div>
       </div>
     </div>
-  
+
     <!-- Floating SOS Button -->
-    <button 
-      mat-fab 
-      
-      class="floating-sos-btn danger-btn" 
+    <button
+      mat-fab
+
+      class="floating-sos-btn danger-btn"
       (click)="sendSOSAlert()">
       <mat-icon>emergency</mat-icon>
     </button>

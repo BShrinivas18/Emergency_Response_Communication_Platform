@@ -143,10 +143,10 @@ export class LoginComponent {
             // });
 
             //Save user ID or responder ID depending on the role
-            if (role === 'ADMIN' && response.userId != null) {
+            if (this.authService.getRole() === 'ADMIN' && response.userId != null) {
               sessionStorage.setItem('userId', response.userId.toString());
               this.router.navigate(['/admin/dashboard']);
-            } else if (role === 'RESPONDER' && response.responderId != null) {
+            } else if (this.authService.getRole() === 'RESPONDER' && response.responderId != null) {
               sessionStorage.setItem('responderId', response.responderId.toString());
 
               this.responderservice.getResponderById(response.responderId).subscribe({
@@ -183,5 +183,3 @@ export class LoginComponent {
 
 }
 }
-
-

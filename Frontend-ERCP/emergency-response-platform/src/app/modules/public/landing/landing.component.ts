@@ -34,6 +34,7 @@ import { DialogModule, DialogRef } from '@angular/cdk/dialog';
   styleUrls: ['./landing.component.css']
 })
 export class LandingComponent implements OnInit {
+  readonly mapsAvailable = typeof google !== 'undefined' && !!google.maps;
   incident!:Incident;
   mapCenter = signal<google.maps.LatLngLiteral>({
     lat: 20.5937,

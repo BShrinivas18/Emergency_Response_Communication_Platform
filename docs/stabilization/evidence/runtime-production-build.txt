@@ -1,0 +1,4 @@
+                      | Initial total          | 729.24 kB |               161.49 kB
+Application bundle generation complete. [41.597 seconds]
+▲ [WARNING] bundle initial exceeded maximum budget. Budget 512.00 kB was not met by 217.24 kB with a total of 729.24 kB.
+Output location: C:\Users\91911\Documents\ChatGPT\Emergency response redesign\Frontend-ERCP\emergency-response-platform\dist\emergency-response-platform

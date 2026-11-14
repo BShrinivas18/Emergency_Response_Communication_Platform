@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->request
 //                        .requestMatchers("/responders/create/**","/responders/update","/responders/delete","/responders/getAll", "/incidents/{id}").hasRole("ADMIN")
 //                        .requestMatchers(("/responders/request-additional/{id}/{type}")).hasRole("RESPONDER")
+                        .requestMatchers(HttpMethod.GET, "/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/incidents/create").permitAll()
                         .requestMatchers("/register").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/user/**").authenticated()
@@ -108,4 +109,3 @@ public class SecurityConfig {
 
 
 }
-

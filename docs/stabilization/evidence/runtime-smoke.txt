@@ -1,0 +1,9 @@
+http://127.0.0.1:4200/ : 200 PASS
+http://127.0.0.1:8888/ : 200 PASS
+http://127.0.0.1:8888/incidents : 401 PASS
+Local admin login : 200 PASS (credentials and token omitted)
+http://127.0.0.1:8888/incidents : 200 PASS
+http://127.0.0.1:8888/responders : 200 PASS
+http://127.0.0.1:8888/logs : 200 PASS
+http://127.0.0.1:8888/locations : 200 PASS
+Read-only checks complete; no SOS, dispatch, or notifications submitted.

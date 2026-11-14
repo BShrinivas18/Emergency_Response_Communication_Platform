@@ -1,0 +1,5 @@
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.492 s -- in com.Api_Gateway_Server.JwtBehaviorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.58 s -- in com.Api_Gateway_Server.LocalAdminBootstrapTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 51.31 s -- in com.Api_Gateway_Server.SecurityBoundaryTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

@@ -152,3 +152,47 @@ describe('Stabilization: responder history', () => {
     component.ngOnInit(); expect(component.events).toEqual([]); expect(component.message).toContain('could not');
   });
 });
+
+import { appConfig } from './app.config';
+
+describe('Application runtime configuration', () => {
+  it('renders the public page without Google Maps or external providers', async () => {
+    await TestBed.configureTestingModule({
+      imports: [LandingComponent],
+      providers: [...appConfig.providers, provideHttpClientTesting(),
+        {provide: LocationService, useValue: {
+          requestLocationPermission: () => Promise.resolve(false),
+          getCurrentLocation: () => Promise.reject(new Error('No location in test'))
+        }}]
+    }).compileComponents();
+    const fixture = TestBed.createComponent(LandingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Emergency Response Platform');
+    expect(fixture.nativeElement.textContent).toContain('Map preview is unavailable');
+    expect(fixture.nativeElement.querySelector('google-map')).toBeNull();
+    const http = TestBed.inject(HttpTestingController);
+    TestBed.inject(EmergencyService).reportIncident(incident).subscribe();
+    http.expectOne(`${API_ORIGIN}/incidents/create`).flush({...incident, incidentId: 9});
+    http.verify();
+    fixture.destroy();
+  });
+});
+
+import { LoginComponent } from './modules/public/login/login.component';
+import { AuthService } from './core/services/auth.service';
+import { Router } from '@angular/router';
+
+describe('Login navigation', () => {
+  it('uses the authenticated role even when a different role was selected', () => {
+    const router = {navigate: jasmine.createSpy()};
+    const auth = {login: () => of({jwtToken:'test', userId:1, responderId:null}),
+      saveToken: jasmine.createSpy(), getRole: () => 'ADMIN'};
+    const component = new LoginComponent(new FormBuilder(), auth as any, router as any,
+      {} as any, {} as any, {} as any);
+    component.loginForm.setValue({username:'admin', password:'test-password', role:'RESPONDER'});
+    component.onSubmit();
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/dashboard']);
+    sessionStorage.removeItem('userId');
+  });
+});

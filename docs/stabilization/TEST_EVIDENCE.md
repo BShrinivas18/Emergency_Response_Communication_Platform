@@ -45,3 +45,5 @@ Karma reported successful completion of all tests, followed by Windows browser s
 ## Explicit evidence limits
 
 Mocks establish save-before-dispatch ordering and error behavior, not physical database durability or rollback. The local audit transaction uses Spring/JPA but requires PostgreSQL integration coverage before operational use. No concurrent reservation, database migration, real network failover, load test, measured latency or production readiness claim is made. Historical exposed secrets still require external rotation.
+
+Runtime repair follow-up (2026-11-14): 20 gateway and 18 frontend regression tests passed; production frontend build now passes; live read-only login/API checks passed. See [RUNTIME_REPAIR.md](RUNTIME_REPAIR.md) and evidence/runtime-*.txt. Earlier full-suite limitations still apply.
