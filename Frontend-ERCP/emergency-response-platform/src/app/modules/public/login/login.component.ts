@@ -1,25 +1,30 @@
-
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { IncidentManagementService } from '../../../core/services/incident-management.service';
-import { ResponderService } from '../../../core/services/responder.service';
+import { finalize } from 'rxjs';
+import { Role } from '../../../shared/models/user.model';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  loginError: string = '';
-  
-  // Statistical placeholders for emergency response platform
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  readonly loginForm = inject(FormBuilder).nonNullable.group({
+    username: ['', Validators.required],
+    password: ['', Validators.required]
+  });
+
+  loginError = '';
+  pending = false;
+  readonly sessionExpired = inject(ActivatedRoute).snapshot.queryParamMap.get('session') === 'expired';
+
   emergencyStats = [
     { label: 'Total Incidents This Year', value: '12,547' },
     { label: 'Average Response Time', value: '8.3 mins' },
@@ -44,142 +49,30 @@ export class LoginComponent {
     }
   ];
 
-  constructor(
-    private fb: FormBuilder, 
-    private authService: AuthService,
-    private router: Router,
-    private http: HttpClient,
-    private incidentManagementService: IncidentManagementService,
-    private responderservice: ResponderService
-  ) {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['']
+  onSubmit(): void {
+    if (this.loginForm.invalid || this.pending) return;
+
+    const credentials = this.loginForm.getRawValue();
+    this.pending = true;
+    this.loginError = '';
+    this.authService.login(credentials).pipe(finalize(() => this.pending = false)).subscribe({
+      next: response => {
+        const role = this.authService.startSession(response, credentials.username);
+        if (role === Role.ADMIN) {
+          void this.router.navigate(['/admin/dashboard']);
+        } else if (role === Role.RESPONDER) {
+          void this.router.navigate(['/responder-dashboard'], {
+            queryParams: { responderId: response.responderId }
+          });
+        } else {
+          this.loginError = 'The server did not return a usable staff session.';
+        }
+      },
+      error: ({ status }) => {
+        this.loginError = status === 401
+          ? 'Invalid username or password.'
+          : 'Sign-in is unavailable. Try again when the service is reachable.';
+      }
     });
   }
-
-  // onSubmit() {
-  //   const loginRequest = {
-  //    username: this.loginForm.get('username')!.value,
-  //    password: this.loginForm.get('password')!.value, 
-  //     role: this.loginForm.get('role')!.value
-  //   };
-
-  //   // const { username, password, role } = loginRequest;
-  //   if (this.loginForm.valid) {
-  //     this.authService.login(this.loginForm.value).subscribe({
-  //       next: (token) => {
-
-  //         this.authService.saveToken(token.JwtToken);
-
-
-          
-  //         this.incidentManagementService.getUserId().subscribe({
-  //           next: (userId) => {
-  //             if(userId!==null){
-  //               sessionStorage.setItem('userId', userId.toString());
-              
-  //             if(loginRequest.role ==="ADMIN"){
-  //               this.router.navigate(['/admin/dashboard']);
-  //             }
-  //             else {
-  //               this.router.navigate(['/responder-dashboard'], {queryParams:{userId:userId}});
-  //             }
-  //           }
-  //           },
-  //           error: (err) => {
-  //             console.error('Error retrieving user ID:', err);
-  //           }
-  //         });
-  //       },
-       
-  //       error: (err) => {
-  //         this.loginError = 'Invalid username or password';
-  //       }
-        
-  //     });
-  //   }
-  // }
-
-
-
-
-  onSubmit() {
-
-    if (this.loginForm.valid) {
-      const { username, password, role } = this.loginForm.value;
-  
-      const loginRequest = {
-        username,
-        password,
-        role
-      };
-
-      this.authService.login(loginRequest).subscribe({
-        next: (response) => {
-
-          if (response && response.jwtToken) {
-            this.authService.saveToken(response.jwtToken);
-
-            // this.incidentManagementService.getUserId().subscribe({
-            //   next: (userId) => {
-
-            //     if (role === 'ADMIN' && response.userId != null) {
-            //       sessionStorage.setItem('userId', response.userId.toString());
-            //       this.router.navigate(['/admin/dashboard']);
-            //     } else if (role === 'RESPONDER' && response.responderId != null) {
-            //       sessionStorage.setItem('responderId', response.responderId.toString());
-            //       this.router.navigate(['/responder-dashboard'], {
-            //         queryParams: { responderId: response.responderId }
-            //       });
-            //     } else {
-            //       this.loginError = 'Unexpected role or missing ID in response.';
-            //     }
-            //   },
-            //   error: (err) => {
-            //     console.error('Error retrieving user ID:', err);
-            //   }
-            // });
-
-            //Save user ID or responder ID depending on the role
-            if (this.authService.getRole() === 'ADMIN' && response.userId != null) {
-              sessionStorage.setItem('userId', response.userId.toString());
-              this.router.navigate(['/admin/dashboard']);
-            } else if (this.authService.getRole() === 'RESPONDER' && response.responderId != null) {
-              sessionStorage.setItem('responderId', response.responderId.toString());
-
-              this.responderservice.getResponderById(response.responderId).subscribe({
-                next: (responder) => {
-
-
-
-
-
-
-                }
-              });  
-              
-              this.router.navigate(['/responder-dashboard'], {
-                queryParams: { responderId: response.responderId }
-              });
-            } else {
-              this.loginError = 'Unexpected role or missing ID in response.';
-            }
-          } else {
-            this.loginError = 'Invalid response from server.';
-          }
-        },
-        error: (err) => {
-          console.error('Login failed:', err);
-          this.loginError = 'Invalid username or password.';
-        }
-        
-      });
-    
-  }
-  
-  
-
-}
 }

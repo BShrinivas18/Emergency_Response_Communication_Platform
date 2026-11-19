@@ -1,9 +1,10 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { EmergencyService } from './core/services/emergency.service';
 import { IncidentType, Incident } from './shared/models/incident.model';
+import { Role } from './shared/models/user.model';
 import { LandingComponent } from './modules/public/landing/landing.component';
 import { IncidentReportModalComponent } from './shared/components/incident-modal/incident-modal.component';
 import { LocationService } from './core/services/location.service';
@@ -181,18 +182,106 @@ describe('Application runtime configuration', () => {
 
 import { LoginComponent } from './modules/public/login/login.component';
 import { AuthService } from './core/services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { authGuard } from './core/auth-gaurd/auth.guard';
 
-describe('Login navigation', () => {
-  it('uses the authenticated role even when a different role was selected', () => {
-    const router = {navigate: jasmine.createSpy()};
-    const auth = {login: () => of({jwtToken:'test', userId:1, responderId:null}),
-      saveToken: jasmine.createSpy(), getRole: () => 'ADMIN'};
-    const component = new LoginComponent(new FormBuilder(), auth as any, router as any,
-      {} as any, {} as any, {} as any);
-    component.loginForm.setValue({username:'admin', password:'test-password', role:'RESPONDER'});
-    component.onSubmit();
-    expect(router.navigate).toHaveBeenCalledWith(['/admin/dashboard']);
-    sessionStorage.removeItem('userId');
+describe('Staff sign-in and session recovery', () => {
+  let auth: AuthService;
+  let http: HttpTestingController;
+  let router: Router;
+
+  // Use a UTF-8 claim to exercise JWT's URL-safe base64 alphabet.
+  function browserToken(role: string, exp = Math.floor(Date.now() / 1000) + 60): string {
+    const data = new TextEncoder().encode(JSON.stringify({ sub: 'staff-x🙂', role, exp }));
+    return 'header.' + btoa(String.fromCharCode(...data))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') + '.signature';
+  }
+
+  function adminGuard(): boolean | UrlTree {
+    const route = {data: {roles: ['ADMIN']}} as unknown as ActivatedRouteSnapshot;
+    return TestBed.runInInjectionContext(() => authGuard(route, {} as RouterStateSnapshot)) as boolean | UrlTree;
+  }
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: [...appConfig.providers, provideHttpClientTesting()]});
+    auth = TestBed.inject(AuthService);
+    http = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
+  });
+
+  afterEach(() => {
+    http.verify();
+    for (const key of ['jwt', 'username', 'userId', 'responderId']) sessionStorage.removeItem(key);
+  });
+
+  it('renders sign-in when an anonymous user opens the admin dashboard directly', async () => {
+    const harness = await RouterTestingHarness.create('/admin/dashboard');
+    expect(router.url).toBe('/login');
+    expect(harness.routeNativeElement?.querySelector('#username')).toBeTruthy();
+  });
+
+  it('redirects expired or malformed sessions to sign-in and reserves access denied for valid wrong-role sessions', () => {
+    sessionStorage.setItem('jwt', browserToken('ADMIN', Math.floor(Date.now() / 1000) - 1));
+    expect(router.serializeUrl(adminGuard() as UrlTree)).toBe('/login');
+    sessionStorage.setItem('jwt', 'malformed');
+    expect(router.serializeUrl(adminGuard() as UrlTree)).toBe('/login');
+    sessionStorage.setItem('jwt', browserToken('RESPONDER'));
+    expect(router.serializeUrl(adminGuard() as UrlTree)).toBe('/access-denied');
+  });
+
+  it('sends only credentials and navigates using the issued JWT role', async () => {
+    const harness = await RouterTestingHarness.create();
+    const login = await harness.navigateByUrl('/login', LoginComponent);
+    const navigate = spyOn(router, 'navigate');
+    login.loginForm.setValue({username: 'staff', password: 'test-password'});
+    login.onSubmit();
+    login.onSubmit();
+    const request = http.expectOne(`${API_ORIGIN}/login`);
+    expect(request.request.body).toEqual({username: 'staff', password: 'test-password'});
+    const token = browserToken('ADMIN');
+    expect(token.split('.')[1]).toMatch(/[-_]/);
+    request.flush({jwtToken: token, userId: 7, responderId: null});
+    expect(auth.getRole()).toBe(Role.ADMIN);
+    expect(sessionStorage.getItem('userId')).toBe('7');
+    expect(navigate).toHaveBeenCalledOnceWith(['/admin/dashboard']);
+    expect(adminGuard()).toBeTrue();
+  });
+
+  it('clears a rejected session only if that request used the current token', () => {
+    const navigate = spyOn(router, 'navigate');
+    const client = TestBed.inject(HttpClient);
+    const oldToken = browserToken('ADMIN');
+    const currentToken = browserToken('RESPONDER');
+    auth.startSession({jwtToken: oldToken, userId: 7, responderId: null}, 'admin');
+    client.get(`${API_ORIGIN}/incidents`).subscribe({error: () => {}});
+    const oldRequest = http.expectOne(`${API_ORIGIN}/incidents`);
+    auth.startSession({jwtToken: currentToken, userId: null, responderId: 12}, 'staff');
+    oldRequest.flush(null, {status: 401, statusText: 'Unauthorized'});
+    expect(auth.getToken()).toBe(currentToken);
+    expect(navigate).not.toHaveBeenCalled();
+
+    client.get(`${API_ORIGIN}/incidents`).subscribe({error: () => {}});
+    const request = http.expectOne(`${API_ORIGIN}/incidents`);
+    expect(request.request.headers.get('Authorization')).toBe('Bearer ' + currentToken);
+    request.flush(null, {status: 401, statusText: 'Unauthorized'});
+    expect(auth.getToken()).toBeNull();
+    expect(sessionStorage.getItem('responderId')).toBeNull();
+    expect(navigate).toHaveBeenCalledOnceWith(['/login'], {queryParams: {session: 'expired'}});
+  });
+
+  it('keeps public SOS and role-forbidden errors from signing out an active staff session', () => {
+    const navigate = spyOn(router, 'navigate');
+    const client = TestBed.inject(HttpClient);
+    const token = browserToken('RESPONDER');
+    auth.startSession({jwtToken: token, userId: null, responderId: 12}, 'staff');
+    client.post(`${API_ORIGIN}/incidents/create`, {}).subscribe({error: () => {}});
+    const sos = http.expectOne(`${API_ORIGIN}/incidents/create`);
+    expect(sos.request.headers.has('Authorization')).toBeFalse();
+    sos.flush(null, {status: 401, statusText: 'Unauthorized'});
+    client.get(`${API_ORIGIN}/incidents`).subscribe({error: () => {}});
+    http.expectOne(`${API_ORIGIN}/incidents`).flush(null, {status: 403, statusText: 'Forbidden'});
+    expect(auth.getToken()).toBe(token);
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

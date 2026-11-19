@@ -64,3 +64,18 @@ The production frontend was opened in the in-app browser: landing page and navig
 The checked-in read-only smoke script passed against the running local stack: frontend and gateway roots 200; anonymous incident read 401; generated local administrator login 200; authenticated gateway reads of incidents, responders, logs, and locations all 200. Evidence: `evidence/runtime-smoke.txt`. No incident was created.
 
 The local run serves the built production frontend with `scripts/serve-frontend.cjs` on loopback. This avoids retaining Angular's compiler in memory alongside eight Java services. The startup script builds the frontend first. Initial backend startup on this memory-constrained machine took several minutes; a launched process is not yet a ready service. Run `scripts/check-local.ps1` after startup to confirm readiness.
+
+## Staff session follow-up (2026-11-19)
+
+Opening a protected dashboard while signed out, or with an expired or malformed token, now routes to sign-in. A staff session with the wrong role still reaches Access Denied and has a sign-in link. The sign-in form sends credentials and uses the role and account identifier returned by the gateway. The browser uses JWT claims for navigation and the gateway continues to enforce authorization.
+
+A 401 on a protected request clears the session only if the rejected token is still current. An earlier request cannot sign out a newly authenticated user. The public SOS path and staff 403 responses keep their own error handling.
+
+This follow-up addresses a P0 staff access blocker. P1 still needs safe retries and explicit incident location entry. P2 still needs atomic responder reservation and concurrency tests. See the existing stabilization backlog for cross-service reliability, real incident tracking, and validation.
+
+Verification on this follow-up branch:
+
+- Angular targeted browser suite: 22 tests passed. It covers a rendered sign-in screen after opening the admin dashboard link anonymously, expired and malformed sessions, wrong-role navigation, server-issued role selection, and rejection of current versus superseded tokens.
+- Gateway security suite: 20 tests passed. Live sign-in using the local administrator passed with the frontend's origin and a credentials-only request. Gateway reads of incidents, responders, locations, and logs returned 200 for the administrator, and an anonymous incident read returned 401.
+- The Angular production build passed with a 729.90 kB initial bundle. The existing 512 kB warning threshold remains.
+- The rebuilt local app redirected a signed-out browser from the admin dashboard to the sign-in form. The local smoke script passed with all eight services running. The browser check stopped at the sign-in page and the smoke script covered successful staff authentication through the live gateway. No SOS was submitted.
