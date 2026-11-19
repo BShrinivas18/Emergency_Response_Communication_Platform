@@ -9,6 +9,9 @@ export class IncidentHistoryComponent implements OnInit {
   message = 'Loading history...';
   constructor(private http: HttpClient) {}
   ngOnInit() {
+    this.refresh();
+  }
+  refresh() {
     const id = Number(sessionStorage.getItem('responderId'));
     if (!Number.isInteger(id) || id <= 0) { this.message = 'Responder identity unavailable.'; return; }
     this.http.get<typeof this.events>(`${API_ORIGIN}/responders/${id}/history`).subscribe({

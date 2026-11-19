@@ -24,6 +24,7 @@ public class Incident {
     private LocalDateTime timestamp;
     private IncidentStatus status;
     private Integer victimId;
+    private String reportedAddress;
 
 
 }

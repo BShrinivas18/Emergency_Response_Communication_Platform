@@ -78,4 +78,10 @@ export class AuthService {
   signup(user: User): Observable<string> {
     return this.http.post<string>(`${API_ORIGIN}/register`, user);
   }
+
+  provisionResponder(username: string, password: string): Observable<Pick<User, 'id' | 'username' | 'role'>> {
+    return this.http.post<Pick<User, 'id' | 'username' | 'role'>>(`${API_ORIGIN}/register`, {
+      username, password, role: Role.RESPONDER
+    });
+  }
 }

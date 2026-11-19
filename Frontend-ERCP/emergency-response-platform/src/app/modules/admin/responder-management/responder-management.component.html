@@ -6,7 +6,30 @@
       <mat-icon class="me-2">add</mat-icon>
       Create Responder
     </button>
+    <button mat-stroked-button type="button" (click)="showAccountForm = true" [disabled]="showAccountForm">
+      Create responder sign-in
+    </button>
   </div>
+
+  @if (showAccountForm) {
+    <form #accountForm="ngForm" class="card p-3 my-3" (ngSubmit)="provisionResponder()">
+      <h2 class="h5">Responder sign-in</h2>
+      <p class="form-text">Use the exact name on an existing responder profile as the username.</p>
+      <label class="form-label" for="responder-account-name">Responder name</label>
+      <input class="form-control mb-3" id="responder-account-name" name="accountName" [(ngModel)]="accountName" autocomplete="off" required>
+      <label class="form-label" for="responder-account-password">Initial password (at least 12 characters)</label>
+      <input class="form-control mb-3" id="responder-account-password" name="accountPassword" [(ngModel)]="accountPassword"
+        type="password" autocomplete="new-password" minlength="12" maxlength="72" required>
+      @if (accountError) { <p class="alert alert-danger" role="alert">{{ accountError }}</p> }
+      <div class="d-flex gap-2">
+        <button mat-flat-button type="submit" [disabled]="accountPending || accountForm.invalid">Create sign-in</button>
+        <button mat-button type="button" [disabled]="accountPending" (click)="showAccountForm = false; accountPassword = ''; accountError = ''">Cancel</button>
+      </div>
+    </form>
+  }
+  @if (accountCreated) {
+    <p class="alert alert-success mt-3" role="status">Sign-in created for {{ accountCreated }}.</p>
+  }
 
   <!-- Responder Type Cards Section -->
   <section *ngIf="!selectedResponderType" class="fade-in">

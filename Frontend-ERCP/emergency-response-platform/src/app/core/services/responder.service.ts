@@ -122,13 +122,8 @@ export class ResponderService {
     return this.http.put<ResponderDTO>(`${this.apiUrl}/${id}`, responder, { headers });
   }
 
-  requestAdditionalResponders(incidentId: number, type: ResponderType): Observable<ResponderDTO[]> {
-    const token = sessionStorage.getItem('jwt');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-     return this.http.put<ResponderDTO[]>(`${this.apiUrl}/request-additional/${incidentId}/${type}`, {}, { headers });
+  requestAdditionalResponders(incidentId: number, type: ResponderType): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/request-additional/${incidentId}/${type}`, {});
   }
 
 }

@@ -5,6 +5,8 @@ import com.Api_Gateway_Server.Service.*;
 import com.Api_Gateway_Server.FeignClient.ResponderFeignClient;
 import com.Api_Gateway_Server.Model.*;
 import com.Api_Gateway_Server.Model.Enums.Role;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,6 +27,13 @@ class SecurityBoundaryTest {
         mvc.perform(get("/incidents")).andExpect(status().isUnauthorized());
     }
     @Autowired MockMvc mvc;
+    @Test void internalErrorDispatchPreservesServiceFailureWithoutOpeningErrorRoute() throws Exception {
+        mvc.perform(get("/error")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/error")
+                .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 503)
+                .with(request -> { request.setDispatcherType(DispatcherType.ERROR); return request; }))
+            .andExpect(status().isServiceUnavailable());
+    }
     @MockBean UserService users;
     @MockBean MyUserDetailsService details;
     @MockBean JwtService jwt;
@@ -60,6 +69,33 @@ class SecurityBoundaryTest {
         when(users.saveUser(any())).thenReturn(new User(1L,"staff","private-hash",Role.ADMIN));
         mvc.perform(post("/register").with(user("admin").roles("ADMIN")).contentType("application/json").content(body))
             .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(1)).andExpect(jsonPath("$.password").doesNotExist());
+    }
+    @Test void responderRegistrationRequiresMatchingProfile() throws Exception {
+        String request = body.replace("ADMIN", "RESPONDER");
+        mvc.perform(post("/register").with(user("admin").roles("ADMIN")).contentType("application/json").content(request))
+            .andExpect(status().isUnprocessableEntity());
+        verify(users, never()).saveUser(any());
+
+        ResponderDto profile = new ResponderDto();
+        profile.setResponderId(7);
+        when(responders.getResponderByUsername("staff")).thenReturn(profile);
+        when(users.saveUser(any())).thenReturn(new User(1L, "staff", "private-hash", Role.RESPONDER));
+        mvc.perform(post("/register").with(user("admin").roles("ADMIN")).contentType("application/json").content(request))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.role").value("RESPONDER"))
+            .andExpect(jsonPath("$.password").doesNotExist());
+    }
+    @Test void duplicateStaffRegistrationDoesNotChangeTheExistingAccount() throws Exception {
+        when(users.findByUsername("staff")).thenReturn(new User(1L, "staff", "private-hash", Role.ADMIN));
+        mvc.perform(post("/register").with(user("admin").roles("ADMIN")).contentType("application/json").content(body))
+            .andExpect(status().isConflict());
+        verify(users, never()).saveUser(any());
+    }
+    @Test void authenticatedResponderWithoutProfileGetsActionableStatus() throws Exception {
+        User account = new User(1L, "staff", new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("test-password"), Role.RESPONDER);
+        when(details.loadUserByUsername("staff")).thenReturn(new UserPrincipal(account));
+        when(users.findByUsername("staff")).thenReturn(account);
+        mvc.perform(post("/login").contentType("application/json").content(body))
+            .andExpect(status().isUnprocessableEntity());
     }
     @Test void lookupLimitedToSelfOrAdmin() throws Exception {
         mvc.perform(get("/user/other").with(user("staff").roles("RESPONDER"))).andExpect(status().isForbidden());

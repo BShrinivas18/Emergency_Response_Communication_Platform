@@ -57,4 +57,28 @@ class IncidentIntakeTest {
         request.setType(IncidentType.TRAFFIC_ACCIDENT); request.setVictimName("Anonymous");
         assertEquals(IncidentType.TRAFFIC_ACCIDENT, service.reportIncident(request).getType());
     }
+    @Test void contactWithoutNameIsSavedAtTheReportedLocation() {
+        request.setType(IncidentType.FIRE);
+        request.setVictimContact("synthetic callback");
+        VictimDTO saved = new VictimDTO();
+        saved.setVictimId(9);
+        when(victims.createVictim(any())).thenReturn(saved);
+        assertEquals(42, service.reportIncident(request).getIncidentId());
+        verify(victims).createVictim(argThat(victim -> victim.getName() == null
+                && victim.getContactInfo().equals("synthetic callback") && victim.getLocationId() == 7));
+        verify(repository).saveAndFlush(argThat(incident -> incident.getVictimId() == 9));
+    }
+    @Test void keepsReportAddressWhenCoordinatesAlreadyExist() {
+        LocationDTO existing = new LocationDTO(7, 12.0, 77.0, "Earlier report");
+        when(locations.findByLatitudeAndLongitude(12.0, 77.0)).thenReturn(Optional.of(existing));
+        when(locations.getLocationById(7)).thenReturn(existing);
+        request.getIncidentLocation().setAddress("New landmark");
+
+        assertEquals("New landmark", service.reportIncident(request).getIncidentLocation().getAddress());
+        var saved = org.mockito.ArgumentCaptor.forClass(Incident.class);
+        verify(repository).saveAndFlush(saved.capture());
+        when(repository.findById(42)).thenReturn(Optional.of(saved.getValue()));
+        assertEquals("New landmark", service.getIncidentById(42).orElseThrow().getIncidentLocation().getAddress());
+        assertEquals("Earlier report", existing.getAddress());
+    }
 }

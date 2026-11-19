@@ -79,3 +79,19 @@ Verification on this follow-up branch:
 - Gateway security suite: 20 tests passed. Live sign-in using the local administrator passed with the frontend's origin and a credentials-only request. Gateway reads of incidents, responders, locations, and logs returned 200 for the administrator, and an anonymous incident read returned 401.
 - The Angular production build passed with a 729.90 kB initial bundle. The existing 512 kB warning threshold remains.
 - The rebuilt local app redirected a signed-out browser from the admin dashboard to the sign-in form. The local smoke script passed with all eight services running. The browser check stopped at the sign-in page and the smoke script covered successful staff authentication through the live gateway. No SOS was submitted.
+
+## Incident form and staff workflow follow-up (2026-11-19)
+
+- The incident dialog requests device location on open and shows the resulting coordinates. Latitude, longitude, landmark, and optional victim information are editable. If the browser cannot supply coordinates, users can enter the incident coordinates manually. The form retains entered values if receipt cannot be confirmed.
+- Incident reports and SOS use the same receipt pattern with the server reference and a clear assignment status. Report feedback stays inside the dialog, and SOS failures stay with the landing page actions. Intake saves contact-only reports and preserves a report's own landmark when coordinates already exist. The incident database adds a nullable reported_address column.
+- The public landing and sign-in pages no longer show unused weather and map panels, example statistics, or inactive account help links. Account access and password help are handled by the platform administrator.
+- The responder management page provisions a responder login for an existing matching profile through the admin-only registration endpoint. Use the exact profile name as the username. The existing name-based link means renaming a responder profile can affect sign-in. A missing profile and an unavailable service produce different errors. Internal gateway error dispatches preserve service failures so a discovery delay no longer masquerades as an invalid session.
+- The responder dashboard shows assignment load and empty states, allows operational status changes through the existing audited endpoint, and refreshes assignment and history after a successful status change.
+
+The existing workspace credentials remain in ignored .local-run/secrets.json. The startup script provisions the initial local-admin only when the gateway database is empty. Existing accounts keep their credentials. For a responder, create a profile in Responder Management, then select **Create responder sign-in** and supply the profile name and an initial password.
+
+The browser suite passed 24 tests and the production bundle built at 730.07 kB. The running browser showed editable fields and the fallback when the device could not provide location. The GPS success case and server receipt feedback were covered in browser tests. The live synthetic workflow used separate ercp_workflow1119 databases and passed admin sign-in, responder provisioning and sign-in, a 201 report with the typed coordinates and contact, assignment, on route, on scene, assignment release, off duty, history with the authenticated actor, and preserved incident progress. The standalone workflow script is scripts/check-local-workflow.ps1 and requires the explicit -CreateSyntheticFixture switch and an empty incident and responder database.
+
+Duplicate-safe retries and concurrent responder reservation remain open. The synthetic check used the loopback stack and did not contact an emergency service.
+
+Final focused backend checks passed 24 gateway tests, 7 incident intake tests, and 8 responder history tests. The gateway regression includes a 503 error dispatch and verifies that direct anonymous access to the error route remains blocked.

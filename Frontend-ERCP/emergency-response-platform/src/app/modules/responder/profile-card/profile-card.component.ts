@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResponderDTO, ResponderService, ResponderStatus } from '../../../core/services/responder.service';  // Ensure correct import
-import {  Router } from '@angular/router';
+import { finalize, timeout } from 'rxjs';
+import { ResponderDTO, ResponderService, ResponderStatus } from '../../../core/services/responder.service';
 import { AuthService } from '../../../core/services/auth.service';
+
 @Component({
   selector: 'app-profile-header',
   standalone: true,
@@ -11,49 +12,51 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./profile-card.component.css']
 })
 export class ProfileHeaderComponent implements OnInit {
-  responder: ResponderDTO = {} as ResponderDTO;
-  status!: string;  // Use string type to store the status temporarily
+  @Output() readonly statusChanged = new EventEmitter<void>();
+  responder = {} as ResponderDTO;
+  status = '';
+  statusError = '';
+  statusPending = false;
 
-  constructor(private responderService: ResponderService, private authService: AuthService, private router: Router) {}
+  constructor(private responderService: ResponderService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    // Call the service method to fetch the responder data dynamically
     this.fetchResponderData();
   }
 
   fetchResponderData(): void {
-    this.responderService.getResponderById(Number(sessionStorage.getItem('responderId'))).subscribe({
-      next: (responder) => {
+    const id = Number(sessionStorage.getItem('responderId'));
+    if (!id || this.statusPending) return;
+
+    this.statusPending = true;
+    this.statusError = '';
+    this.responderService.getResponderById(id).pipe(timeout(15000), finalize(() => this.statusPending = false)).subscribe({
+      next: responder => {
         this.responder = responder;
-
-
-
-
-
-        // Convert the responder's status to string and set
-        this.status = this.responder.status;
+        this.status = responder.status;
       },
-      error: (error) => {
-        console.error('Error fetching responder data:', error);
-      }
+      error: () => this.statusError = 'Could not load your responder profile.'
     });
   }
 
-  statusError = '';
-  statusPending = false;
   setStatus(newStatus: string): void {
-    if (this.statusPending || !['AVAILABLE', 'OFF_DUTY'].includes(newStatus)) return;
-    this.statusPending = true; this.statusError = '';
-    this.responderService.updateStatus(this.responder.responderId, newStatus as ResponderStatus).subscribe({
-      next: updated => { this.responder = updated; this.status = updated.status; this.statusPending = false; },
-      error: () => { this.statusError = 'Status update not confirmed.'; this.statusPending = false; }
-    });
+    if (!this.responder.responderId || this.statusPending ||
+          !['AVAILABLE', 'OFF_DUTY', 'ON_ROUTE', 'ON_SCENE'].includes(newStatus)) return;
+    this.statusPending = true;
+    this.statusError = '';
+    this.responderService.updateStatus(this.responder.responderId, newStatus as ResponderStatus)
+      .pipe(timeout(15000), finalize(() => this.statusPending = false))
+      .subscribe({
+        next: updated => {
+          this.responder = updated;
+          this.status = updated.status;
+          this.statusChanged.emit();
+        },
+        error: () => this.statusError = 'Status update not confirmed. Refresh your dashboard before retrying.'
+      });
   }
 
-  logout() {
-    // Call the logout method from your AuthService to clear session or tokens
+  logout(): void {
     this.authService.logout();
-    // Navigate to the login page or homepage
-    this.router.navigate(['/login']);
   }
 }

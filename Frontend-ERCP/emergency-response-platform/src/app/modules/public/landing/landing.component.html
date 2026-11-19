@@ -1,125 +1,24 @@
-<p role="alert" *ngIf="submissionError">{{ submissionError }}</p>
-<p *ngIf="submissionPending">Sending report; receipt not yet confirmed.</p>
-<a href="tel:112">Call 112 (India)</a>
-<div class="container-fluid emergency-platform">
-    <!-- Header -->
-    <header class="emergency-header">
-      <div class="header-content">
-        <div class="logo-section">
-          <!-- <img src="/assets/emergency-logo.svg" alt="Emergency Response Logo" class="logo"> -->
-          <h2 class="platform-title">Emergency Response Platform</h2>
-        </div>
-        <div class="header-actions">
-          <button mat-raised-button color="primary" class="login-btn" (click)="onLogin()">
-            <mat-icon>account_circle</mat-icon>
-            Login
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content Grid -->
-    <div class="emergency-grid">
-      <!-- Left Sidebar: Emergency Guidelines -->
-      <div class="emergency-guidelines">
-
-
-        <div><h3> Emergency Guidelines : </h3></div>
-        <div class="emergency-type-buttons">
-          <button
-            *ngFor="let type of emergencyTypes"
-            mat-raised-button
-            [color]="selectedEmergency === type ? 'primary' : 'basic'"
-            (click)="selectEmergency(type)">
-            {{ type }}
-          </button>
-        </div>
-
-          <div  *ngIf="selectedEmergency === null">
-          <h6> Select Emergency Type to view guidelines </h6>
-          </div>
-        <!-- Dynamic Guidelines Section -->
-        <div class="guidelines-details" *ngIf="selectedEmergency">
-          <h6>In Case Of</h6>
-          <h4>{{ selectedEmergency }} : </h4>
-          <ul>
-            <li *ngFor="let guideline of guidelines[selectedEmergency]">
-
-             {{ guideline }}
-            </li>
-          </ul>
-        </div>
-
-
-
-      </div>
-
-      <!-- Central Map Section -->
-      <div class="emergency-map">
-        <google-map *ngIf="mapsAvailable; else mapUnavailable"
-          height="100%"
-          width="100%"
-          [center]="mapCenter()"
-          [zoom]="5">
-          @for (marker of mapMarkers(); track marker.position) {
-            <map-marker
-              [position]="marker.position"
-              [title]="marker.title">
-            </map-marker>
-          }
-        </google-map><ng-template #mapUnavailable><p class="p-4" role="status">Map preview is unavailable. Location sharing and incident reporting use your browser location and do not require a map.</p></ng-template>
-      </div>
-
-      <!-- Right Sidebar: Emergency Actions -->
-      <div class="emergency-actions">
-        <h3>Quick Actions</h3>
-        <div class="action-buttons">
-          <button
-            mat-raised-button
-            color="primary"
-            class="report-incident-btn"
-            (click)="openIncidentReportModal()">
-            <mat-icon>report_problem</mat-icon>
-            Report an Incident
-          </button>
-          <button
-            mat-raised-button
-            color="warn"
-            class="sos-alert-btn"
-            (click)="sendSOSAlert()">
-            <mat-icon>warning</mat-icon>
-            Send SOS Alert
-          </button>
-        </div>
-
-        <!-- Weather Alerts Section -->
-        <div class="weather-alerts">
-          <h4>Current Weather Alerts</h4>
-          <div *ngIf="weatherAlerts().length; else noAlerts" class="alerts-container">
-            <div *ngFor="let alert of weatherAlerts()" class="alert-card">
-              <div class="alert-icon">
-                <mat-icon [ngClass]="getAlertSeverityClass(alert.severity)">warning</mat-icon>
-              </div>
-              <div class="alert-details">
-                <h5>{{ alert.type }}</h5>
-                <p>{{ alert.description }}</p>
-                <small>{{ alert.location }}</small>
-              </div>
-            </div>
-          </div>
-          <ng-template #noAlerts>
-            <p class="no-alerts">Weather alerts are unavailable: no provider is configured.</p>
-          </ng-template>
-        </div>
-      </div>
-    </div>
-
-    <!-- Floating SOS Button -->
-    <button
-      mat-fab
-
-      class="floating-sos-btn danger-btn"
-      (click)="sendSOSAlert()">
-      <mat-icon>emergency</mat-icon>
-    </button>
+<header class="platform-header">
+  <div class="platform-header-inner">
+    <h1>Emergency Response Platform</h1>
+    <a mat-stroked-button routerLink="/login">Staff sign-in</a>
   </div>
+</header>
+
+<main class="public-actions">
+  <section class="card shadow-sm">
+    <div class="card-body p-4">
+      <h2 class="h4">Report an emergency</h2>
+      <p class="text-muted">For immediate help in India, <a href="tel:112">call 112</a>. Reports here are separate from the official emergency service.</p>
+      <div class="action-buttons">
+        <button mat-flat-button type="button" (click)="openIncidentReportModal()">Report an incident</button>
+        <button class="btn btn-danger" type="button" (click)="sendSOSAlert()" [disabled]="submissionPending">
+          {{ submissionPending ? 'Sending SOS…' : 'Send SOS from my location' }}
+        </button>
+      </div>
+      @if (submissionError) {
+        <div class="alert alert-warning mt-3 mb-0" role="alert">{{ submissionError }}</div>
+      }
+    </div>
+  </section>
+</main>

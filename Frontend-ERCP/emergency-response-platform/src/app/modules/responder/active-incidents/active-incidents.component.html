@@ -1,51 +1,32 @@
-<div class="card">
-    <div class="card-header">
-      <h5 class="card-title mb-0">Incident Assigned</h5>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-12">
-          <div class="d-flex justify-content-between mb-2" >
-            <span class="fw-bold">Incident ID:</span>
-            <span>{{incident.incidentId}}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="fw-bold">Type:</span>
-            <span class="badge bg-primary">{{incident.type}}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="fw-bold">Location:</span>
-            <span>{{incident.incidentLocation?.address}}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="fw-bold">Reported:</span>
-            <span>{{incident.timestamp | date:'medium'}}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-3">
-            <span class="fw-bold">Status:</span>
-            <span class="badge bg-warning">{{incident.status}}</span>
-          </div>
-        </div>
-      </div>
-      
+<section class="card">
+  <div class="card-header"><h2 class="h5 mb-0">Current assignment</h2></div>
+  <div class="card-body">
+    @if (loading) {
+      <p role="status">Checking assignment…</p>
+    } @else if (loadError) {
+      <p class="alert alert-warning" role="alert">{{ loadError }}</p>
+    } @else if (incident) {
+      <dl class="row">
+        <dt class="col-4">Incident</dt><dd class="col-8">#{{ incident.incidentId }}</dd>
+        <dt class="col-4">Type</dt><dd class="col-8">{{ incident.type }}</dd>
+        <dt class="col-4">Location</dt>
+        <dd class="col-8">{{ incident.incidentLocation.address || (incident.incidentLocation.latitude + ', ' + incident.incidentLocation.longitude) }}</dd>
+        <dt class="col-4">Reported</dt><dd class="col-8">{{ incident.timestamp | date:'medium' }}</dd>
+        <dt class="col-4">Status</dt><dd class="col-8">{{ incident.status }}</dd>
+      </dl>
       <form [formGroup]="responderForm" (ngSubmit)="requestResponders()">
-        <div class="row">
-          <div class="col-12">
-            <div class="mb-3">
-              <label for="type" class="form-label">Additional Responder</label>
-              <select class="form-select" id="type" [(ngModel)]="type" formControlName="responderType" required>
-                <option value="" disabled selected>Select an option</option>
-                <option *ngFor="let option of responderTypes" value="{{option}}"> {{ option }}</option>
-              </select>
-            </div>
-            <button 
-              type="submit" 
-              class="btn btn-primary w-100" 
-              [disabled]="responderForm.invalid">
-              Request Additional Responders
-            </button>
-          </div>
-        </div>
+        <label for="additional-responder" class="form-label">Additional responder type</label>
+        <select class="form-select mb-3" id="additional-responder" formControlName="responderType">
+          <option value="" disabled>Select a type</option>
+          @for (type of responderTypes; track type) { <option [value]="type">{{ type }}</option> }
+        </select>
+        <button class="btn btn-outline-primary" type="submit" [disabled]="responderForm.invalid || requestPending">
+          {{ requestPending ? 'Requesting…' : 'Request additional responder' }}
+        </button>
+        @if (requestMessage) { <p class="form-text mb-0" role="status">{{ requestMessage }}</p> }
       </form>
-    </div>
+    } @else {
+      <p class="mb-0">No incident assigned.</p>
+    }
   </div>
+</section>

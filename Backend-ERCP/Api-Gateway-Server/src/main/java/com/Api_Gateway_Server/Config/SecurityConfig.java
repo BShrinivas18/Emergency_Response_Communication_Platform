@@ -1,6 +1,7 @@
 package com.Api_Gateway_Server.Config;
 
 import com.Api_Gateway_Server.Service.MyUserDetailsService;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -53,6 +54,7 @@ public class SecurityConfig {
 
         http.csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request->request
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
 //                        .requestMatchers("/responders/create/**","/responders/update","/responders/delete","/responders/getAll", "/incidents/{id}").hasRole("ADMIN")
 //                        .requestMatchers(("/responders/request-additional/{id}/{type}")).hasRole("RESPONDER")
                         .requestMatchers(HttpMethod.GET, "/").permitAll()

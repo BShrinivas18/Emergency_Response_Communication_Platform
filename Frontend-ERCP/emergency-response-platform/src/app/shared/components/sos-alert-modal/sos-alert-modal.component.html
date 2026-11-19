@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Incident recorded</h2>
 <mat-dialog-content>
-  <p>Reference: {{ data.incident.incidentId }}</p>
-  <p>Responder assignment is not confirmed. This platform is not connected to ERSS-112.</p>
-  <a href="tel:112">Call 112 (India)</a>
+  <div class="alert alert-success" role="status">Report reference <strong>#{{ data.incident.incidentId }}</strong></div>
+  <p>Responder assignment has yet to be confirmed.</p>
+  <a href="tel:112">Call 112 in India for immediate help</a>
 </mat-dialog-content>
-<mat-dialog-actions><button mat-button (click)="dialogRef.close()">Close</button></mat-dialog-actions>
+<mat-dialog-actions align="end"><button mat-flat-button (click)="dialogRef.close()">Done</button></mat-dialog-actions>

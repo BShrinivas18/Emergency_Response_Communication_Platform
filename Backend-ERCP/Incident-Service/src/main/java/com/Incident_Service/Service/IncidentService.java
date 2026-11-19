@@ -52,10 +52,15 @@ public class IncidentService {
     public IncidentDTO reportIncident(IncidentDTO dto) {
         if (dto == null || dto.getType() == null) throw new IllegalArgumentException("Incident type required");
         validateLocation(dto.getIncidentLocation());
+        String address = dto.getIncidentLocation().getAddress();
+        if (address != null && address.length() > 255) throw new IllegalArgumentException("Incident address too long");
         LocationDTO location = determineLocation(dto.getIncidentLocation());
         Incident incident = createIncident(dto, location.getLocationId());
-        if (dto.getType() != IncidentType.SOS_REQUEST && dto.getVictimName() != null
-                && !dto.getVictimName().isBlank() && !"Anonymous".equals(dto.getVictimName())) {
+        incident.setReportedAddress(address == null || address.isBlank() ? null : address.strip());
+        boolean hasName = dto.getVictimName() != null && !dto.getVictimName().isBlank()
+                && !"Anonymous".equals(dto.getVictimName());
+        boolean hasContact = dto.getVictimContact() != null && !dto.getVictimContact().isBlank();
+        if (dto.getType() != IncidentType.SOS_REQUEST && (hasName || hasContact)) {
             LocationDTO victimLocation = dto.getVictimLocation() == null ? location : determineLocation(dto.getVictimLocation());
             incident.setVictimId(handleVictimInformation(dto, victimLocation.getLocationId()));
         }
@@ -66,7 +71,7 @@ public class IncidentService {
         receipt.setType(incident.getType());
         receipt.setTimestamp(incident.getTimestamp());
         receipt.setStatus(incident.getStatus());
-        receipt.setIncidentLocation(location);
+        receipt.setIncidentLocation(withReportedAddress(location, incident));
         // Best effort only. A durable retry/outbox is a separately reviewed follow-up.
         try { logIncident(incident, location); }
         catch (RuntimeException e) { log.warn("Incident stored; audit delivery not confirmed"); }
@@ -129,20 +134,12 @@ public class IncidentService {
         }
     }
 
-    private Integer handleVictimInformation(IncidentDTO dto,int victimLocation) {
-
-        if (dto.getVictimName() != null) {
-
-            VictimDTO victim = new VictimDTO();
-            victim.setName(dto.getVictimName());
-            victim.setContactInfo(dto.getVictimContact());
-//            victim.setLocationId(dto.getVictimLocationId());
-            victim.setLocationId(victimLocation);
-            Integer victimId = (victimServiceClient.createVictim(victim)).getVictimId(); // victim id
-
-            return victimId;
-        }
-        return null;
+    private Integer handleVictimInformation(IncidentDTO dto, int victimLocation) {
+        VictimDTO victim = new VictimDTO();
+        victim.setName(dto.getVictimName());
+        victim.setContactInfo(dto.getVictimContact());
+        victim.setLocationId(victimLocation);
+        return victimServiceClient.createVictim(victim).getVictimId();
     }
 
     private void logIncident(Incident incident, LocationDTO location) {
@@ -199,7 +196,7 @@ public class IncidentService {
                     dto.setType(incident.getType());
                     dto.setTimestamp(incident.getTimestamp());
                     dto.setStatus(incident.getStatus());
-                    dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
+                    dto.setIncidentLocation(withReportedAddress(locationServiceClient.getLocationById(incident.getLocationId()), incident));
 //                    dto.setIncidentLocationId(incident.getLocationId());
                     dto.setVictimId(incident.getVictimId());
                     return dto;
@@ -213,7 +210,7 @@ public class IncidentService {
         dto.setType(incident.getType());
         dto.setTimestamp(incident.getTimestamp());
         dto.setStatus(incident.getStatus());
-        dto.setIncidentLocation(locationServiceClient.getLocationById(incident.getLocationId()));
+        dto.setIncidentLocation(withReportedAddress(locationServiceClient.getLocationById(incident.getLocationId()), incident));
 
         // Fetch additional details from other services
         if (incident.getVictimId() != null) {
@@ -233,5 +230,11 @@ public class IncidentService {
                 .collect(Collectors.toList()));
 
         return dto;
+    }
+
+    private LocationDTO withReportedAddress(LocationDTO location, Incident incident) {
+        if (incident.getReportedAddress() == null) return location;
+        return new LocationDTO(location.getLocationId(), location.getLatitude(), location.getLongitude(),
+                incident.getReportedAddress());
     }
 }

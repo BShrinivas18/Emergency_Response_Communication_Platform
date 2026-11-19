@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import { API_ORIGIN } from '../api.config';
 import { Injectable } from '@angular/core';
 import { Observable, from, of, throwError } from 'rxjs';

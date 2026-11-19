@@ -1,6 +1,7 @@
 param(
  [string[]]$Services = @('Eureka-Server','Api-Gateway-Server','Incident-Service','Responder-Service','Victim-Service','Location-Service','Log-Service','User-Service'),
- [switch]$SkipBuild
+ [switch]$SkipBuild,
+ [ValidatePattern('^ercp(_[a-z0-9]{1,24})?$')][string]$DatabasePrefix = 'ercp'
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
@@ -24,10 +25,10 @@ $env:CORS_ORIGINS = 'http://localhost:4200,http://127.0.0.1:4200'
 $env:SPRING_JPA_SHOW_SQL = 'false'
 $env:EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = 'http://127.0.0.1:8761/eureka/'
 $definitions = @{
- 'Eureka-Server'=@(8761,''); 'Api-Gateway-Server'=@(8888,'ercp_gateway');
- 'Incident-Service'=@(8080,'ercp_incident'); 'Responder-Service'=@(8081,'ercp_responder');
- 'Victim-Service'=@(8082,'ercp_victim'); 'Location-Service'=@(8000,'ercp_location');
- 'Log-Service'=@(8084,'ercp_log'); 'User-Service'=@(8083,'ercp_user')
+ 'Eureka-Server'=@(8761,''); 'Api-Gateway-Server'=@(8888,'gateway');
+ 'Incident-Service'=@(8080,'incident'); 'Responder-Service'=@(8081,'responder');
+ 'Victim-Service'=@(8082,'victim'); 'Location-Service'=@(8000,'location');
+ 'Log-Service'=@(8084,'log'); 'User-Service'=@(8083,'user')
 }
 foreach ($service in $Services) {
  $config = $definitions[$service]
@@ -43,7 +44,7 @@ foreach ($service in $Services) {
  $jar = Get-ChildItem (Join-Path $project 'target') -Filter '*.jar' | Select-Object -First 1
  if (!$jar) { throw "Package missing for $service; run without -SkipBuild" }
  $env:SERVER_PORT = [string]$config[0]
- $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://127.0.0.1:55432/$($config[1])"
+ $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://127.0.0.1:55432/${DatabasePrefix}_$($config[1])"
  $process = Start-Process -FilePath (Join-Path $env:JAVA_HOME 'bin/java.exe') -ArgumentList @('-Xms32m','-Xmx160m','-XX:MaxMetaspaceSize=160m','-XX:+UseSerialGC','-jar',('"'+$jar.FullName+'"')) -WorkingDirectory $project -WindowStyle Hidden -RedirectStandardOutput (Join-Path $state "$service.log") -RedirectStandardError (Join-Path $state "$service-error.log") -PassThru
  $process.Id | Set-Content (Join-Path $state "$service.pid")
  Write-Output "$service launched: PID $($process.Id), port $($config[0])"

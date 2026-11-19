@@ -1,11 +1,10 @@
-<div class="container-fluid p-4 bg-light min-vh-100">
-    <app-profile-header></app-profile-header>
-    <div class="row mt-4">
-      <div class="col-md-6">
-        <app-incident></app-incident>
-      </div>
-      <div class="col-md-6">
-        <app-incident-history></app-incident-history>
-      </div>
-    </div>
+<div class="container py-4">
+  <app-profile-header #profile (statusChanged)="assignment.refresh(); history.refresh()"></app-profile-header>
+  <button class="btn btn-outline-primary my-3" type="button"
+    [disabled]="profile.statusPending || assignment.loading"
+    (click)="profile.fetchResponderData(); assignment.refresh(); history.refresh()">Refresh dashboard</button>
+  <div class="row g-3">
+    <div class="col-md-6"><app-incident #assignment></app-incident></div>
+    <div class="col-md-6"><app-incident-history #history></app-incident-history></div>
   </div>
+</div>

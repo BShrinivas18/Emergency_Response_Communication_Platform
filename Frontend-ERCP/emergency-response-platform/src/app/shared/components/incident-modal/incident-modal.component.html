@@ -1,64 +1,69 @@
-<p role="alert" *ngIf="submissionError">{{ submissionError }}</p>
-<a href="tel:112">Call 112 (India)</a>
-
-<mat-dialog-content>
-  <h2 mat-dialog-title>Report an Incident</h2>
-  <form [formGroup]="incidentForm" (submit)="onSubmit()">
-    <!-- Victim Name -->
-    <div class="form-group">
-      <label for="victimName">Victim Name (optional)</label>
-      <input class="form-control" id="victimName" formControlName="victimName" />
-    </div>
-
-    <!-- Victim Contact -->
-    <div class="form-group">
-      <label for="victimContact">Contact Details (optional)</label>
-      <input class="form-control" id="victimContact" formControlName="victimContact" />
-    </div>
-
-    <!-- Victim Address -->
-    <div class="form-group">
-      <label for="victimAddress">Victim Current Address
-        </label>
-
-      <input class="form-control" id="victimAddress" formControlName="victimAddress" readonly  />
-    </div>
-
-    <!-- Incident Type -->
-    <div class="form-group">
-      <label for="type">Incident Type</label>
-      
-      <select class="form-control" id="type" formControlName="type" required>
-        <option value="" disabled selected>Select an option</option>
-    
-        <option *ngFor="let option of type" [value]="option"> {{ option }}</option>
-      </select>
-    </div>
-    
-    <!-- Same Location Checkbox -->
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" formControlName="useSameLocation" (change)="updateIncidentLocation()" />
-      <label class="form-check-label" for="useSameLocation">
-        Incident is at my current GPS location
-      </label>
-    </div>
-
-    <!-- Incident Location -->
-    <div class="form-group">
-      <label for="incidentLocation">Incident Location</label>
-      <input class="form-control" id="incidentLocation" formControlName="incidentLocation" readonly />
-      <!-- <div class="button-group mt-2">
-        <button class="btn btn-secondary" type="button" (click)="openMapModal()">Locate on Map</button>
-      </div> -->
-    </div>
-
-    <!-- Submit Button -->
-    <div class="form-actions">
-      <button class="btn btn-primary" type="submit" [disabled]="!incidentForm.valid || submissionPending">
-        Submit Report
+@if (receipt; as recorded) {
+  <h2 mat-dialog-title>Incident recorded</h2>
+  <mat-dialog-content>
+    <div class="alert alert-success" role="status">Report reference <strong>#{{ recorded.incidentId }}</strong></div>
+    <p>Responder assignment has yet to be confirmed.</p>
+    <a href="tel:112">Call 112 in India for immediate help</a>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-flat-button type="button" [mat-dialog-close]="recorded">Done</button>
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title>Report an incident</h2>
+  <form [formGroup]="incidentForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="report-fields">
+      <div>
+        <label class="form-label" for="incident-type">Incident type</label>
+        <select class="form-select" id="incident-type" formControlName="type" required>
+          <option value="" disabled>Select incident type</option>
+          @for (type of types; track type) { <option [value]="type">{{ type }}</option> }
+        </select>
+        @if (incidentForm.controls.type.touched && incidentForm.controls.type.invalid) {
+          <p class="text-danger form-text">Select an incident type.</p>
+        }
+      </div>
+      <fieldset>
+        <legend>Incident location</legend>
+        <button mat-stroked-button type="button" (click)="fillLocation(true)" [disabled]="locationPending || submissionPending">
+          {{ locationPending ? 'Finding your location…' : 'Use my location' }}
+        </button>
+        <p class="form-text" role="status">{{ locationMessage || 'Enter the coordinates of the incident. Device location can fill them if the incident is where you are.' }}</p>
+        <div class="coordinate-fields">
+          <div>
+            <label class="form-label" for="latitude">Latitude</label>
+            <input class="form-control" id="latitude" formControlName="latitude" type="number" step="any" min="-90" max="90" required>
+          </div>
+          <div>
+            <label class="form-label" for="longitude">Longitude</label>
+            <input class="form-control" id="longitude" formControlName="longitude" type="number" step="any" min="-180" max="180" required>
+          </div>
+        </div>
+        @if ((incidentForm.controls.latitude.touched || incidentForm.controls.longitude.touched)
+          && (incidentForm.controls.latitude.invalid || incidentForm.controls.longitude.invalid)) {
+          <p class="text-danger form-text">Enter a latitude from −90 to 90 and a longitude from −180 to 180.</p>
+        }
+        <label class="form-label mt-2" for="incident-address">Address or landmark (optional)</label>
+        <input class="form-control" id="incident-address" formControlName="address" maxlength="255">
+      </fieldset>
+      <div class="coordinate-fields">
+        <div>
+          <label class="form-label" for="victimName">Victim name (optional)</label>
+          <input class="form-control" id="victimName" formControlName="victimName" maxlength="255">
+        </div>
+        <div>
+          <label class="form-label" for="victimContact">Victim contact (optional)</label>
+          <input class="form-control" id="victimContact" formControlName="victimContact" type="tel" maxlength="255">
+        </div>
+      </div>
+      @if (submissionError) {
+        <div class="alert alert-warning mb-0" role="alert">{{ submissionError }} <a href="tel:112">Call 112</a></div>
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" mat-dialog-close [disabled]="submissionPending">Cancel</button>
+      <button mat-flat-button type="submit" [disabled]="submissionPending">
+        {{ submissionPending ? 'Submitting…' : 'Submit report' }}
       </button>
-    </div>
+    </mat-dialog-actions>
   </form>
-</mat-dialog-content>
-
-
+}

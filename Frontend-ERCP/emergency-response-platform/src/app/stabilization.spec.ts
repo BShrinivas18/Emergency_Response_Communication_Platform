@@ -1,7 +1,7 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EmergencyService } from './core/services/emergency.service';
 import { IncidentType, Incident } from './shared/models/incident.model';
 import { Role } from './shared/models/user.model';
@@ -67,16 +67,16 @@ describe('Stabilization: truthful SOS feedback', () => {
     response = new Subject(); dialog = {open:jasmine.createSpy()};
     service = {reportIncident:jasmine.createSpy().and.returnValue(response)};
     location = {getCurrentLocation: jasmine.createSpy().and.resolveTo({latitude:12,longitude:77})};
-    component = new LandingComponent(dialog,location,service,{} as any,{} as any);
+    component = new LandingComponent(dialog, location, service);
   });
   it('waits for receipt and prevents duplicate taps', async () => {
-    await component.sendSOSAlert(); await component.sendSOSAlert();
+    const submission = component.sendSOSAlert(); await component.sendSOSAlert();
     expect(dialog.open).not.toHaveBeenCalled(); expect(service.reportIncident).toHaveBeenCalledTimes(1);
-    response.next({...incident,incidentId:42});
+    response.next({...incident,incidentId:42}); await submission;
     expect(dialog.open.calls.mostRecent().args[1].data.incident.incidentId).toBe(42);
   });
   it('shows unconfirmed on network failure', async () => {
-    await component.sendSOSAlert(); response.error(new Error());
+    const submission = component.sendSOSAlert(); await Promise.resolve(); response.error(new Error()); await submission;
     expect(dialog.open).not.toHaveBeenCalled(); expect(component.submissionError).toContain('not confirmed');
   });
   it('does not submit invented coordinates on GPS denial', async () => {
@@ -86,25 +86,86 @@ describe('Stabilization: truthful SOS feedback', () => {
 });
 
 describe('Stabilization: incident form', () => {
-  it('keeps failures visible and confirms only server data', () => {
+  it('prefills GPS coordinates and uses typed address, contact and edited coordinates', async () => {
     const response = new Subject<Incident>();
-    const service = {reportIncident:jasmine.createSpy().and.returnValue(response),setFormData:jasmine.createSpy(),openIncidentConfirmationModal:jasmine.createSpy()};
-    const ref = {close:jasmine.createSpy()};
-    const component = new IncidentReportModalComponent(new FormBuilder(),{} as any,service as any,ref as any);
-    component.initForm(); component.userLocation={lat:12,lng:77}; component.incidentForm.patchValue({type:IncidentType.FIRE});
-    component.onSubmit(); expect(ref.close).not.toHaveBeenCalled();
-    response.error(new Error()); expect(service.openIncidentConfirmationModal).not.toHaveBeenCalled();
-    expect(component.submissionError).toContain('not confirmed');
+    const service = {reportIncident: jasmine.createSpy().and.returnValue(response)};
+    const ref = {disableClose: false};
+    await TestBed.configureTestingModule({
+      imports: [IncidentReportModalComponent],
+      providers: [
+        ...appConfig.providers,
+        {provide: LocationService, useValue: {getCurrentLocation: () => Promise.resolve({latitude: 12, longitude: 77})}},
+        {provide: EmergencyService, useValue: service},
+        {provide: MatDialogRef, useValue: ref}
+      ]
+    }).compileComponents();
+    const fixture = TestBed.createComponent(IncidentReportModalComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const view: HTMLElement = fixture.nativeElement;
+    const edit = (id: string, value: string) => {
+      const field = view.querySelector<HTMLInputElement>('#' + id)!;
+      field.value = value;
+      field.dispatchEvent(new Event(field instanceof HTMLSelectElement ? 'change' : 'input'));
+    };
+    expect(view.querySelector<HTMLInputElement>('#latitude')?.value).toBe('12');
+    expect(view.querySelector<HTMLInputElement>('#longitude')?.value).toBe('77');
+    edit('incident-type', IncidentType.FIRE);
+    edit('latitude', '0');
+    edit('longitude', '20.001');
+    edit('incident-address', 'Synthetic location');
+    edit('victimContact', '+91 00000 00000');
+    view.querySelector<HTMLButtonElement>('button[type=submit]')!.click();
+    expect(service.reportIncident).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+      incidentLocation: {latitude: 0, longitude: 20.001, address: 'Synthetic location'},
+      victimName: '', victimContact: '+91 00000 00000'
+    }));
+    expect(ref.disableClose).toBeTrue();
+    expect(view.textContent).not.toContain('Report reference');
+    response.next({...incident, incidentId: 42});
+    response.complete();
+    fixture.detectChanges();
+    expect(view.textContent).toContain('#42');
+    expect(view.querySelector('form')).toBeNull();
+    expect(ref.disableClose).toBeFalse();
   });
-  it('refuses to substitute reporter GPS for a different incident location', () => {
-    const service = {reportIncident:jasmine.createSpy()};
-    const component = new IncidentReportModalComponent(new FormBuilder(),{} as any,service as any,{} as any);
-    component.initForm(); component.userLocation={lat:12,lng:77};
-    component.incidentForm.patchValue({type:IncidentType.FIRE,useSameLocation:false}); component.onSubmit();
-    expect(service.reportIncident).not.toHaveBeenCalled(); expect(component.submissionError).toContain('location is not confirmed');
+
+  it('supports GPS denial, only submits valid coordinates and retains inputs on failure', async () => {
+    const response = new Subject<Incident>();
+    const service = {reportIncident: jasmine.createSpy().and.returnValue(response)};
+    const location = {getCurrentLocation: () => Promise.reject(new Error('Permission denied'))};
+    const component = new IncidentReportModalComponent(new FormBuilder(), location as any, service as any, {} as any);
+    await component.fillLocation();
+    expect(component.locationMessage).toContain('manually');
+    component.incidentForm.patchValue({type: IncidentType.FIRE, latitude: 91, longitude: 77});
+    component.onSubmit();
+    expect(service.reportIncident).not.toHaveBeenCalled();
+    component.incidentForm.patchValue({latitude: 12, address: 'A landmark'});
+    component.onSubmit();
+    component.onSubmit();
+    expect(service.reportIncident).toHaveBeenCalledTimes(1);
+    response.error(new Error('network'));
+    expect(component.receipt).toBeUndefined();
+    expect(component.incidentForm.enabled).toBeTrue();
+    expect(component.incidentForm.value.address).toBe('A landmark');
+    expect(component.submissionError).toContain('could not confirm');
+  });
+
+  it('leaves manual coordinates intact if they were edited while GPS was pending', async () => {
+    let resolveLocation!: (location: {latitude: number; longitude: number}) => void;
+    const pending = new Promise<{latitude: number; longitude: number}>(resolve => resolveLocation = resolve);
+    const location = {getCurrentLocation: () => pending};
+    const component = new IncidentReportModalComponent(new FormBuilder(), location as any, {} as any, {} as any);
+    const fetch = component.fillLocation();
+    component.incidentForm.controls.latitude.setValue(15);
+    component.incidentForm.controls.latitude.markAsDirty();
+    resolveLocation({latitude: 12, longitude: 77});
+    await fetch;
+    expect(component.incidentForm.controls.latitude.value).toBe(15);
+    expect(component.incidentForm.controls.longitude.value).toBeNull();
   });
 });
-
 describe('Stabilization: credentials', () => {
   it('valid GPS does not depend on geocoding or Google Maps', async () => {
     const service = new LocationService({} as any);
@@ -135,7 +196,7 @@ describe('Stabilization: responder history', () => {
   });
   it('profile waits for persisted status and preserves previous status on failure', () => {
     const response = new Subject<any>(); const service = {updateStatus:jasmine.createSpy().and.returnValue(response)};
-    const component = new ProfileHeaderComponent(service as any,{} as any,{} as any);
+    const component = new ProfileHeaderComponent(service as any, {} as any);
     component.responder = {responderId:7,status:'AVAILABLE'} as any; component.status='AVAILABLE';
     component.setStatus('OFF_DUTY'); expect(component.status).toBe('AVAILABLE');
     response.error(new Error()); expect(component.status).toBe('AVAILABLE'); expect(component.statusError).toContain('not confirmed');
@@ -170,7 +231,7 @@ describe('Application runtime configuration', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Emergency Response Platform');
-    expect(fixture.nativeElement.textContent).toContain('Map preview is unavailable');
+    expect(fixture.nativeElement.textContent).toContain('Report an incident');
     expect(fixture.nativeElement.querySelector('google-map')).toBeNull();
     const http = TestBed.inject(HttpTestingController);
     TestBed.inject(EmergencyService).reportIncident(incident).subscribe();
@@ -182,6 +243,7 @@ describe('Application runtime configuration', () => {
 
 import { LoginComponent } from './modules/public/login/login.component';
 import { AuthService } from './core/services/auth.service';
+import { ResponderDashboardComponent } from './modules/responder/dashboard/dashboard.component';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { authGuard } from './core/auth-gaurd/auth.guard';
@@ -283,5 +345,37 @@ describe('Staff sign-in and session recovery', () => {
     http.expectOne(`${API_ORIGIN}/incidents`).flush(null, {status: 403, statusText: 'Forbidden'});
     expect(auth.getToken()).toBe(token);
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('renders a signed-in responder assignment and refreshes history after an audited status change', async () => {
+    auth.startSession({jwtToken: browserToken('RESPONDER'), userId: null, responderId: 12}, 'staff');
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/responder-dashboard', ResponderDashboardComponent);
+    const profile = {responderId: 12, name: 'Staff', status: 'ASSIGNED', incidentId: 42};
+    const load = () => {
+      const requests = http.match(`${API_ORIGIN}/responders/12`);
+      expect(requests.length).toBe(2);
+      for (const request of requests) request.flush(profile);
+      http.expectOne(`${API_ORIGIN}/incidents/42`).flush({...incident, incidentId: 42});
+      http.expectOne(`${API_ORIGIN}/responders/12/history`).flush([]);
+    };
+    load();
+    harness.detectChanges();
+    const view = harness.routeNativeElement!;
+    expect(view.textContent).toContain('#42');
+    const button = [...view.querySelectorAll<HTMLButtonElement>('button')].find(node => node.textContent?.includes('Mark on route'))!;
+    expect(button.disabled).toBeFalse();
+    button.click();
+    const update = http.expectOne(`${API_ORIGIN}/responders/12/ON_ROUTE`);
+    expect(update.request.method).toBe('PATCH');
+    update.flush({...profile, status: 'ON_ROUTE'});
+    http.expectOne(`${API_ORIGIN}/responders/12`).flush({...profile, status: 'ON_ROUTE'});
+    http.expectOne(`${API_ORIGIN}/incidents/42`).flush({...incident, incidentId: 42, status: 'IN_PROGRESS'});
+    http.expectOne(`${API_ORIGIN}/responders/12/history`).flush([
+      {incidentId: 42, eventType: 'STATUS_CHANGED', previousStatus: 'ASSIGNED', newStatus: 'ON_ROUTE'}
+    ]);
+    harness.detectChanges();
+    expect(view.textContent).toContain('On Route');
+    expect(view.textContent).toContain('IN_PROGRESS');
   });
 });
